@@ -12,10 +12,10 @@ export type TRecordsContext = {
   isGetRecordsLoading?: boolean;
   isGetRecordsError?: boolean;
   error?: Error;
-  queryParams: RecordsQueryParams;
-  setQueryParams: (params: RecordsQueryParams) => void;
-  updateRecord: ReturnType<typeof useUpdateRecordAPI>;
-  deleteRecord: ReturnType<typeof useDeleteRecordAPI>;
+  queryParams?: RecordsQueryParams;
+  setQueryParams?: (params: RecordsQueryParams) => void;
+  updateRecord?: ReturnType<typeof useUpdateRecordAPI>;
+  deleteRecord?: ReturnType<typeof useDeleteRecordAPI>;
 };
 
 export type RecordsQueryParams = {
