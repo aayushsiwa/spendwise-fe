@@ -12,10 +12,10 @@ export type TRecordsContext = {
   isGetRecordsLoading?: boolean;
   isGetRecordsError?: boolean;
   error?: Error;
-  queryParams?: RecordsQueryParams;
-  setQueryParams?: (params: RecordsQueryParams) => void;
-  updateRecord?: ReturnType<typeof useUpdateRecordAPI>;
-  deleteRecord?: ReturnType<typeof useDeleteRecordAPI>;
+  queryParams: RecordsQueryParams;
+  setQueryParams: (params: RecordsQueryParams) => void;
+  updateRecord: ReturnType<typeof useUpdateRecordAPI>;
+  deleteRecord: ReturnType<typeof useDeleteRecordAPI>;
 };
 
 export type RecordsQueryParams = {
@@ -34,9 +34,9 @@ export const RecordsContext = createContext<TRecordsContext>(
   {} as unknown as TRecordsContext
 );
 
-export const RecordsContextProvider: FC<
-  React.PropsWithChildren<TRecordsContext>
-> = ({ children }) => {
+export const RecordsContextProvider: FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [queryParams, setQueryParams] = useState<RecordsQueryParams>({
     page: 1,
     limit: 10,
