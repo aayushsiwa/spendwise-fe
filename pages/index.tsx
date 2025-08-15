@@ -1,3 +1,7 @@
-export default function Home() {
-  return <>Hi from expense-tracker</>;
-}
+import Home from "@/lib/containers/Home/Home";
+
+const HomePage = () => {
+  return <Home />;
+};
+
+export default HomePage;
