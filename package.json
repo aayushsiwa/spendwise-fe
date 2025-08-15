@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "format": "prettier --check .",
+    "format:check": "prettier --check .",
     "format:write": "prettier --write ."
   },
   "dependencies": {
