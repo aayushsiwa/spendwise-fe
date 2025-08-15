@@ -1,20 +1,21 @@
-import { Box, useTheme, Paper } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
-import Toolbar from "@/lib/components/Toolbar/Toolbar";
-import { FC } from "react";
-import Records from "@/lib/components/Records/Records";
+import { Box, Paper, useTheme } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
+import { FC } from 'react';
+
+import Records from '@/lib/components/Records/Records';
+import Toolbar from '@/lib/components/Toolbar/Toolbar';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#6299d0",
+      main: '#6299d0',
     },
     secondary: {
-      main: "#6C5CE7",
+      main: '#6C5CE7',
     },
     background: {
-      default: "#f8fafc",
-      paper: "#ffffff",
+      default: '#f8fafc',
+      paper: '#ffffff',
     },
   },
   typography: {
@@ -79,14 +80,14 @@ const Home: FC = () => {
   return (
     <Box
       sx={{
-        height: "100vh",
-        width: "100vw",
+        height: '100vh',
+        width: '100vw',
         margin: 0,
         padding: 0,
         backgroundColor: theme.palette.background.default,
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* <Paper
@@ -104,10 +105,10 @@ const Home: FC = () => {
 
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "row",
-          width: "100%",
-          height: "80%",
+          display: 'flex',
+          flexDirection: 'row',
+          width: '100%',
+          height: '80%',
         }}
       >
         <Paper
@@ -116,10 +117,10 @@ const Home: FC = () => {
             padding: 2,
             margin: 2,
             borderRadius: 2,
-            width: "70%",
+            width: '70%',
             backgroundColor: theme.palette.background.paper,
             boxShadow: theme.shadows[1],
-            overflow: "hidden",
+            overflow: 'hidden',
           }}
           variant="outlined"
         >

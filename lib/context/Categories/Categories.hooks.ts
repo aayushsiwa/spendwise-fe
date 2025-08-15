@@ -1,5 +1,6 @@
-import { useGetCategoriesAPI } from "@/pages/api/categories/getCategories";
-import { TCategoriesContext } from "./Categories";
+import { useGetCategoriesAPI } from '@/pages/api/categories/getCategories';
+
+import { TCategoriesContext } from './Categories';
 
 export const useCategoriesProvider = (): TCategoriesContext => {
   const {
@@ -13,7 +14,7 @@ export const useCategoriesProvider = (): TCategoriesContext => {
     const category = getCategoriesResponse?.data.categories?.find(
       (cat) => cat.name === categoryName
     );
-    return category?.color ?? "#B0BEC5";
+    return category?.color ?? '#B0BEC5';
   };
 
   return {

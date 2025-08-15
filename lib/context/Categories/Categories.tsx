@@ -1,6 +1,8 @@
-import { createContext, FC, useContext } from "react";
-import { Category } from "@/types/Categories";
-import { useCategoriesProvider } from "./Categories.hooks";
+import { FC, createContext, useContext } from 'react';
+
+import { Category } from '@/types/Categories';
+
+import { useCategoriesProvider } from './Categories.hooks';
 
 export type TCategoriesContext = {
   categories?: Category[];

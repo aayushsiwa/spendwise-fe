@@ -1,9 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
+import { useMutation } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 
-import { PrivateAxios, queryClient } from "@/pages/api/index";
-import { QueryKeys } from "@/constants/QueryKeys";
-import { Record, RecordQuery } from "@/types/Records";
+import { QueryKeys } from '@/constants/QueryKeys';
+import { PrivateAxios, queryClient } from '@/pages/api/index';
+import { Record, RecordQuery } from '@/types/Records';
 
 type UpdateRecordAPIResponse = {
   record: Record;
@@ -12,14 +12,14 @@ type UpdateRecordResponse = AxiosResponse<UpdateRecordAPIResponse>;
 
 type UpdateRecordRequest = {
   id: string;
-  record: Omit<Record, "id">;
+  record: Omit<Record, 'id'>;
 };
 
 export const updateRecordAPI = async ({
   id,
   record,
 }: UpdateRecordRequest): Promise<UpdateRecordResponse> => {
-  console.log("called");
+  console.log('called');
   const res = await PrivateAxios.patch<UpdateRecordAPIResponse>(
     `/api/records/${id}`,
     record

@@ -1,10 +1,10 @@
-import { QueryObserverResult, useQuery } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
+import { QueryObserverResult, useQuery } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 
-import { PrivateAxios } from "@/pages/api/index";
-import { QueryKeys } from "@/constants/QueryKeys";
-import { QueryHookOptions } from "@/types/api";
-import { Record } from "@/types/Records";
+import { QueryKeys } from '@/constants/QueryKeys';
+import { PrivateAxios } from '@/pages/api/index';
+import { Record } from '@/types/Records';
+import { QueryHookOptions } from '@/types/api';
 
 export type Pagination = {
   has_next: boolean;
@@ -41,7 +41,7 @@ export const getRecordsAPI = async (
 
   // Add filter params
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
+    if (value !== undefined && value !== null && value !== '') {
       queryParams.append(key, value.toString());
     }
   });

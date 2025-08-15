@@ -1,7 +1,7 @@
-import { Fab, Tooltip, Box } from "@mui/material";
-import { useQueryClient } from "@tanstack/react-query";
-import { useTheme } from "@mui/material/styles";
-import { Refresh, Add } from "@mui/icons-material";
+import { Add, Refresh } from '@mui/icons-material';
+import { Box, Fab, Tooltip } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Toolbar = () => {
   const queryClient = useQueryClient();
@@ -13,16 +13,16 @@ const Toolbar = () => {
 
   const handleAddRecord = () => {
     // TODO: Implement add record functionality
-    console.log("Add record clicked");
+    console.log('Add record clicked');
   };
 
   return (
     <Box
       sx={{
-        position: "fixed",
+        position: 'fixed',
         bottom: 20,
         left: 20,
-        display: "flex",
+        display: 'flex',
         // flexDirection: "column",
         gap: 2,
         zIndex: 1000,
@@ -36,7 +36,7 @@ const Toolbar = () => {
           sx={{
             backgroundColor: theme.palette.secondary.main,
             color: theme.palette.secondary.contrastText,
-            "&:hover": {
+            '&:hover': {
               backgroundColor: theme.palette.secondary.dark,
             },
           }}
@@ -53,7 +53,7 @@ const Toolbar = () => {
           sx={{
             backgroundColor: theme.palette.primary.main,
             color: theme.palette.primary.contrastText,
-            "&:hover": {
+            '&:hover': {
               backgroundColor: theme.palette.primary.dark,
             },
           }}

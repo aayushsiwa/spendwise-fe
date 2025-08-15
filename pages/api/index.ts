@@ -1,5 +1,5 @@
-import { DefaultOptions, QueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { DefaultOptions, QueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 
 const queryClientOptions: DefaultOptions = {
   queries: {

@@ -1,9 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
+import { useMutation } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 
-import { PrivateAxios, queryClient } from "@/pages/api/index";
-import { QueryKeys } from "@/constants/QueryKeys";
-import { Record, RecordQuery } from "@/types/Records";
+import { QueryKeys } from '@/constants/QueryKeys';
+import { PrivateAxios, queryClient } from '@/pages/api/index';
+import { Record, RecordQuery } from '@/types/Records';
 
 type DeleteRecordAPIResponse = {
   record: Record;

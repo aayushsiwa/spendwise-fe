@@ -1,9 +1,9 @@
-import { UseQueryOptions } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
+import { UseQueryOptions } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 
 export type QueryHookOptions<TQueryFnData = unknown> = Omit<
   UseQueryOptions<TQueryFnData>,
-  "queryKey" | "queryFn"
+  'queryKey' | 'queryFn'
 >;
 
 import DefaultObject = Utility.DefaultObject;

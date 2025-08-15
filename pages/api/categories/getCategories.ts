@@ -1,10 +1,10 @@
-import { QueryObserverResult, useQuery } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
+import { QueryObserverResult, useQuery } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
 
-import { PrivateAxios } from "@/pages/api/index";
-import { QueryKeys } from "@/constants/QueryKeys";
-import { QueryHookOptions } from "@/types/api";
-import { Category } from "@/types/Categories";
+import { QueryKeys } from '@/constants/QueryKeys';
+import { PrivateAxios } from '@/pages/api/index';
+import { Category } from '@/types/Categories';
+import { QueryHookOptions } from '@/types/api';
 
 type GetCategoriesAPIResponse = {
   categories: Category[];
@@ -12,9 +12,8 @@ type GetCategoriesAPIResponse = {
 type GetCategoriesResponse = AxiosResponse<GetCategoriesAPIResponse>;
 
 export const getCategoriesAPI = async (): Promise<GetCategoriesResponse> => {
-  const res = await PrivateAxios.get<GetCategoriesAPIResponse>(
-    `/api/categories`
-  );
+  const res =
+    await PrivateAxios.get<GetCategoriesAPIResponse>(`/api/categories`);
 
   return res;
 };

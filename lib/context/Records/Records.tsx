@@ -1,9 +1,11 @@
-import { Record } from "@/types/Records";
-import { createContext, FC, useContext, useState } from "react";
-import { useRecordsProvider } from "./Records.hooks";
-import { Pagination } from "@/pages/api/records/getRecords";
-import { useUpdateRecordAPI } from "@/pages/api/records/updateRecords";
-import { useDeleteRecordAPI } from "@/pages/api/records/deleteRecords";
+import { FC, createContext, useContext, useState } from 'react';
+
+import { useDeleteRecordAPI } from '@/pages/api/records/deleteRecords';
+import { Pagination } from '@/pages/api/records/getRecords';
+import { useUpdateRecordAPI } from '@/pages/api/records/updateRecords';
+import { Record } from '@/types/Records';
+
+import { useRecordsProvider } from './Records.hooks';
 
 export type TRecordsContext = {
   records?: Record[];
