@@ -1,9 +1,11 @@
-import { Box, Paper, useTheme } from '@mui/material';
+import { Box, CircularProgress, Paper, useTheme } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import { FC } from 'react';
 
 import Records from '@/lib/components/Records/Records';
+import Summary from '@/lib/components/Summary/Summary';
 import Toolbar from '@/lib/components/Toolbar/Toolbar';
+import { useGetSummaryAPI } from '@/pages/api/summary/getSummary';
 
 const theme = createTheme({
   palette: {
@@ -28,54 +30,55 @@ const theme = createTheme({
 
 const Home: FC = () => {
   const theme = useTheme();
+  const currentMonth = new Date().toISOString().slice(0, 7);
 
-  // const {
-  //     data: summary,
-  //     isLoading: summaryLoading,
-  //     error: summaryError,
-  //   } = useSummaryQuery();
+  const {
+    data: summary,
+    isLoading: summaryLoading,
+    error: summaryError,
+  } = useGetSummaryAPI(currentMonth);
 
-  // if (summaryLoading || !summary) {
-  //   return (
-  //     <Box
-  //       sx={{
-  //         height: "100vh",
-  //         width: "100vw",
-  //         display: "flex",
-  //         alignItems: "center",
-  //         justifyContent: "center",
-  //         backgroundColor: theme.palette.background.default,
-  //       }}
-  //     >
-  //       <CircularProgress
-  //         size={60}
-  //         sx={{ color: theme.palette.primary.main }}
-  //       />
-  //     </Box>
-  //   );
-  // }
+  if (summaryLoading || !summary) {
+    return (
+      <Box
+        sx={{
+          height: '100vh',
+          width: '100vw',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: theme.palette.background.default,
+        }}
+      >
+        <CircularProgress
+          size={60}
+          sx={{ color: theme.palette.primary.main }}
+        />
+      </Box>
+    );
+  }
 
-  // if (summaryError) {
-  //   return (
-  //     <Box
-  //       sx={{
-  //         height: "100vh",
-  //         width: "100vw",
-  //         display: "flex",
-  //         alignItems: "center",
-  //         justifyContent: "center",
-  //         backgroundColor: theme.palette.background.default,
-  //         flexDirection: "column",
-  //         gap: 2,
-  //       }}
-  //     >
-  //       <Box sx={{ color: theme.palette.error.main, textAlign: "center" }}>
-  //         <h2>Error Loading Data</h2>
-  //         <p>Failed to load summary data. Please try refreshing the page.</p>
-  //       </Box>
-  //     </Box>
-  //   );
-  // }
+  if (summaryError) {
+    return (
+      <Box
+        sx={{
+          height: '100vh',
+          width: '100vw',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: theme.palette.background.default,
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <Box sx={{ color: theme.palette.error.main, textAlign: 'center' }}>
+          <h2>Error Loading Data</h2>
+          <p>Failed to load summary data. Please try refreshing the page.</p>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -90,18 +93,18 @@ const Home: FC = () => {
         flexDirection: 'column',
       }}
     >
-      {/* <Paper
-          sx={{
-            padding: 2,
-            margin: 2,
-            borderRadius: 2,
-            backgroundColor: theme.palette.background.paper,
-            boxShadow: theme.shadows[1],
-          }}
-          variant="outlined"
-        >
-          <Summary summary={summary} />
-        </Paper> */}
+      <Paper
+        sx={{
+          padding: 2,
+          margin: 2,
+          borderRadius: 2,
+          backgroundColor: theme.palette.background.paper,
+          boxShadow: theme.shadows[1],
+        }}
+        variant="outlined"
+      >
+        <Summary summary={summary} />
+      </Paper>
 
       <Box
         sx={{
