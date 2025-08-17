@@ -28,6 +28,7 @@ import {
 import { currency } from '@/constants/Currency';
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
 import { useRecordsContext } from '@/lib/context/Records/Records';
+import { queryClient } from '@/pages/api';
 import type { Record } from '@/types/Records';
 
 // Helper function to get type color and icon
@@ -83,10 +84,9 @@ const Records = () => {
   };
 
   const processRowUpdate = async (newRow: Record, oldRow: Record) => {
-    console.log('Processing row update:', newRow, oldRow);
     try {
       const { id, ...recordData } = newRow;
-      await updateRecord.mutateAsync({ id, record: recordData });
+      await updateRecord.mutateAsync({ id, record: recordData, queryParams });
       return newRow;
     } catch (error) {
       console.error('Failed to update record:', error);
