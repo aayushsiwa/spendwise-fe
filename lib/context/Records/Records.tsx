@@ -1,5 +1,6 @@
 import { FC, createContext, useContext, useState } from 'react';
 
+import { useCreateRecordAPI } from '@/pages/api/records/createRecord';
 import { useDeleteRecordAPI } from '@/pages/api/records/deleteRecords';
 import { Pagination } from '@/pages/api/records/getRecords';
 import { useUpdateRecordAPI } from '@/pages/api/records/updateRecords';
@@ -18,6 +19,7 @@ export type TRecordsContext = {
   setQueryParams: (params: RecordsQueryParams) => void;
   updateRecord: ReturnType<typeof useUpdateRecordAPI>;
   deleteRecord: ReturnType<typeof useDeleteRecordAPI>;
+  createRecord: ReturnType<typeof useCreateRecordAPI>;
 };
 
 export type RecordsQueryParams = {
@@ -49,6 +51,7 @@ export const RecordsContextProvider: FC<{ children: React.ReactNode }> = ({
     pagination,
     updateRecord,
     deleteRecord,
+    createRecord,
     isGetRecordsSuccess,
     isGetRecordsLoading,
     isGetRecordsError,
@@ -68,6 +71,7 @@ export const RecordsContextProvider: FC<{ children: React.ReactNode }> = ({
         setQueryParams,
         updateRecord,
         deleteRecord,
+        createRecord,
       }}
     >
       {children}
