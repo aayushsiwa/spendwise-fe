@@ -40,6 +40,7 @@ export const useUpdateRecordAPI = () => {
       const noChanges =
         cached &&
         Object.keys(record).every(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (key) => (cached as any)[key] === (record as any)[key]
         );
 
@@ -91,6 +92,7 @@ export const useUpdateRecordAPI = () => {
       }
     },
     onSettled: (data) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((data as any)?.__skip) return;
       queryClient.invalidateQueries({ queryKey: [QueryKeys.RECORDS] });
       queryClient.invalidateQueries({ queryKey: [QueryKeys.SUMMARY] });

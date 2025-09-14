@@ -1,30 +1,31 @@
+import { CircularProgress } from '@mui/material';
 import {
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
   Radar,
   RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
   ResponsiveContainer,
   Tooltip,
-} from "recharts";
-import useStatistics from "./Satistics.hooks";
-import { CircularProgress } from "@mui/material";
-import Toast from "../Toasts/Toast";
+} from 'recharts';
+
+import Toast from '../Toasts/Toast';
+import useStatistics from './Satistics.hooks';
 
 const SimpleRadarChart = () => {
-  const { filteredSummary, isLoading, error } = useStatistics();
+  const { summary, isLoading, error } = useStatistics();
 
   if (isLoading) {
     return (
-      <div style={{ textAlign: "center", padding: "20px" }}>
+      <div style={{ textAlign: 'center', padding: '20px' }}>
         <CircularProgress />
       </div>
     );
   }
 
-  if (!filteredSummary || filteredSummary.length === 0) {
+  if (!summary) {
     return (
-      <div style={{ textAlign: "center", padding: "20px" }}>
+      <div style={{ textAlign: 'center', padding: '20px' }}>
         <p>No data available</p>
       </div>
     );
@@ -40,7 +41,7 @@ const SimpleRadarChart = () => {
         //   cx="50%"
         //   cy="50%"
         //   outerRadius="80%"
-        data={filteredSummary}
+        data={summary.expenses}
         layout="centric"
       >
         <PolarGrid gridType="circle" />

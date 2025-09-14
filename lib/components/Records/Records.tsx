@@ -47,9 +47,6 @@ const Records = () => {
   } = useRecords();
   const { categories, getCategoryColor } = useCategoriesContext();
   const theme = useTheme();
-  const [rowModesModel, setRowModesModel] = useState<{ [key: string]: any }>(
-    {}
-  );
 
   if (isLoading) {
     return (
@@ -359,11 +356,6 @@ const Records = () => {
         onRowEditStop={(params, event) => {
           if (params.id === 'new') {
             setIsAdding(false);
-            setRowModesModel((prev) => {
-              const updated = { ...prev };
-              delete updated['new'];
-              return updated;
-            });
           }
         }}
         paginationMode="server"

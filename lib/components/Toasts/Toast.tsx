@@ -1,10 +1,10 @@
-import * as React from "react";
-import Snackbar from "@mui/material/Snackbar";
-import type { SnackbarCloseReason } from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+import type { SnackbarCloseReason } from '@mui/material/Snackbar';
+import * as React from 'react';
 
 const Toast: React.FC<{
-  variant: "success" | "error" | "info" | "warning";
+  variant: 'success' | 'error' | 'info' | 'warning';
   message: string;
   duration?: number;
 }> = ({ variant, message, duration = 6000 }) => {
@@ -14,7 +14,7 @@ const Toast: React.FC<{
     event?: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason
   ) => {
-    if (reason === "clickaway") {
+    if (reason === 'clickaway') {
       return;
     }
 
@@ -28,7 +28,7 @@ const Toast: React.FC<{
           onClose={handleClose}
           severity={variant}
           variant="filled"
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           {message}
         </Alert>

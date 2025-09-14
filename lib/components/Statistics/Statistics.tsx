@@ -1,5 +1,5 @@
-import SimplePieChart from "./PieChart";
-import SimpleRadarChart from "./RadarChart";
+import SimplePieChart from './PieChart';
+import SimpleRadarChart from './RadarChart';
 
 const Statistics = () => {
   return (
