@@ -15,9 +15,10 @@ export const getSummaryAPI = async (month: string): Promise<SummaryMonth> => {
 
   return summary;
 };
+const currentMonth = new Date().toISOString().slice(0, 7);
 
 export const useGetSummaryAPI = (
-  month: string
+  month: string = currentMonth
 ): QueryObserverResult<SummaryMonth> => {
   return useQuery({
     queryKey: [QueryKeys.SUMMARY, month],
