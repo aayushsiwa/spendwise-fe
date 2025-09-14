@@ -9,7 +9,7 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
         <Card
           sx={{
             border: `10px solid ${alpha(
-              summary.net >= 0 ? '#2ECC71' : '#E74C3C',
+              summary.net + summary.opening >= 0 ? '#2ECC71' : '#E74C3C',
               0.2
             )}`,
           }}
@@ -24,7 +24,7 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
                 fontWeight: 700,
               }}
             >
-              {summary.net}
+              {summary.net + summary.opening}
             </Typography>
           </CardContent>
         </Card>
