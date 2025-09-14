@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  Receipt,
-  SwapHoriz,
-  TrendingDown,
-  TrendingUp,
-} from '@mui/icons-material';
+import { Receipt } from '@mui/icons-material';
 import { Delete } from '@mui/icons-material';
 import {
   Alert,
@@ -23,76 +18,38 @@ import {
   GridColDef,
   GridPaginationModel,
   GridRenderCellParams,
+  GridRowId,
 } from '@mui/x-data-grid';
+import { useEffect, useState } from 'react';
 
 import { currency } from '@/constants/Currency';
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
-import { useRecordsContext } from '@/lib/context/Records/Records';
-import { queryClient } from '@/pages/api';
 import type { Record } from '@/types/Records';
 
-// Helper function to get type color and icon
-const getTypeDetails = (type: string) => {
-  switch (type) {
-    case 'income':
-      return { color: '#00B894', icon: TrendingUp, bgColor: '#00B89410' };
-    case 'expense':
-      return { color: '#E17055', icon: TrendingDown, bgColor: '#E1705510' };
-    case 'transfer':
-      return { color: '#0984E3', icon: SwapHoriz, bgColor: '#0984E310' };
-    default:
-      return { color: '#636E72', icon: Receipt, bgColor: '#636E7210' };
-  }
-};
+import useRecords from './Records.hooks';
 
 const Records = () => {
   const {
-    records: recordsResponse,
-    pagination: paginationResponse,
+    localRows,
+    setLocalRows,
+    records,
+    isLoading,
+    paginationResponse,
+    handlePaginationModelChange,
+    getTypeDetails,
+    processRowUpdate,
+    handleDeleteRecord,
     isGetRecordsError,
-    isGetRecordsLoading: isLoading,
     error,
-    deleteRecord,
-    updateRecord,
     queryParams,
-    setQueryParams,
-  } = useRecordsContext();
+    isAdding,
+    setIsAdding,
+  } = useRecords();
   const { categories, getCategoryColor } = useCategoriesContext();
   const theme = useTheme();
-
-  // Extract records and pagination from response
-  const records = recordsResponse || [];
-  const pagination = paginationResponse;
-
-  // Handle pagination model changes
-  const handlePaginationModelChange = (model: GridPaginationModel) => {
-    setQueryParams({
-      ...queryParams,
-      page: model.page + 1, // MUI DataGrid uses 0-based pagination, API uses 1-based
-      limit: model.pageSize,
-    });
-  };
-
-  const handleDeleteRecord = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this record?')) {
-      try {
-        await deleteRecord.mutateAsync({ id });
-      } catch (error) {
-        console.error('Failed to delete record:', error);
-      }
-    }
-  };
-
-  const processRowUpdate = async (newRow: Record, oldRow: Record) => {
-    try {
-      const { id, ...recordData } = newRow;
-      await updateRecord.mutateAsync({ id, record: recordData, queryParams });
-      return newRow;
-    } catch (error) {
-      console.error('Failed to update record:', error);
-      return oldRow;
-    }
-  };
+  const [rowModesModel, setRowModesModel] = useState<{ [key: string]: any }>(
+    {}
+  );
 
   if (isLoading) {
     return (
@@ -117,7 +74,7 @@ const Records = () => {
     );
   }
 
-  if (!recordsResponse || !records || records.length === 0) {
+  if (!records || records.length === 0) {
     return (
       <Box
         sx={{
@@ -156,11 +113,14 @@ const Records = () => {
                 fontSize: '0.85rem',
               }}
             >
-              {date.toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-              })}{' '}
-              {date.getFullYear()}
+              {isToday
+                ? 'Today'
+                : date.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                  }) +
+                  ' ' +
+                  date.getFullYear()}
             </Typography>
           </Box>
         );
@@ -255,7 +215,7 @@ const Records = () => {
             color: 'text.primary',
           }}
         >
-          {currency.Rupee} {params.value.toLocaleString()}
+          {currency.Rupee} {params.value}
         </Typography>
       ),
     },
@@ -277,19 +237,19 @@ const Records = () => {
         return (
           <Box
             sx={{
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
-              gap: 1,
               px: 1.5,
               py: 0.5,
+              gap: 1,
               backgroundColor: bgColor,
-              borderRadius: '8px',
+              borderRadius: '999px',
               border: `1px solid ${alpha(color, 0.2)}`,
+              boxShadow: `inset 0 0 4px ${alpha(color, 0.1)}`,
             }}
           >
             <Icon sx={{ fontSize: 16, color }} />
             <Typography
-              variant="body2"
               sx={{
                 fontWeight: 600,
                 fontSize: '0.75rem',
@@ -364,16 +324,54 @@ const Records = () => {
         boxShadow: `0 4px 20px ${alpha(theme.palette.common.black, 0.08)}`,
       }}
     >
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
+        <Tooltip title="Add new record">
+          <IconButton
+            color="primary"
+            onClick={() => {
+              const newRecord: Record = {
+                id: 'new',
+                date: new Date().toISOString().split('T')[0],
+                description: '',
+                category: 'misc',
+                amount: 0,
+                type: 'expense',
+                note: '',
+              };
+
+              setLocalRows((prev) => [newRecord, ...prev]);
+              setIsAdding(true);
+            }}
+            disabled={isAdding}
+          >
+            <Receipt />
+          </IconButton>
+        </Tooltip>
+      </Box>
+
       <DataGrid
-        rows={records}
+        rows={localRows}
+        getRowId={(row) => row.id}
+        getRowClassName={(params) => `row-type-${params.row.type}`}
         columns={columns}
         pagination
+        editMode="row"
+        onRowEditStop={(params, event) => {
+          if (params.id === 'new') {
+            setIsAdding(false);
+            setRowModesModel((prev) => {
+              const updated = { ...prev };
+              delete updated['new'];
+              return updated;
+            });
+          }
+        }}
         paginationMode="server"
         paginationModel={{
           page: (queryParams.page || 1) - 1, // Convert 1-based to 0-based
           pageSize: queryParams.limit || 50,
         }}
-        rowCount={pagination?.total_count || 0}
+        rowCount={paginationResponse?.total_count || 0}
         pageSizeOptions={[10, 25, 50, 100]}
         onPaginationModelChange={handlePaginationModelChange}
         className="data-grid"
@@ -389,6 +387,22 @@ const Records = () => {
           height: '100%',
           border: 'none',
           backgroundColor: 'transparent',
+          '& .MuiDataGrid-row[data-id="new"]': {
+            backgroundColor: alpha(theme.palette.success.light, 0.08),
+            '&:hover': {
+              backgroundColor: alpha(theme.palette.success.light, 0.12),
+            },
+          },
+          '& .MuiDataGrid-row.row-type-income': {
+            borderLeft: `4px solid ${getTypeDetails('income').color}`,
+          },
+          '& .MuiDataGrid-row.row-type-expense': {
+            borderLeft: `4px solid ${getTypeDetails('expense').color}`,
+          },
+          '& .MuiDataGrid-row.row-type-transfer': {
+            borderLeft: `4px solid ${getTypeDetails('transfer').color}`,
+          },
+
           '& .MuiDataGrid-root': {
             backgroundColor: 'transparent',
           },
@@ -414,17 +428,16 @@ const Records = () => {
             },
           },
           '& .MuiDataGrid-row': {
-            backgroundColor: alpha(theme.palette.background.paper, 0.7),
-            backdropFilter: 'blur(10px)',
-            borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-            transition: 'all 0.2s ease-in-out',
+            backgroundColor: alpha(theme.palette.background.paper, 0.6),
+            backdropFilter: 'blur(12px)',
+            borderRadius: '8px',
+            margin: '4px 8px',
+            boxShadow: `0 2px 10px ${alpha(theme.palette.common.black, 0.04)}`,
+            transition: 'all 0.2s ease',
             '&:hover': {
-              backgroundColor: alpha(theme.palette.primary.main, 0.04),
-              transform: 'translateY(-1px)',
-              boxShadow: `0 2px 12px ${alpha(
-                theme.palette.primary.main,
-                0.15
-              )}`,
+              backgroundColor: alpha(theme.palette.primary.light, 0.08),
+              transform: 'scale(1.01)',
+              boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.1)}`,
             },
             '&.Mui-selected': {
               backgroundColor: alpha(theme.palette.primary.main, 0.08),
@@ -432,9 +445,9 @@ const Records = () => {
                 backgroundColor: alpha(theme.palette.primary.main, 0.12),
               },
             },
-            '&:nth-of-type(even)': {
-              backgroundColor: alpha(theme.palette.background.paper, 0.4),
-            },
+            // '&:nth-of-type(even)': {
+            //   backgroundColor: alpha(theme.palette.background.paper, 0.4),
+            // },
           },
           '& .MuiDataGrid-cell': {
             borderBottom: 'none',
@@ -470,6 +483,10 @@ const Records = () => {
           )} transparent`,
           scrollbarWidth: 'thin',
           scrollBehavior: 'smooth',
+          '& .MuiDataGrid-row.MuiDataGrid-row--editing': {
+            backgroundColor: alpha(theme.palette.info.light, 0.12),
+            borderLeft: `4px solid ${theme.palette.info.main}`,
+          },
           '& .MuiDataGrid-virtualScroller': {
             '&::-webkit-scrollbar': {
               width: '8px',
