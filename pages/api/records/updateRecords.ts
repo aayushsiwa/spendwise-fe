@@ -32,28 +32,36 @@ export const updateRecordAPI = async ({
 
 export const useUpdateRecordAPI = () => {
   return useMutation({
-    mutationFn: updateRecordAPI,
+    mutationFn: async ({ id, record, queryParams }: UpdateRecordRequest) => {
+      const cached = queryClient
+        .getQueryData<RecordQuery>([QueryKeys.RECORDS, queryParams])
+        ?.data.records.find((r) => r.id === id);
+
+      const noChanges =
+        cached &&
+        Object.keys(record).every(
+          (key) => (cached as any)[key] === (record as any)[key]
+        );
+
+      if (noChanges) {
+        // Return a fake response so downstream code still works
+        return {
+          data: { record: cached },
+          __skip: true, // custom flag
+        };
+      }
+
+      return updateRecordAPI({ id, record, queryParams });
+    },
     onMutate: async ({ id, record, queryParams }) => {
-      // Cancel any outgoing queries so they don’t overwrite our optimistic update
       await queryClient.cancelQueries({
         queryKey: [QueryKeys.RECORDS, queryParams],
       });
 
-      // Snapshot the previous value
       const previousRecords = queryClient.getQueryData<RecordQuery>([
         QueryKeys.RECORDS,
         queryParams,
       ]);
-
-      const updatedRecord = previousRecords?.data.records.find(
-        (r) => r.id === id
-      );
-      const isEqual =
-        updatedRecord &&
-        Object.keys(record).every(
-          (key) => (updatedRecord as any)[key] === (record as any)[key]
-        ) &&
-        updatedRecord.id === id;
 
       // Optimistically update
       queryClient.setQueryData<RecordQuery>(
@@ -75,7 +83,6 @@ export const useUpdateRecordAPI = () => {
       return { previousRecords };
     },
     onError: (err, variables, context) => {
-      // Rollback on error
       if (context?.previousRecords) {
         queryClient.setQueryData(
           [QueryKeys.RECORDS, variables.queryParams],
@@ -83,8 +90,8 @@ export const useUpdateRecordAPI = () => {
         );
       }
     },
-    onSettled: () => {
-      // Re-fetch for data consistency
+    onSettled: (data) => {
+      if ((data as any)?.__skip) return;
       queryClient.invalidateQueries({ queryKey: [QueryKeys.RECORDS] });
       queryClient.invalidateQueries({ queryKey: [QueryKeys.SUMMARY] });
       queryClient.invalidateQueries({ queryKey: [QueryKeys.SUMMARY_FILTER] });
