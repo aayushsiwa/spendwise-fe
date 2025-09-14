@@ -6,8 +6,6 @@ import { RecordsQueryParams } from '@/lib/context/Records/Records';
 import { PrivateAxios, queryClient } from '@/pages/api/index';
 import { Record, RecordQuery } from '@/types/Records';
 
-import { Pagination } from './getRecords';
-
 type UpdateRecordAPIResponse = {
   record: Record;
 };
@@ -47,9 +45,19 @@ export const useUpdateRecordAPI = () => {
         queryParams,
       ]);
 
+      const updatedRecord = previousRecords?.data.records.find(
+        (r) => r.id === id
+      );
+      const isEqual =
+        updatedRecord &&
+        Object.keys(record).every(
+          (key) => (updatedRecord as any)[key] === (record as any)[key]
+        ) &&
+        updatedRecord.id === id;
+
       // Optimistically update
       queryClient.setQueryData<RecordQuery>(
-        [QueryKeys.RECORDS],
+        [QueryKeys.RECORDS, queryParams],
         (old: RecordQuery | undefined) => {
           if (!old) return old;
           return {
@@ -66,10 +74,13 @@ export const useUpdateRecordAPI = () => {
 
       return { previousRecords };
     },
-    onError: (err, _variables, context) => {
+    onError: (err, variables, context) => {
       // Rollback on error
       if (context?.previousRecords) {
-        queryClient.setQueryData([QueryKeys.RECORDS], context.previousRecords);
+        queryClient.setQueryData(
+          [QueryKeys.RECORDS, variables.queryParams],
+          context.previousRecords
+        );
       }
     },
     onSettled: () => {
