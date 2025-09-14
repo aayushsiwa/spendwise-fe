@@ -3,6 +3,7 @@ import { createTheme } from '@mui/material/styles';
 import { FC } from 'react';
 
 import Records from '@/lib/components/Records/Records';
+import Statistics from '@/lib/components/Statistics/Statistics';
 import Summary from '@/lib/components/Summary/Summary';
 import Toolbar from '@/lib/components/Toolbar/Toolbar';
 import { useGetSummaryAPI } from '@/pages/api/summary/getSummary';
@@ -30,13 +31,12 @@ const theme = createTheme({
 
 const Home: FC = () => {
   const theme = useTheme();
-  const currentMonth = new Date().toISOString().slice(0, 7);
 
   const {
     data: summary,
     isLoading: summaryLoading,
     error: summaryError,
-  } = useGetSummaryAPI(currentMonth);
+  } = useGetSummaryAPI();
 
   if (summaryLoading || !summary) {
     return (
@@ -87,7 +87,7 @@ const Home: FC = () => {
         width: '100vw',
         margin: 0,
         padding: 0,
-        backgroundColor: theme.palette.background.default,
+        // backgroundColor: theme.palette.background.default,
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -98,7 +98,7 @@ const Home: FC = () => {
           padding: 2,
           margin: 2,
           borderRadius: 2,
-          backgroundColor: theme.palette.background.paper,
+          // backgroundColor: theme.palette.background.paper,
           boxShadow: theme.shadows[1],
         }}
         variant="outlined"
@@ -121,7 +121,7 @@ const Home: FC = () => {
             margin: 2,
             borderRadius: 2,
             width: '70%',
-            backgroundColor: theme.palette.background.paper,
+            // backgroundColor: theme.palette.background.paper,
             boxShadow: theme.shadows[1],
             overflow: 'hidden',
           }}
@@ -145,19 +145,19 @@ const Home: FC = () => {
             <AddRecord />
           </Paper> */}
         {/* <Paper
-            sx={{
-              flex: 1,
-              padding: 2,
-              margin: 2,
-              maxWidth: "30%",
-              borderRadius: 2,
-              backgroundColor: theme.palette.background.paper,
-              boxShadow: theme.shadows[1],
-              overflow: "hidden",
-            }}
-          >
-            <Statistics />
-          </Paper> */}
+          sx={{
+            flex: 1,
+            padding: 2,
+            margin: 2,
+            maxWidth: '30%',
+            borderRadius: 2,
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: theme.shadows[1],
+            overflow: 'hidden',
+          }}
+        >
+          <Statistics />
+        </Paper> */}
       </Box>
 
       <Toolbar />
