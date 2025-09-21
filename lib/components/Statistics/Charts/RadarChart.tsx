@@ -9,8 +9,8 @@ import {
   Tooltip,
 } from 'recharts';
 
-import Toast from '../Toasts/Toast';
-import useStatistics from './Satistics.hooks';
+import Toast from '../../Toasts/Toast';
+import useStatistics from '../Satistics.hooks';
 
 const SimpleRadarChart = () => {
   const { summary, isLoading, error } = useStatistics();
@@ -38,9 +38,9 @@ const SimpleRadarChart = () => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <RadarChart
-        //   cx="50%"
-        //   cy="50%"
-        //   outerRadius="80%"
+        cx="50%"
+        cy="50%"
+        outerRadius="80%"
         data={summary.expenses}
         layout="centric"
       >
