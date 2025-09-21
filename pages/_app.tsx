@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app';
 
 import { CategoriesContextProvider } from '@/lib/context/Categories/Categories';
 import { RecordsContextProvider } from '@/lib/context/Records/Records';
-import '@/styles/globals.css';
+import { ColorModeProvider } from '@/lib/context/ThemeContext';
 
 import { queryClient } from './api';
 
@@ -12,7 +12,9 @@ export default function App({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <CategoriesContextProvider>
         <RecordsContextProvider>
-          <Component {...pageProps} />
+          <ColorModeProvider>
+            <Component {...pageProps} />
+          </ColorModeProvider>
         </RecordsContextProvider>
       </CategoriesContextProvider>
     </QueryClientProvider>
