@@ -1,11 +1,12 @@
 export interface Record {
-  id: string;
+  id: number;
   date: string;
   description: string;
   category: string;
   amount: number;
   type: RecordTypes;
   note: string;
+  balance: number;
 }
 
 export type RecordQuery = {
