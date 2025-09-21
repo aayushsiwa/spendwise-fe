@@ -4,12 +4,12 @@ import { useCreateRecordAPI } from '@/pages/api/records/createRecord';
 import { useDeleteRecordAPI } from '@/pages/api/records/deleteRecords';
 import { Pagination } from '@/pages/api/records/getRecords';
 import { useUpdateRecordAPI } from '@/pages/api/records/updateRecords';
-import { Record } from '@/types/Records';
+import { TRecord } from '@/types/Records';
 
 import { useRecordsProvider } from './Records.hooks';
 
 export type TRecordsContext = {
-  records?: Record[];
+  records?: TRecord[];
   pagination?: Pagination;
   isGetRecordsSuccess?: boolean;
   isGetRecordsLoading?: boolean;

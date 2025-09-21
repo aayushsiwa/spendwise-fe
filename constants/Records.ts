@@ -1,7 +1,7 @@
 import { Record, RecordType } from '@/types/Records';
 
 export const blankRecord: Record = {
-  id: 'new',
+  id: 9999,
   date: new Date().toISOString().slice(0, 10),
   description: '',
   category: '',

@@ -1,4 +1,4 @@
-export interface Record {
+export interface TRecord {
   id: number;
   date: string;
   description: string;
@@ -7,6 +7,16 @@ export interface Record {
   type: RecordTypes;
   note: string;
   balance: number;
+}
+
+export interface Record {
+  id: number;
+  date: string;
+  description: string;
+  category: string;
+  amount: number;
+  type: RecordTypes;
+  note: string;
 }
 
 export type RecordQuery = {

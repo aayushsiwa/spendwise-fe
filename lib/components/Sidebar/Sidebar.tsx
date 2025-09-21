@@ -139,7 +139,6 @@ export interface SidebarProps {
   menuItems?: SidebarMenuItem[];
   defaultOpen?: boolean;
   showAppBar?: boolean;
-  appBarContent?: ReactNode;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -148,7 +147,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   menuItems = [],
   defaultOpen = false,
   showAppBar = true,
-  appBarContent,
 }) => {
   const theme = useTheme();
   const [open, setOpen] = useState(defaultOpen);

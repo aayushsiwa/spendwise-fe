@@ -4,16 +4,9 @@ import {
   TrendingDown,
   TrendingUp,
 } from '@mui/icons-material';
-import {
-  DataGrid,
-  GridColDef,
-  GridPaginationModel,
-  GridRenderCellParams,
-  GridRowId,
-} from '@mui/x-data-grid';
+import { GridPaginationModel } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 
-import { blankRecord } from '@/constants/Records';
 import { useRecordsContext } from '@/lib/context/Records/Records';
 import type { Record } from '@/types/Records';
 
@@ -59,9 +52,9 @@ const useRecords = () => {
     });
   };
 
-  const handleDeleteRecord = async (id: string) => {
-    if (id === 'new') {
-      setLocalRows((prev) => prev.filter((r) => r.id !== 'new'));
+  const handleDeleteRecord = async (id: number) => {
+    if (id === 9999) {
+      setLocalRows((prev) => prev.filter((r) => r.id !== 9999));
       setIsAdding(false);
       return;
     }
@@ -79,7 +72,7 @@ const useRecords = () => {
     oldRow: Record
   ): Promise<Record> => {
     try {
-      const isNew = newRow.id === 'new';
+      const isNew = newRow.id === 9999;
 
       if (isNew) {
         const { id, ...recordData } = newRow;
@@ -93,10 +86,7 @@ const useRecords = () => {
           createdResponse.data ??
           createdResponse;
 
-        setLocalRows((prev) => [
-          created,
-          ...prev.filter((r) => r.id !== 'new'),
-        ]);
+        setLocalRows((prev) => [created, ...prev.filter((r) => r.id !== 9999)]);
         return created;
       } else {
         const { id, ...recordData } = newRow;

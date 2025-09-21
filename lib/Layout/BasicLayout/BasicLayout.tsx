@@ -2,16 +2,13 @@ import {
   Dashboard as DashboardIcon,
   Drafts as DraftsIcon,
   Inbox as InboxIcon,
-  Mail as MailIcon,
   People as PeopleIcon,
   Send as SendIcon,
   Settings as SettingsIcon,
 } from '@mui/icons-material';
-import { Typography } from '@mui/material';
 import { FC, PropsWithChildren } from 'react';
 
 import Sidebar, { SidebarMenuItem } from '@/lib/components/Sidebar/Sidebar';
-import ThemeToggle from '@/lib/components/ThemeToggle/ThemeToggle';
 import { PeriodProvider } from '@/lib/context/Period/Period';
 
 const BasicLayout: FC<PropsWithChildren> = ({ children }) => {

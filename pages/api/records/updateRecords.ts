@@ -12,7 +12,7 @@ type UpdateRecordAPIResponse = {
 type UpdateRecordResponse = AxiosResponse<UpdateRecordAPIResponse>;
 
 type UpdateRecordRequest = {
-  id: string;
+  id: number;
   record: Omit<Record, 'id'>;
   queryParams: RecordsQueryParams;
 };
@@ -20,8 +20,7 @@ type UpdateRecordRequest = {
 export const updateRecordAPI = async ({
   id,
   record,
-  queryParams,
-}: UpdateRecordRequest): Promise<UpdateRecordResponse> => {
+}: Omit<UpdateRecordRequest, 'queryParams'>): Promise<UpdateRecordResponse> => {
   const res = await PrivateAxios.patch<UpdateRecordAPIResponse>(
     `/api/records/${id}`,
     record
@@ -52,7 +51,7 @@ export const useUpdateRecordAPI = () => {
         };
       }
 
-      return updateRecordAPI({ id, record, queryParams });
+      return updateRecordAPI({ id, record });
     },
     onMutate: async ({ id, record, queryParams }) => {
       await queryClient.cancelQueries({

@@ -11,7 +11,7 @@ type DeleteRecordAPIResponse = {
 type DeleteRecordResponse = AxiosResponse<DeleteRecordAPIResponse>;
 
 type DeleteRecordRequest = {
-  id: string;
+  id: number;
 };
 
 export const deleteRecordAPI = async ({
@@ -26,7 +26,7 @@ export const deleteRecordAPI = async ({
 export const useDeleteRecordAPI = () => {
   return useMutation({
     mutationFn: deleteRecordAPI,
-    onMutate: async ({ id }: { id: string }) => {
+    onMutate: async ({ id }: DeleteRecordRequest) => {
       // Cancel any outgoing fetches so they don’t overwrite optimistic update
       await queryClient.cancelQueries({ queryKey: [QueryKeys.RECORDS] });
 

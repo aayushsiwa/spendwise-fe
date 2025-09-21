@@ -13,14 +13,7 @@ import {
   alpha,
   useTheme,
 } from '@mui/material';
-import {
-  DataGrid,
-  GridColDef,
-  GridPaginationModel,
-  GridRenderCellParams,
-  GridRowId,
-} from '@mui/x-data-grid';
-import { useEffect, useState } from 'react';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 
 import { currency } from '@/constants/Currency';
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
@@ -327,7 +320,7 @@ const Records = () => {
             color="primary"
             onClick={() => {
               const newRecord: Record = {
-                id: 'new',
+                id: 9999,
                 date: new Date().toISOString().split('T')[0],
                 description: '',
                 category: 'misc',
@@ -353,8 +346,8 @@ const Records = () => {
         columns={columns}
         pagination
         editMode="row"
-        onRowEditStop={(params, event) => {
-          if (params.id === 'new') {
+        onRowEditStop={(params) => {
+          if (params.id === 9999) {
             setIsAdding(false);
           }
         }}

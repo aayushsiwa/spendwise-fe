@@ -51,10 +51,7 @@ export const useCreateRecordAPI = () => {
             ...old,
             data: {
               ...old.data,
-              records: [
-                ...old.data.records,
-                { ...record, id: `temp-${Date.now()}` },
-              ],
+              records: [...old.data.records, { ...record, id: 9999 }],
             },
           };
         }

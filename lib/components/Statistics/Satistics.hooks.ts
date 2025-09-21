@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useRecordsContext } from '@/lib/context/Records/Records';
 import { useGetSummaryAPI } from '@/pages/api/summary/getSummary';
-import { Record } from '@/types/Records';
+import { TRecord } from '@/types/Records';
 
 const useStatistics = () => {
   const { data: summary, isLoading, error } = useGetSummaryAPI();
@@ -17,7 +17,7 @@ const useStatistics = () => {
     }
 
     // Step 1: Group by date and keep only highest id per date
-    const latestPerDateMap = new Map<string, Record>();
+    const latestPerDateMap = new Map<string, TRecord>();
     for (const r of records) {
       const dateKey = r.date.split('T')[0];
       const existing = latestPerDateMap.get(dateKey);

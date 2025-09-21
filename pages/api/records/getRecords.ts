@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios';
 
 import { QueryKeys } from '@/constants/QueryKeys';
 import { PrivateAxios } from '@/pages/api/index';
-import { Record } from '@/types/Records';
+import { TRecord } from '@/types/Records';
 import { QueryHookOptions } from '@/types/api';
 
 export type Pagination = {
@@ -16,7 +16,7 @@ export type Pagination = {
 };
 
 type GetRecordsAPIResponse = {
-  records: Record[];
+  records: TRecord[];
   pagination: Pagination;
 };
 type GetRecordsResponse = AxiosResponse<GetRecordsAPIResponse>;

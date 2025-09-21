@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useState } from 'react';
+import { ReactNode, createContext, useContext } from 'react';
 
 import usePeriodProvider, { PeriodRange } from './Period.hooks';
 
