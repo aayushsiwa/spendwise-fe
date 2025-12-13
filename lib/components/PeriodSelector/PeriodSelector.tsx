@@ -17,9 +17,7 @@ import 'react-date-range/dist/theme/default.css';
 import { usePeriodContext } from '@/lib/context/Period/Period';
 
 const PeriodSelector = () => {
-  const { period, setPeriod, range, setRange } = usePeriodContext();
-
-  console.log('Current range:', period, range);
+  const { period, setPeriod, setRange } = usePeriodContext();
 
   const [customRange, setCustomRange] = useState({
     startDate: new Date(),
@@ -59,7 +57,6 @@ const PeriodSelector = () => {
           key: 'selection',
         };
         setRange(newRange);
-        console.log('Selected range:', newRange);
       }
     }
 
@@ -74,6 +71,14 @@ const PeriodSelector = () => {
       });
     }
     // TODO: handle everything case
+    if (e.target.value === 'everything') {
+      console.log('everything selected: todo pending');
+      setRange({
+        startDate: '2000-01-01',
+        endDate: dayjs().format('YYYY-MM-DD'),
+        key: 'selection',
+      });
+    }
     if (e.target.value === 'customRange') {
       setAnchorEl(document.body);
     } else {

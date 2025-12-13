@@ -14,6 +14,17 @@ export const queryClient = new QueryClient({
   defaultOptions: queryClientOptions,
 });
 
+declare global {
+  interface Window {
+    __TANSTACK_QUERY_CLIENT__: import('@tanstack/react-query').QueryClient;
+  }
+}
+
+// This code is for all users
+if (typeof window !== 'undefined') {
+  window.__TANSTACK_QUERY_CLIENT__ = queryClient;
+}
+
 export const PrivateAxios = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });

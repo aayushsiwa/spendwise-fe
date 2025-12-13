@@ -78,8 +78,11 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
 
               <Box>
                 <Typography
-                  variant="subtitle2"
-                  sx={{ fontWeight: 600, color: card.color }}
+                  sx={{
+                    fontWeight: 600,
+                    color: card.color,
+                    fontFamily: 'monospace',
+                  }}
                 >
                   {card.label.toUpperCase()}
                 </Typography>

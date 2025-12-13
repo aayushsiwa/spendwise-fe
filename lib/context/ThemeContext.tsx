@@ -1,6 +1,6 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { getDesignTokens } from '@/theme/theme';
 
@@ -21,11 +21,32 @@ export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
 
+  // Load theme preference on first render
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('theme') as
+      | 'light'
+      | 'dark'
+      | null;
+    if (storedTheme) {
+      setMode(storedTheme);
+    } else {
+      const systemPrefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      setMode(systemPrefersDark ? 'dark' : 'light');
+    }
+  }, []);
+
   const colorMode = useMemo(
     () => ({
       mode,
-      toggleColorMode: () =>
-        setMode((prev) => (prev === 'light' ? 'dark' : 'light')),
+      toggleColorMode: () => {
+        setMode((prev) => {
+          const newMode = prev === 'light' ? 'dark' : 'light';
+          localStorage.setItem('theme', newMode);
+          return newMode;
+        });
+      },
     }),
     [mode]
   );

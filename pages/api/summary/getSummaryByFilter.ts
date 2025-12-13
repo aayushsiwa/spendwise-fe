@@ -4,21 +4,22 @@ import { QueryKeys } from '@/constants/QueryKeys';
 import { PrivateAxios } from '@/pages/api/index';
 import { SummaryMonth } from '@/types/Summary';
 
-type GetSummaryAPIResponse = { summary: SummaryMonth };
+export type GetSummaryByFilterAPIResponse = { summary: SummaryMonth };
 
-type GetSummaryForMonth = {
-  month: string;
+export type GetSummaryByFilterRequest = {
+  page?: number;
+  limit?: number;
+  start_date?: string;
+  end_date?: string;
+  category?: string;
+  type?: string;
+  description?: string;
+  min_amount?: number;
+  max_amount?: number;
 };
 
-type GetSummaryForDateRange = {
-  from: string;
-  to: string;
-};
-
-type GetSummaryAPIRequest = GetSummaryForMonth | GetSummaryForDateRange;
-
-export const getSummaryAPI = async (
-  params: GetSummaryAPIRequest
+export const getSummaryByFilterAPI = async (
+  params: GetSummaryByFilterRequest
 ): Promise<SummaryMonth> => {
   const queryParams = new URLSearchParams();
 
@@ -29,8 +30,8 @@ export const getSummaryAPI = async (
     }
   });
 
-  const res = await PrivateAxios.get<GetSummaryAPIResponse>(
-    `/api/summary?${queryParams.toString()}`
+  const res = await PrivateAxios.get<GetSummaryByFilterAPIResponse>(
+    `/api/summary/filter?${queryParams.toString()}`
   );
 
   const summary = { ...res.data.summary };
@@ -38,12 +39,12 @@ export const getSummaryAPI = async (
   return summary;
 };
 
-export const useGetSummaryAPI = (
-  params: GetSummaryAPIRequest
+export const useGetSummaryByFilterAPI = (
+  params: GetSummaryByFilterRequest = {}
 ): QueryObserverResult<SummaryMonth> => {
   return useQuery({
     queryKey: [QueryKeys.SUMMARY, params],
-    queryFn: () => getSummaryAPI(params),
+    queryFn: () => getSummaryByFilterAPI(params),
     refetchOnMount: false,
     staleTime: 2 * 60 * 1000, // 2 minutes
     retry: 3,

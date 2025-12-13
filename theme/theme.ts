@@ -18,7 +18,7 @@ export const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
         }),
   },
   typography: {
-    fontFamily: `'Roboto','Helvetica','Arial',sans-serif`,
+    fontFamily: `'JetBrains Mono Variable','Roboto','Helvetica','Arial',monospace,sans-serif`,
     h1: { fontSize: '2.5rem', fontWeight: 600 },
     h2: { fontSize: '2rem', fontWeight: 500 },
     body1: { fontSize: '1rem' },
