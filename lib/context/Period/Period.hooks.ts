@@ -12,10 +12,12 @@ export type PeriodRange = {
 const usePeriodProvider = (): TPeriodContext => {
   const currentMonthName = dayjs().format('MMMM');
 
+  const d = dayjs().month(dayjs().month());
+
   const [period, setPeriod] = useState<string>(currentMonthName);
   const [range, setRange] = useState<PeriodRange>({
-    startDate: '',
-    endDate: '',
+    startDate: d.startOf('month').format('YYYY-MM-DD'),
+    endDate: d.endOf('month').format('YYYY-MM-DD'),
     key: 'selection',
   });
 

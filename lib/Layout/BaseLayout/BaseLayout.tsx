@@ -10,8 +10,9 @@ import { FC, PropsWithChildren } from 'react';
 
 import Sidebar, { SidebarMenuItem } from '@/lib/components/Sidebar/Sidebar';
 import { PeriodProvider } from '@/lib/context/Period/Period';
+import { SummaryProvider } from '@/lib/context/Summary/Summary';
 
-const BasicLayout: FC<PropsWithChildren> = ({ children }) => {
+const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
   const menuItems: SidebarMenuItem[] = [
     {
       text: 'Dashboard',
@@ -53,16 +54,18 @@ const BasicLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <PeriodProvider>
-      <Sidebar
-        title="Spend Wise"
-        menuItems={menuItems}
-        defaultOpen={false}
-        showAppBar={true}
-      >
-        {children}
-      </Sidebar>
+      <SummaryProvider>
+        <Sidebar
+          title="Spend Wise"
+          menuItems={menuItems}
+          defaultOpen={false}
+          showAppBar={true}
+        >
+          {children}
+        </Sidebar>
+      </SummaryProvider>
     </PeriodProvider>
   );
 };
 
-export default BasicLayout;
+export default BaseLayout;

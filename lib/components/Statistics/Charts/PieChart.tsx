@@ -5,11 +5,10 @@ import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
 
 import Toast from '../../Toasts/Toast';
-import useStatistics from '../Satistics.hooks';
+import useStatistics from '../Statistics.hooks';
 
 const SimplePieChart = () => {
   const { summary, isLoading, error } = useStatistics();
-  console.log(summary);
   const { getCategoryColor } = useCategoriesContext();
   const currency = '₹';
 

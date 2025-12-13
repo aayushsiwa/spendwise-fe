@@ -25,10 +25,11 @@ export type TRecordsContext = {
 export type RecordsQueryParams = {
   page?: number;
   limit?: number;
-  start_date?: string;
-  end_date?: string;
+  from?: string;
+  to?: string;
   category?: string;
   type?: string;
+  search?: string;
   description?: string;
   min_amount?: number;
   max_amount?: number;
@@ -45,6 +46,7 @@ export const RecordsContextProvider: FC<{ children: React.ReactNode }> = ({
     page: 1,
     limit: 10,
   });
+  console.log(queryParams);
 
   const {
     records,

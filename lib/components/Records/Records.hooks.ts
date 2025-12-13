@@ -10,7 +10,9 @@ import { useEffect, useState } from 'react';
 import { useRecordsContext } from '@/lib/context/Records/Records';
 import type { Record } from '@/types/Records';
 
-const useRecords = () => {
+import { RecordProps } from './Records';
+
+const useRecords = (): RecordProps => {
   const {
     records,
     pagination: paginationResponse,
@@ -114,7 +116,8 @@ const useRecords = () => {
     handleDeleteRecord,
     isGetRecordsError,
     error,
-    queryParams,
+    recordsQueryParams: queryParams,
+    setRecordsQueryParams: setQueryParams,
     isAdding,
     setIsAdding,
   };

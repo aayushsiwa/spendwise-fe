@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 
 import Toast from '../../Toasts/Toast';
-import useStatistics from '../Satistics.hooks';
+import useStatistics from '../Statistics.hooks';
 
 const SimpleRadarChart = () => {
   const { summary, isLoading, error } = useStatistics();
