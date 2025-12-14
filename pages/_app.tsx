@@ -9,14 +9,14 @@ import { queryClient } from './api';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <CategoriesContextProvider>
-        <RecordsContextProvider>
-          <ColorModeProvider>
+    <ColorModeProvider>
+      <QueryClientProvider client={queryClient}>
+        <CategoriesContextProvider>
+          <RecordsContextProvider>
             <Component {...pageProps} />
-          </ColorModeProvider>
-        </RecordsContextProvider>
-      </CategoriesContextProvider>
-    </QueryClientProvider>
+          </RecordsContextProvider>
+        </CategoriesContextProvider>
+      </QueryClientProvider>
+    </ColorModeProvider>
   );
 }
