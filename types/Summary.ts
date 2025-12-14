@@ -1,21 +1,15 @@
-export type CategoryExpense = {
-  category_id: number;
-  category: string;
-  amount: number;
-};
-
-export type CategoryIncome = {
+export type CategoryDetail = {
   category_id: number;
   category: string;
   amount: number;
 };
 
 export type SummaryMonth = {
-  expenses: CategoryExpense[];
-  incomes: CategoryIncome[];
+  expenses: CategoryDetail[];
+  incomes: CategoryDetail[];
   net: number;
   opening: number;
   closing: number;
-  total_expenses: number;
+  total_expense: number;
   total_income: number;
 };
