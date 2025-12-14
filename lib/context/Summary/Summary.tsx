@@ -1,30 +1,18 @@
 import { FC, createContext, useContext, useState } from 'react';
 
 import { SummaryMonth } from '@/types/Summary';
+import { BaseQueryParams, TimeFrame } from '@/types/queryParams';
 
 import { useSummaryProvider } from './Summary.hooks';
 
 export type TSummaryContext = {
   summary?: SummaryMonth;
-  queryParams: SummaryQueryParams;
-  setQueryParams: (params: SummaryQueryParams) => void;
+  queryParams: BaseQueryParams;
+  setQueryParams: (params: BaseQueryParams) => void;
   isLoading: boolean;
   isError: boolean;
   isSuccess: boolean;
 };
-
-type SummaryByMonthQueryParams = {
-  month: string;
-};
-
-type SummaryByDateRangeQueryParams = {
-  from: string;
-  to: string;
-};
-
-export type SummaryQueryParams =
-  | SummaryByMonthQueryParams
-  | SummaryByDateRangeQueryParams;
 
 export const SummaryContext = createContext<TSummaryContext>(
   {} as unknown as TSummaryContext
@@ -33,8 +21,8 @@ export const SummaryContext = createContext<TSummaryContext>(
 export const SummaryProvider: FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [queryParams, setQueryParams] = useState<SummaryQueryParams>({
-    month: new Date().toISOString().slice(0, 7),
+  const [queryParams, setQueryParams] = useState<BaseQueryParams>({
+    timeframe: TimeFrame.Month,
   });
 
   const { summary, isLoading, isError, isSuccess } =

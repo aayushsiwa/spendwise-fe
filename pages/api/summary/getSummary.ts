@@ -3,19 +3,11 @@ import { QueryObserverResult, useQuery } from '@tanstack/react-query';
 import { QueryKeys } from '@/constants/QueryKeys';
 import { PrivateAxios } from '@/pages/api/index';
 import { SummaryMonth } from '@/types/Summary';
+import { BaseQueryParams } from '@/types/queryParams';
 
 type GetSummaryAPIResponse = { summary: SummaryMonth };
 
-type GetSummaryForMonth = {
-  month: string;
-};
-
-type GetSummaryForDateRange = {
-  from: string;
-  to: string;
-};
-
-type GetSummaryAPIRequest = GetSummaryForMonth | GetSummaryForDateRange;
+type GetSummaryAPIRequest = BaseQueryParams;
 
 export const getSummaryAPI = async (
   params: GetSummaryAPIRequest
