@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { TPeriodContext } from './Period';
 
 export type PeriodRange = {
-  startDate: string;
-  endDate: string;
+  from?: string;
+  to?: string;
   key: string;
 };
 
@@ -16,8 +16,8 @@ const usePeriodProvider = (): TPeriodContext => {
 
   const [period, setPeriod] = useState<string>(currentMonthName);
   const [range, setRange] = useState<PeriodRange>({
-    startDate: d.startOf('month').format('YYYY-MM-DD'),
-    endDate: d.endOf('month').format('YYYY-MM-DD'),
+    from: d.startOf('month').format('YYYY-MM-DD'),
+    to: d.endOf('month').format('YYYY-MM-DD'),
     key: 'selection',
   });
 

@@ -20,8 +20,8 @@ const PeriodSelector = () => {
   const { period, setPeriod, setRange } = usePeriodContext();
 
   const [customRange, setCustomRange] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
+    from: new Date(),
+    to: new Date(),
     key: 'selection',
   });
 
@@ -38,8 +38,8 @@ const PeriodSelector = () => {
     return {
       label: d.format('MMMM'),
       range: {
-        startDate: d.startOf('month').format('YYYY-MM-DD'),
-        endDate: d.endOf('month').format('YYYY-MM-DD'),
+        from: d.startOf('month').format('YYYY-MM-DD'),
+        to: d.endOf('month').format('YYYY-MM-DD'),
         key: 'selection',
       },
     };
@@ -48,25 +48,25 @@ const PeriodSelector = () => {
   const handleChange = (e: SelectChangeEvent) => {
     setPeriod(e.target.value);
     // for cases when month is selected
-    if (!Object.values(additionalRanges).includes(e.target.value)) {
-      const selectedMonth = months.find((m) => m.label === e.target.value);
-      if (selectedMonth) {
-        const newRange = {
-          startDate: selectedMonth.range.startDate,
-          endDate: selectedMonth.range.endDate,
-          key: 'selection',
-        };
-        setRange(newRange);
-      }
-    }
+    // if (!Object.values(additionalRanges).includes(e.target.value)) {
+    //   const selectedMonth = months.find((m) => m.label === e.target.value);
+    //   if (selectedMonth) {
+    //     const newRange = {
+    //       from: selectedMonth.range.from,
+    //       to: selectedMonth.range.to,
+    //       key: 'selection',
+    //     };
+    //     setRange(newRange);
+    //   }
+    // }
 
     // for cases when additional range is selected
     if (e.target.value === 'yearToDate') {
       const startOfYear = dayjs().startOf('year').format('YYYY-MM-DD');
       const endOfYear = dayjs().format('YYYY-MM-DD');
       setRange({
-        startDate: startOfYear,
-        endDate: endOfYear,
+        from: startOfYear,
+        to: endOfYear,
         key: 'selection',
       });
     }
@@ -74,8 +74,8 @@ const PeriodSelector = () => {
     if (e.target.value === 'everything') {
       console.log('everything selected: todo pending');
       setRange({
-        startDate: '2000-01-01',
-        endDate: dayjs().format('YYYY-MM-DD'),
+        from: '2000-01-01',
+        to: dayjs().format('YYYY-MM-DD'),
         key: 'selection',
       });
     }
@@ -88,13 +88,13 @@ const PeriodSelector = () => {
 
   const handleRangeChange = (ranges: RangeKeyDict) => {
     setCustomRange({
-      startDate: ranges.selection.startDate!,
-      endDate: ranges.selection.endDate!,
+      from: ranges.selection.startDate!,
+      to: ranges.selection.endDate!,
       key: 'selection',
     });
     setRange({
-      startDate: dayjs(ranges.selection.startDate).format('YYYY-MM-DD'),
-      endDate: dayjs(ranges.selection.endDate).format('YYYY-MM-DD'),
+      from: dayjs(ranges.selection.startDate).format('YYYY-MM-DD'),
+      to: dayjs(ranges.selection.endDate).format('YYYY-MM-DD'),
       key: 'selection',
     });
   };
