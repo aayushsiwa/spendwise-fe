@@ -1,12 +1,7 @@
-import { useEffect } from 'react';
-
 import useRecords from '@/lib/components/Records/Records.hooks';
-import { usePeriodContext } from '@/lib/context/Period/Period';
 import { useSummaryContext } from '@/lib/context/Summary/Summary';
 
 const useHome = () => {
-  const { range } = usePeriodContext();
-  const { summary, isLoading, isError, setQueryParams } = useSummaryContext();
   const {
     localRows,
     setLocalRows,
@@ -25,14 +20,9 @@ const useHome = () => {
     setIsAdding,
   } = useRecords();
 
-  useEffect(() => {
-    if (range?.startDate && range?.endDate) {
-      setQueryParams({
-        from: range.startDate,
-        to: range.endDate,
-      });
-    }
-  }, [range, setQueryParams]);
+  const { summary, isLoading, isError } = useSummaryContext();
+
+  console.log('Summary Data:', summary);
 
   return {
     summary,

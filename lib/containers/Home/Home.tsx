@@ -31,13 +31,13 @@ const Home: FC = () => {
         <Summary summary={summary} />
       </Grid>
       <Grid size={8}>
-        <Statistics />
+        <Statistics summary={summary} />
       </Grid>
       <Grid size={4}>
         <Records {...recordProps} isAddingAllowed={false} />
       </Grid>
       <Grid size={8}>
-        <Statistics />
+        <Statistics summary={summary} />
       </Grid>
     </Grid>
   );
