@@ -88,7 +88,7 @@ const Records: FC<RecordProps> = ({
   const { categories, getCategoryColor } = useCategoriesContext();
   const theme = useTheme();
 
-  console.log(recordsQueryParams);
+  // console.log(recordsQueryParams);
 
   if (isLoading) {
     return (

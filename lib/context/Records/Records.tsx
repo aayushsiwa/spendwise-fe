@@ -46,7 +46,6 @@ export const RecordsContextProvider: FC<{ children: React.ReactNode }> = ({
     page: 1,
     limit: 10,
   });
-  console.log(queryParams);
 
   const {
     records,
