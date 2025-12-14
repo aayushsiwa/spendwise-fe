@@ -24,13 +24,13 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
   const cards = [
     {
       label: 'In + Out',
-      value: summary.total_income - summary.total_expenses,
+      value: summary.total_income - summary.total_expense,
       color: '#003f83',
       icon: <Balance fontSize="large" />,
     },
     {
       label: 'Spent',
-      value: summary.total_expenses,
+      value: summary.total_expense,
       color: '#E74C3C',
       icon: <Payment fontSize="large" />,
     },
