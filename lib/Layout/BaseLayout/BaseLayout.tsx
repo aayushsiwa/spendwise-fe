@@ -1,8 +1,10 @@
 import {
+  CloudUpload,
   Dashboard as DashboardIcon,
   Drafts as DraftsIcon,
   Inbox as InboxIcon,
   People as PeopleIcon,
+  Publish,
   Send as SendIcon,
   Settings as SettingsIcon,
 } from '@mui/icons-material';
@@ -21,10 +23,10 @@ const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
       href: '/',
     },
     {
-      text: 'Users',
-      icon: <PeopleIcon />,
-      onClick: () => console.log('Users clicked'),
-      href: '/users',
+      text: 'Upload',
+      icon: <CloudUpload />,
+      // onClick: () => console.log('Users clicked'),
+      href: '/upload/csv',
     },
     {
       text: 'Inbox',

@@ -49,7 +49,7 @@ export const getRecordsColumns = (
             fontSize: '0.85rem',
           }}
         >
-          {isToday ? 'Today' : dayjs(date).format('MM DD YYYY')}
+          {isToday ? 'Today' : dayjs(date).format(`DD MMM 'YY`)}
         </Typography>
       );
     },

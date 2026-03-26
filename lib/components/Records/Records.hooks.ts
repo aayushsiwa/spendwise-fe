@@ -5,7 +5,7 @@ import {
   TrendingUp,
 } from '@mui/icons-material';
 import { GridPaginationModel } from '@mui/x-data-grid';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useRecordsContext } from '@/lib/context/Records/Records';
 import type { Record } from '@/types/Records';
@@ -15,7 +15,7 @@ import { RecordProps } from './Records';
 const useRecords = (): RecordProps => {
   const {
     records,
-    pagination: paginationResponse,
+    pagination,
     isGetRecordsError,
     isGetRecordsLoading: isLoading,
     error,
@@ -30,10 +30,12 @@ const useRecords = (): RecordProps => {
   const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
-    setLocalRows(records ?? []);
-  }, [records]);
+    if (!isAdding) {
+      setLocalRows(records ?? []);
+    }
+  }, [records, isAdding]);
 
-  const getTypeDetails = (type: string) => {
+  const getTypeDetails = useCallback((type: string) => {
     switch (type) {
       case 'income':
         return { color: '#00B894', icon: TrendingUp, bgColor: '#00B89410' };
@@ -44,15 +46,25 @@ const useRecords = (): RecordProps => {
       default:
         return { color: '#636E72', icon: Receipt, bgColor: '#636E7210' };
     }
-  };
+  }, []);
 
-  const handlePaginationModelChange = (model: GridPaginationModel) => {
-    setQueryParams({
-      ...queryParams,
-      page: model.page + 1,
-      limit: model.pageSize,
-    });
-  };
+  const handlePaginationModelChange = useCallback(
+    (model: GridPaginationModel) => {
+      const newPage = model.page + 1;
+      const newLimit = model.pageSize;
+
+      // 🚫 prevent redundant updates
+      if (newPage === queryParams.page && newLimit === queryParams.limit) {
+        return;
+      }
+
+      setQueryParams({
+        page: newPage,
+        limit: newLimit,
+      });
+    },
+    [setQueryParams, queryParams.page, queryParams.limit]
+  );
 
   const handleDeleteRecord = async (id: number) => {
     if (id === 9999) {
@@ -109,15 +121,13 @@ const useRecords = (): RecordProps => {
     setLocalRows,
     records,
     isLoading,
-    paginationResponse,
+    pagination,
     handlePaginationModelChange,
     getTypeDetails,
     processRowUpdate,
     handleDeleteRecord,
     isGetRecordsError,
     error,
-    recordsQueryParams: queryParams,
-    setRecordsQueryParams: setQueryParams,
     isAdding,
     setIsAdding,
   };

@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Grid } from '@mui/material';
+import { Box, CircularProgress, Grid, Stack } from '@mui/material';
 import { FC } from 'react';
 
 import Records from '@/lib/components/Records/Records';
@@ -25,20 +25,65 @@ const Home: FC = () => {
     );
   }
 
+  if (isError) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '90vh',
+        }}
+      >
+        Error while loading data.
+      </Box>
+    );
+  }
+
   return (
     <Grid container spacing={2}>
-      <Grid size={12}>
+      {/* first line */}
+      <Grid
+        size={{
+          xs: 12,
+        }}
+      >
         <Summary summary={summary} />
       </Grid>
-      <Grid size={8}>
-        <Statistics summary={summary} />
+      {/* second line more of a stack */}
+      <Grid
+        size={{
+          xs: 12,
+          lg: 8,
+        }}
+      >
+        <Stack spacing={2}>
+          <Statistics summary={summary} />
+          <Statistics summary={summary} />
+        </Stack>
       </Grid>
-      <Grid size={4}>
-        <Records {...recordProps} isAddingAllowed={false} />
+      <Grid
+        size={{
+          xs: 12,
+          md: 4,
+        }}
+        sx={{
+          borderRadius: 1,
+          boxShadow: 2,
+          height: '100%',
+          border: '1px solid',
+          borderColor: 'divider',
+          overflow: 'hidden',
+        }}
+      >
+        <Records
+          {...recordProps}
+          isAddingAllowed={false}
+          isCheckBoxSelectionAllowed={false}
+        />
       </Grid>
-      <Grid size={8}>
-        <Statistics summary={summary} />
-      </Grid>
+      {/* third line */}
+      <Grid size={8}></Grid>
     </Grid>
   );
 };

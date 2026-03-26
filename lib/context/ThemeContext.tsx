@@ -22,22 +22,40 @@ export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [mode, setMode] = useState<ThemeMode>('system');
+  const [resolvedMode, setResolvedMode] = useState<'light' | 'dark'>('light');
   const [mounted, setMounted] = useState(false);
 
-  // Load preference (client-only)
+  // Client-only logic
   useEffect(() => {
     const stored = localStorage.getItem('theme') as ThemeMode | null;
-    setMode(stored ?? 'system');
+    const selectedMode = stored ?? 'system';
+    setMode(selectedMode);
+
+    if (selectedMode === 'system') {
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      setResolvedMode(prefersDark ? 'dark' : 'light');
+    } else {
+      setResolvedMode(selectedMode);
+    }
+
     setMounted(true);
   }, []);
 
-  // Resolve actual theme used by MUI
-  const resolvedMode: 'light' | 'dark' =
-    mode === 'system'
-      ? window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light'
-      : mode;
+  // Update resolved mode when user changes theme
+  useEffect(() => {
+    if (!mounted) return;
+
+    if (mode === 'system') {
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      setResolvedMode(prefersDark ? 'dark' : 'light');
+    } else {
+      setResolvedMode(mode);
+    }
+  }, [mode, mounted]);
 
   const theme = useMemo(
     () => createTheme(getDesignTokens(resolvedMode)),

@@ -1,5 +1,8 @@
 import useRecords from '@/lib/components/Records/Records.hooks';
+import { usePeriodContext } from '@/lib/context/Period/Period';
 import { useSummaryContext } from '@/lib/context/Summary/Summary';
+import { useGetSummaryAPI } from '@/pages/api/summary/getSummary';
+import { DateUtil } from '@/utils/DateUtils';
 
 const useHome = () => {
   const {
@@ -7,22 +10,25 @@ const useHome = () => {
     setLocalRows,
     records,
     isLoading: isGetRecordsLoading,
-    paginationResponse,
+    pagination,
     handlePaginationModelChange,
     getTypeDetails,
     processRowUpdate,
     handleDeleteRecord,
     isGetRecordsError,
     error,
-    recordsQueryParams,
-    setRecordsQueryParams,
     isAdding,
     setIsAdding,
   } = useRecords();
 
-  const { summary, isLoading, isError } = useSummaryContext();
+  const { range } = usePeriodContext();
 
-  console.log('Summary Data:', summary);
+  const queryParams = {
+    from: DateUtil.formattedDate(range.from),
+    to: DateUtil.formattedDate(range.to),
+  };
+
+  const { data: summary, isLoading, isError } = useGetSummaryAPI(queryParams);
 
   return {
     summary,
@@ -33,15 +39,13 @@ const useHome = () => {
       setLocalRows,
       records,
       isGetRecordsLoading,
-      paginationResponse,
+      pagination,
       handlePaginationModelChange,
       getTypeDetails,
       processRowUpdate,
       handleDeleteRecord,
       isGetRecordsError,
       error,
-      recordsQueryParams,
-      setRecordsQueryParams,
       isAdding,
       setIsAdding,
     },

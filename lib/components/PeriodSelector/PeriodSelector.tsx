@@ -16,12 +16,10 @@ import 'react-date-range/dist/theme/default.css';
 
 import { usePeriodContext } from '@/lib/context/Period/Period';
 import { PeriodRange } from '@/lib/context/Period/Period.hooks';
-import { useSummaryContext } from '@/lib/context/Summary/Summary';
 import { DateUtil } from '@/utils/DateUtils';
 
 const PeriodSelector = () => {
   const { period, setPeriod, setRange } = usePeriodContext();
-  const { setQueryParams } = useSummaryContext();
 
   const [customRange, setCustomRange] = useState({
     from: DateUtil.formattedDate(),
@@ -91,11 +89,6 @@ const PeriodSelector = () => {
     } else {
       setAnchorEl(null);
     }
-
-    setQueryParams({
-      from: DateUtil.formattedDate(range?.from ?? ''),
-      to: DateUtil.formattedDate(range?.to ?? ''),
-    });
   };
 
   const handleRangeChange = (ranges: RangeKeyDict) => {

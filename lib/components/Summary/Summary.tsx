@@ -50,7 +50,7 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
             sx={{
               border: `2px solid ${alpha(card.color, 0.3)}`,
               bgcolor: alpha(card.color, 0.05),
-              borderRadius: 3,
+              borderRadius: 1,
               boxShadow: 1,
             }}
           >

@@ -15,17 +15,17 @@ export type Pagination = {
   total_pages: number;
 };
 
-type GetRecordsAPIResponse = {
+type GetRecordsAPIResponse = Pagination & {
   records: TRecord[];
-  pagination: Pagination;
 };
+
 type GetRecordsResponse = AxiosResponse<GetRecordsAPIResponse>;
 
 type GetRecordsRequest = {
   page?: number;
   limit?: number;
-  start_date?: string;
-  end_date?: string;
+  from?: string;
+  to?: string;
   category?: string;
   type?: string;
   description?: string;
@@ -53,15 +53,7 @@ export const getRecordsAPI = async (
   return {
     ...res,
     data: {
-      records: res.data.records ?? [],
-      pagination: res.data.pagination ?? {
-        has_next: false,
-        has_prev: false,
-        limit: 10,
-        page: 1,
-        total_count: 0,
-        total_pages: 0,
-      },
+      ...res.data,
     },
   };
 };
@@ -71,7 +63,18 @@ export const useGetRecordsAPI = (
   options?: QueryHookOptions<GetRecordsResponse>
 ): QueryObserverResult<GetRecordsResponse> => {
   return useQuery({
-    queryKey: [QueryKeys.RECORDS, { page, limit, ...filters }],
+    queryKey: [
+      QueryKeys.RECORDS,
+      page,
+      limit,
+      filters.from,
+      filters.to,
+      filters.category,
+      filters.type,
+      filters.description,
+      filters.min_amount,
+      filters.max_amount,
+    ],
     queryFn: () => getRecordsAPI({ page, limit, ...filters }),
     refetchOnMount: false,
     staleTime: 2 * 60 * 1000, // 2 minutes

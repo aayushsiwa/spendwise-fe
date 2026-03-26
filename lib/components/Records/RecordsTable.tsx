@@ -1,12 +1,8 @@
 import { Receipt } from '@mui/icons-material';
 import { Box, alpha, useTheme } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { ReactElement } from 'react';
 
 import type { Record } from '@/types/Records';
-import { RecordsUtil } from '@/utils/RecordsUtils';
-
-import Records from './Records';
 
 type RecordsTableProps = {
   rows: Record[];
@@ -21,6 +17,7 @@ type RecordsTableProps = {
     icon: typeof Receipt;
     bgColor: string;
   };
+  isCheckBoxSelectionAllowed?: boolean;
 };
 
 const RecordsTable = ({
@@ -32,6 +29,7 @@ const RecordsTable = ({
   onPaginationModelChange,
   processRowUpdate,
   getTypeDetails,
+  isCheckBoxSelectionAllowed,
 }: RecordsTableProps) => {
   const theme = useTheme();
 
@@ -48,7 +46,6 @@ const RecordsTable = ({
         rows={rows}
         getRowId={(row) => row.id}
         columns={columns}
-        pagination
         paginationMode="server"
         paginationModel={paginationModel}
         rowCount={rowCount}
@@ -56,7 +53,7 @@ const RecordsTable = ({
         onPaginationModelChange={onPaginationModelChange}
         loading={loading}
         processRowUpdate={processRowUpdate}
-        checkboxSelection
+        checkboxSelection={isCheckBoxSelectionAllowed}
         disableRowSelectionOnClick
         sx={{
           width: '100%',
