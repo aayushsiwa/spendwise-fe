@@ -12,9 +12,11 @@ import {
   GridRenderCellParams,
   GridValueGetter,
 } from '@mui/x-data-grid';
+import dayjs from 'dayjs';
 
 import { currency } from '@/constants/Currency';
 import { Record } from '@/types/Records';
+import { DateUtil } from '@/utils/DateUtils';
 import { RecordsUtil } from '@/utils/RecordsUtils';
 
 export const getRecordsColumns = (
@@ -34,9 +36,9 @@ export const getRecordsColumns = (
     headerAlign: 'center',
     align: 'center',
     renderCell: (params: GridRenderCellParams) => {
-      const date = new Date(params.value);
-      const today = new Date();
-      const isToday = date.toDateString() === today.toDateString();
+      const date = DateUtil.formattedDate(params.value);
+      const today = DateUtil.formattedDate();
+      const isToday = date === today;
 
       return (
         <Typography
@@ -47,14 +49,7 @@ export const getRecordsColumns = (
             fontSize: '0.85rem',
           }}
         >
-          {isToday
-            ? 'Today'
-            : date.toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-              }) +
-              ' ' +
-              date.getFullYear()}
+          {isToday ? 'Today' : dayjs(date).format('MM DD YYYY')}
         </Typography>
       );
     },

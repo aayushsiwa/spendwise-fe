@@ -15,13 +15,17 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 
 import { usePeriodContext } from '@/lib/context/Period/Period';
+import { PeriodRange } from '@/lib/context/Period/Period.hooks';
+import { useSummaryContext } from '@/lib/context/Summary/Summary';
+import { DateUtil } from '@/utils/DateUtils';
 
 const PeriodSelector = () => {
   const { period, setPeriod, setRange } = usePeriodContext();
+  const { setQueryParams } = useSummaryContext();
 
   const [customRange, setCustomRange] = useState({
-    from: new Date(),
-    to: new Date(),
+    from: DateUtil.formattedDate(),
+    to: DateUtil.formattedDate(),
     key: 'selection',
   });
 
@@ -47,54 +51,62 @@ const PeriodSelector = () => {
 
   const handleChange = (e: SelectChangeEvent) => {
     setPeriod(e.target.value);
+    let range: PeriodRange | undefined;
     // for cases when month is selected
-    // if (!Object.values(additionalRanges).includes(e.target.value)) {
-    //   const selectedMonth = months.find((m) => m.label === e.target.value);
-    //   if (selectedMonth) {
-    //     const newRange = {
-    //       from: selectedMonth.range.from,
-    //       to: selectedMonth.range.to,
-    //       key: 'selection',
-    //     };
-    //     setRange(newRange);
-    //   }
-    // }
+    if (!Object.values(additionalRanges).includes(e.target.value)) {
+      const selectedMonth = months.find((m) => m.label === e.target.value);
+      if (selectedMonth) {
+        range = {
+          from: selectedMonth.range.from,
+          to: selectedMonth.range.to,
+          key: 'selection',
+        };
+        setRange(range);
+      }
+    }
 
     // for cases when additional range is selected
     if (e.target.value === 'yearToDate') {
       const startOfYear = dayjs().startOf('year').format('YYYY-MM-DD');
       const endOfYear = dayjs().format('YYYY-MM-DD');
-      setRange({
+      range = {
         from: startOfYear,
         to: endOfYear,
         key: 'selection',
-      });
+      };
+      setRange(range);
     }
     // TODO: handle everything case
     if (e.target.value === 'everything') {
       console.log('everything selected: todo pending');
-      setRange({
+      range = {
         from: '2000-01-01',
         to: dayjs().format('YYYY-MM-DD'),
         key: 'selection',
-      });
+      };
+      setRange(range);
     }
     if (e.target.value === 'customRange') {
       setAnchorEl(document.body);
     } else {
       setAnchorEl(null);
     }
+
+    setQueryParams({
+      from: DateUtil.formattedDate(range?.from ?? ''),
+      to: DateUtil.formattedDate(range?.to ?? ''),
+    });
   };
 
   const handleRangeChange = (ranges: RangeKeyDict) => {
     setCustomRange({
-      from: ranges.selection.startDate!,
-      to: ranges.selection.endDate!,
+      from: DateUtil.formattedDate(ranges.selection.startDate?.toISOString()!),
+      to: DateUtil.formattedDate(ranges.selection.endDate?.toISOString()!),
       key: 'selection',
     });
     setRange({
-      from: dayjs(ranges.selection.startDate).format('YYYY-MM-DD'),
-      to: dayjs(ranges.selection.endDate).format('YYYY-MM-DD'),
+      from: DateUtil.formattedDate(ranges.selection.startDate?.toISOString()!),
+      to: DateUtil.formattedDate(ranges.selection.endDate?.toISOString()!),
       key: 'selection',
     });
   };

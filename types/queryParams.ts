@@ -24,8 +24,8 @@ export enum RecordType {
 
 export type BaseQueryParams = TimeFrameQueryParams &
   PaginationQueryParams & {
-    from?: Date;
-    to?: Date;
+    from?: string;
+    to?: string;
     category?: string;
     type?: RecordType;
     minAmount?: number;
