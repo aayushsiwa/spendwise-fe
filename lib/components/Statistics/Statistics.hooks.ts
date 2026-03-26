@@ -1,31 +1,11 @@
 import { useEffect, useState } from 'react';
 
 import { usePeriodContext } from '@/lib/context/Period/Period';
-import { useRecordsContext } from '@/lib/context/Records/Records';
-import { useGetSummaryAPI } from '@/pages/api/summary/getSummary';
 import { TRecord } from '@/types/Records';
 import { SummaryMonth } from '@/types/Summary';
 
-const useStatistics = (summary: SummaryMonth) => {
+const useStatistics = (summary: SummaryMonth, records: TRecord[]) => {
   const { range } = usePeriodContext();
-  // const {
-  //   data: summary,
-  //   isLoading,
-  //   error,
-  // } = useGetSummaryAPI({
-  //   from: range.from,
-  //   to: range.to,
-  // });
-  const { records } = useRecordsContext();
-
-  // useEffect(() => {
-  //   if (range?.from && range?.to) {
-  //     setQueryParams({
-  //       from: range.from,
-  //       to: range.to,
-  //     });
-  //   }
-  // }, [range, setQueryParams]);
 
   const [data, setData] = useState<{ date: string; balance: number }[]>([]);
 

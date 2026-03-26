@@ -1,7 +1,6 @@
 'use client';
 
 import { Receipt } from '@mui/icons-material';
-import { Delete } from '@mui/icons-material';
 import {
   Alert,
   Box,
@@ -10,14 +9,11 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { FC, ReactComponentElement, ReactElement, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 
-import { currency } from '@/constants/Currency';
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
-import { RecordsQueryParams } from '@/lib/context/Records/Records';
 import { Pagination } from '@/pages/api/records/getRecords';
-import type { Record } from '@/types/Records';
+import type { Record, TRecord } from '@/types/Records';
 import { DateUtil } from '@/utils/DateUtils';
 
 import { getRecordsColumns } from './RecordsColumns';
@@ -26,7 +22,7 @@ import RecordsTable from './RecordsTable';
 export type RecordProps = {
   localRows: Record[];
   setLocalRows: React.Dispatch<React.SetStateAction<Record[]>>;
-  records: Record[] | undefined;
+  records: TRecord[] | undefined;
   isLoading?: boolean;
   pagination: Pagination;
   handlePaginationModelChange: (model: {
@@ -67,6 +63,29 @@ const Records: FC<RecordProps> = ({
 }: RecordProps) => {
   const { getCategoryColor } = useCategoriesContext();
 
+  const columns = useMemo(
+    () =>
+      getRecordsColumns(getCategoryColor, getTypeDetails, handleDeleteRecord),
+    [getCategoryColor, getTypeDetails, handleDeleteRecord]
+  );
+
+  const filteredColumns = useMemo(() => {
+    if (!isAddingAllowed) {
+      return columns.filter(
+        (col) => !['actions', 'note', 'type'].includes(col.field)
+      );
+    }
+    return columns;
+  }, [columns, isAddingAllowed]);
+
+  const paginationModel = useMemo(
+    () => ({
+      page: (pagination?.page ?? 1) - 1,
+      pageSize: pagination?.limit ?? 10,
+    }),
+    [pagination]
+  );
+
   if (isLoading || !pagination) {
     return (
       <Box
@@ -105,29 +124,6 @@ const Records: FC<RecordProps> = ({
       </Box>
     );
   }
-
-  const columns = useMemo(
-    () =>
-      getRecordsColumns(getCategoryColor, getTypeDetails, handleDeleteRecord),
-    [getCategoryColor, getTypeDetails, handleDeleteRecord]
-  );
-
-  const filteredColumns = useMemo(() => {
-    if (!isAddingAllowed) {
-      return columns.filter(
-        (col) => !['actions', 'note', 'type'].includes(col.field)
-      );
-    }
-    return columns;
-  }, [columns, isAddingAllowed]);
-
-  const paginationModel = useMemo(
-    () => ({
-      page: (pagination?.page ?? 1) - 1,
-      pageSize: pagination?.limit ?? 10,
-    }),
-    [pagination]
-  );
 
   return (
     <Box sx={{ height: '100%', width: '100%' }}>

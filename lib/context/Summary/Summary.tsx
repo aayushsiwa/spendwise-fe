@@ -1,8 +1,8 @@
-import { FC, createContext, useContext, useMemo, useState } from 'react';
+import { FC, createContext, useContext, useMemo } from 'react';
 
 import { usePeriodContext } from '@/lib/context/Period/Period';
 import { SummaryMonth } from '@/types/Summary';
-import { BaseQueryParams, TimeFrame } from '@/types/queryParams';
+import { BaseQueryParams } from '@/types/queryParams';
 import { DateUtil } from '@/utils/DateUtils';
 
 import { useSummaryProvider } from './Summary.hooks';

@@ -1,6 +1,6 @@
 import useRecords from '@/lib/components/Records/Records.hooks';
 import { usePeriodContext } from '@/lib/context/Period/Period';
-import { useSummaryContext } from '@/lib/context/Summary/Summary';
+import { useGetRecordsAPI } from '@/pages/api/records/getRecords';
 import { useGetSummaryAPI } from '@/pages/api/summary/getSummary';
 import { DateUtil } from '@/utils/DateUtils';
 
@@ -28,12 +28,22 @@ const useHome = () => {
     to: DateUtil.formattedDate(range.to),
   };
 
+  const {
+    data,
+    isError: isGetAllRecordsError,
+    isLoading: isGetAllRecordsLoading,
+  } = useGetRecordsAPI({
+    ...queryParams,
+  });
+  const allRecords = data?.data.records;
+
   const { data: summary, isLoading, isError } = useGetSummaryAPI(queryParams);
 
   return {
     summary,
-    isLoading,
-    isError,
+    allRecords,
+    isLoading: isGetAllRecordsLoading || isLoading,
+    isError: isGetAllRecordsError || isError,
     recordProps: {
       localRows,
       setLocalRows,

@@ -7,24 +7,40 @@ import {
 import { GridPaginationModel } from '@mui/x-data-grid';
 import { useCallback, useEffect, useState } from 'react';
 
-import { useRecordsContext } from '@/lib/context/Records/Records';
+import { usePeriodContext } from '@/lib/context/Period/Period';
+import { useCreateRecordAPI } from '@/pages/api/records/createRecord';
+import { useDeleteRecordAPI } from '@/pages/api/records/deleteRecords';
+import { useGetRecordsAPI } from '@/pages/api/records/getRecords';
+import { useUpdateRecordAPI } from '@/pages/api/records/updateRecords';
 import type { Record } from '@/types/Records';
 
 import { RecordProps } from './Records';
 
 const useRecords = (): RecordProps => {
-  const {
-    records,
-    pagination,
-    isGetRecordsError,
-    isGetRecordsLoading: isLoading,
-    error,
-    deleteRecord,
-    updateRecord,
-    createRecord,
-    queryParams,
-    setQueryParams,
-  } = useRecordsContext();
+  const { range } = usePeriodContext();
+
+  const updateRecord = useUpdateRecordAPI();
+  const deleteRecord = useDeleteRecordAPI();
+  const createRecord = useCreateRecordAPI();
+
+  const [queryParams, setQueryParams] = useState<{
+    page: number;
+    limit: number;
+  }>({ page: 1, limit: 10 });
+
+  const { data, isLoading, isError, error } = useGetRecordsAPI({
+    ...queryParams,
+    ...range,
+  });
+
+  const { records, ...pagination } = data?.data ?? {
+    has_next: false,
+    has_prev: false,
+    limit: 0,
+    page: 0,
+    total_count: 0,
+    total_pages: 0,
+  };
 
   const [localRows, setLocalRows] = useState<Record[]>([]);
   const [isAdding, setIsAdding] = useState(false);
@@ -126,8 +142,8 @@ const useRecords = (): RecordProps => {
     getTypeDetails,
     processRowUpdate,
     handleDeleteRecord,
-    isGetRecordsError,
-    error,
+    isGetRecordsError: isError,
+    error: error ?? undefined,
     isAdding,
     setIsAdding,
   };

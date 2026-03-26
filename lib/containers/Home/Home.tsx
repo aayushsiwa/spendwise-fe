@@ -8,9 +8,9 @@ import Summary from '@/lib/components/Summary/Summary';
 import useHome from './Home.hooks';
 
 const Home: FC = () => {
-  const { summary, isLoading, isError, recordProps } = useHome();
+  const { summary, isLoading, isError, recordProps, allRecords } = useHome();
 
-  if (isLoading || !summary) {
+  if (isLoading || !summary || !allRecords) {
     return (
       <Box
         sx={{
@@ -58,8 +58,8 @@ const Home: FC = () => {
         }}
       >
         <Stack spacing={2}>
-          <Statistics summary={summary} />
-          <Statistics summary={summary} />
+          <Statistics summary={summary} records={allRecords} />
+          <Statistics summary={summary} records={allRecords} />
         </Stack>
       </Grid>
       <Grid
@@ -73,7 +73,6 @@ const Home: FC = () => {
           height: '100%',
           border: '1px solid',
           borderColor: 'divider',
-          overflow: 'hidden',
         }}
       >
         <Records

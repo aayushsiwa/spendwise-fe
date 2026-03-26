@@ -2,9 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 
 import { QueryKeys } from '@/constants/QueryKeys';
-import { RecordsQueryParams } from '@/lib/context/Records/Records';
 import { PrivateAxios, queryClient } from '@/pages/api/index';
-import { Record, RecordQuery } from '@/types/Records';
 
 type UploadCSVAPIResponse = {
   message: string;

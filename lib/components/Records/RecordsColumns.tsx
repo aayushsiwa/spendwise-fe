@@ -7,14 +7,9 @@ import {
   Typography,
   alpha,
 } from '@mui/material';
-import {
-  GridColDef,
-  GridRenderCellParams,
-  GridValueGetter,
-} from '@mui/x-data-grid';
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 
-import { currency } from '@/constants/Currency';
 import { Record } from '@/types/Records';
 import { DateUtil } from '@/utils/DateUtils';
 import { RecordsUtil } from '@/utils/RecordsUtils';

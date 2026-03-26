@@ -19,9 +19,7 @@ export const useRecordsProvider = (
   const deleteRecord = useDeleteRecordAPI();
   const createRecord = useCreateRecordAPI();
 
-  const records = getRecordsResponse?.data?.records;
-
-  const { records: _ignored, ...pagination } = getRecordsResponse?.data ?? {
+  const { records, ...pagination } = getRecordsResponse?.data ?? {
     has_next: false,
     has_prev: false,
     limit: 0,

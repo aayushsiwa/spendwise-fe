@@ -93,13 +93,13 @@ const PeriodSelector = () => {
 
   const handleRangeChange = (ranges: RangeKeyDict) => {
     setCustomRange({
-      from: DateUtil.formattedDate(ranges.selection.startDate?.toISOString()!),
-      to: DateUtil.formattedDate(ranges.selection.endDate?.toISOString()!),
+      from: DateUtil.formattedDate(ranges.selection.startDate?.toISOString()),
+      to: DateUtil.formattedDate(ranges.selection.endDate?.toISOString()),
       key: 'selection',
     });
     setRange({
-      from: DateUtil.formattedDate(ranges.selection.startDate?.toISOString()!),
-      to: DateUtil.formattedDate(ranges.selection.endDate?.toISOString()!),
+      from: DateUtil.formattedDate(ranges.selection.startDate?.toISOString()),
+      to: DateUtil.formattedDate(ranges.selection.endDate?.toISOString()),
       key: 'selection',
     });
   };

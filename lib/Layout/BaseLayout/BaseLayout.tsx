@@ -3,8 +3,6 @@ import {
   Dashboard as DashboardIcon,
   Drafts as DraftsIcon,
   Inbox as InboxIcon,
-  People as PeopleIcon,
-  Publish,
   Send as SendIcon,
   Settings as SettingsIcon,
 } from '@mui/icons-material';
