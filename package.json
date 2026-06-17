@@ -23,7 +23,7 @@
     "@types/react-date-range": "^1.4.10",
     "axios": "^1.11.0",
     "dayjs": "^1.11.18",
-    "next": "15.4.6",
+    "next": "16.2.9",
     "react": "19.1.0",
     "react-date-range": "^2.0.1",
     "react-dom": "19.1.0"
