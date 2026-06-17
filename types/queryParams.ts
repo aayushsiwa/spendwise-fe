@@ -1,7 +1,4 @@
-export type PaginationQueryParams = {
-  page?: number;
-  limit?: number;
-};
+export type PaginationQueryParams = { page?: number; limit?: number };
 
 export enum TimeFrame {
   Month = 'month',
@@ -16,18 +13,12 @@ export type TimeFrameQueryParams = {
   month?: number;
 };
 
-export enum RecordType {
-  Income = 'income',
-  Expense = 'expense',
-  Transfer = 'transfer',
-}
-
 export type BaseQueryParams = TimeFrameQueryParams &
   PaginationQueryParams & {
     from?: string;
     to?: string;
     category?: string;
-    type?: RecordType;
+    type?: 'income' | 'expense' | 'transfer';
     minAmount?: number;
     maxAmount?: number;
     groupBy?: string;
