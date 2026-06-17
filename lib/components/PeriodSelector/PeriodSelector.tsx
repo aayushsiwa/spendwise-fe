@@ -9,7 +9,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { DateRange, RangeKeyDict } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
@@ -34,6 +34,7 @@ const PeriodSelector = () => {
   };
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const selectRef = useRef<HTMLDivElement>(null);
 
   const months = Array.from({ length: 6 }).map((_, i) => {
     const d = dayjs().subtract(i, 'month');
@@ -85,7 +86,7 @@ const PeriodSelector = () => {
       setRange(range);
     }
     if (e.target.value === 'customRange') {
-      setAnchorEl(document.body);
+      setAnchorEl(selectRef.current);
     } else {
       setAnchorEl(null);
     }
@@ -109,6 +110,7 @@ const PeriodSelector = () => {
       <FormControl size="small" sx={{ minWidth: 180 }}>
         <InputLabel id="period-label">Period</InputLabel>
         <Select
+          ref={selectRef}
           labelId="period-label"
           value={period}
           label="Period"

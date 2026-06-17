@@ -1,20 +1,19 @@
-import { Receipt } from '@mui/icons-material';
 import { Box, alpha, useTheme } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 
 import type { Record } from '@/types/Records';
 
 type RecordsTableProps = {
   rows: Record[];
-  columns: any[];
+  columns: GridColDef<Record>[];
   loading?: boolean;
   paginationModel: { page: number; pageSize: number };
   rowCount: number;
-  onPaginationModelChange: (model: any) => void;
+  onPaginationModelChange: (model: GridPaginationModel) => void;
   processRowUpdate: (newRow: Record, oldRow: Record) => Promise<Record>;
   getTypeDetails: (type: string) => {
     color: string;
-    icon: typeof Receipt;
+    icon: typeof import('@mui/icons-material').Receipt;
     bgColor: string;
   };
   isCheckBoxSelectionAllowed?: boolean;
@@ -60,7 +59,7 @@ const RecordsTable = ({
           height: '100%',
           border: 'none',
           backgroundColor: 'transparent',
-          '& .MuiDataGrid-row[data-id="new"]': {
+          '& .MuiDataGrid-row[data-id="9999"]': {
             backgroundColor: alpha(theme.palette.success.light, 0.08),
             '&:hover': {
               backgroundColor: alpha(theme.palette.success.light, 0.12),
