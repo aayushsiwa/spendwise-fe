@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
-import { useUploadCSVAPI } from '@/pages/api/upload/csv';
+import { useUploadCSVAPI } from '@/api/upload/csv';
 
 const UploadCSV = () => {
   const [file, setFile] = useState<File | null>(null);

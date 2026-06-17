@@ -1,4 +1,4 @@
-import { useGetCategoriesAPI } from '@/pages/api/categories/getCategories';
+import { useGetCategoriesAPI } from '@/api/categories/getCategories';
 
 import { TCategoriesContext } from './Categories';
 

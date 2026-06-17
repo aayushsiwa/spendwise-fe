@@ -7,12 +7,12 @@ import {
 import { GridPaginationModel } from '@mui/x-data-grid';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useCreateRecordAPI } from '@/api/records/createRecord';
+import { useDeleteRecordAPI } from '@/api/records/deleteRecords';
+import { useGetRecordsAPI } from '@/api/records/getRecords';
+import { useUpdateRecordAPI } from '@/api/records/updateRecords';
 import { usePeriodContext } from '@/lib/context/Period/Period';
-import { useCreateRecordAPI } from '@/pages/api/records/createRecord';
-import { useDeleteRecordAPI } from '@/pages/api/records/deleteRecords';
-import { useGetRecordsAPI } from '@/pages/api/records/getRecords';
-import { useUpdateRecordAPI } from '@/pages/api/records/updateRecords';
-import type { Record } from '@/types/Records';
+import type { Record, RecordsQueryParams } from '@/types/Records';
 
 import { RecordProps } from './Records';
 
@@ -28,10 +28,9 @@ const useRecords = (): RecordProps => {
     limit: number;
   }>({ page: 1, limit: 10 });
 
-  const { data, isLoading, isError, error } = useGetRecordsAPI({
-    ...queryParams,
-    ...range,
-  });
+  const fullParams: RecordsQueryParams = { ...queryParams, ...range };
+
+  const { data, isLoading, isError, error } = useGetRecordsAPI(fullParams);
 
   const { records, ...pagination } = data?.data ?? {
     has_next: false,
@@ -90,7 +89,7 @@ const useRecords = (): RecordProps => {
     }
     if (window.confirm('Are you sure you want to delete this record?')) {
       try {
-        await deleteRecord.mutateAsync({ id });
+        await deleteRecord.mutateAsync({ id, queryParams: fullParams });
       } catch (error) {
         console.error('Failed to delete record:', error);
       }
@@ -105,16 +104,15 @@ const useRecords = (): RecordProps => {
       const isNew = newRow.id === 9999;
 
       if (isNew) {
-        const { id, ...recordData } = newRow;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id: _unused, ...recordData } = newRow;
         const createdResponse = await createRecord.mutateAsync({
           record: recordData,
-          queryParams,
+          queryParams: fullParams,
         });
 
-        const created: Record =
-          createdResponse.data?.record ??
-          createdResponse.data ??
-          createdResponse;
+        const id = createdResponse.data?.id ?? 9999;
+        const created: Record = { ...recordData, id };
 
         setLocalRows((prev) => [created, ...prev.filter((r) => r.id !== 9999)]);
         return created;

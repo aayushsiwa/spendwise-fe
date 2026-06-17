@@ -1,4 +1,4 @@
-import { useGetSummaryAPI } from '@/pages/api/summary/getSummary';
+import { useGetSummaryAPI } from '@/api/summary/getSummary';
 import { BaseQueryParams } from '@/types/queryParams';
 
 import { TSummaryContext } from './Summary';

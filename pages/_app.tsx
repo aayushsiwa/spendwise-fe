@@ -6,7 +6,7 @@ import { CategoriesContextProvider } from '@/lib/context/Categories/Categories';
 import { PeriodProvider } from '@/lib/context/Period/Period';
 import { ColorModeProvider } from '@/lib/context/ThemeContext';
 
-import { queryClient } from './api';
+import { queryClient } from '../api';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (

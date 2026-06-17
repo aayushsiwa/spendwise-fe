@@ -11,8 +11,8 @@ import {
 } from '@mui/material';
 import { FC, useMemo } from 'react';
 
+import { Pagination } from '@/api/records/getRecords';
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
-import { Pagination } from '@/pages/api/records/getRecords';
 import type { Record, TRecord } from '@/types/Records';
 import { DateUtil } from '@/utils/DateUtils';
 
