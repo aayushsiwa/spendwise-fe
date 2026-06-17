@@ -162,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       item.onClick();
     }
     if (item.href) {
-      window.location.href = item.href;
+      router.push(item.href);
     }
   };
 
@@ -248,75 +248,41 @@ const Sidebar: React.FC<SidebarProps> = ({
                 disablePadding
                 sx={{ display: 'block' }}
               >
-                {item.href ? (
-                  <ListItemButton
-                    component="a"
-                    href={item.href}
+                <ListItemButton
+                  onClick={() => handleMenuItemClick(item)}
+                  selected={item.href ? currentPath === item.href : false}
+                  sx={[
+                    {
+                      minHeight: 48,
+                      px: 2.5,
+                      color: 'inherit',
+                      textDecoration: 'none',
+                    },
+                    currentPath === item.href && {
+                      backgroundColor: theme.palette.action.selected,
+                      fontWeight: 600,
+                    },
+                    open
+                      ? { justifyContent: 'initial' }
+                      : { justifyContent: 'center' },
+                  ]}
+                >
+                  <ListItemIcon
                     sx={[
                       {
-                        minHeight: 48,
-                        px: 2.5,
-                        color: 'inherit',
-                        textDecoration: 'none',
-                        '&:hover': {
-                          backgroundColor: theme.palette.action.selected,
-                        },
+                        minWidth: 0,
+                        justifyContent: 'center',
                       },
-                      currentPath === item.href && {
-                        backgroundColor: theme.palette.action.selected,
-                        fontWeight: 600,
-                      },
-                      open
-                        ? { justifyContent: 'initial' }
-                        : { justifyContent: 'center' },
+                      open ? { mr: 3 } : { mr: 'auto' },
                     ]}
                   >
-                    <ListItemIcon
-                      sx={[
-                        {
-                          minWidth: 0,
-                          justifyContent: 'center',
-                        },
-                        open ? { mr: 3 } : { mr: 'auto' },
-                      ]}
-                    >
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.text}
-                      sx={[open ? { opacity: 1 } : { opacity: 0 }]}
-                    />
-                  </ListItemButton>
-                ) : (
-                  <ListItemButton
-                    onClick={() => handleMenuItemClick(item)}
-                    sx={[
-                      {
-                        minHeight: 48,
-                        px: 2.5,
-                      },
-                      open
-                        ? { justifyContent: 'initial' }
-                        : { justifyContent: 'center' },
-                    ]}
-                  >
-                    <ListItemIcon
-                      sx={[
-                        {
-                          minWidth: 0,
-                          justifyContent: 'center',
-                        },
-                        open ? { mr: 3 } : { mr: 'auto' },
-                      ]}
-                    >
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.text}
-                      sx={[open ? { opacity: 1 } : { opacity: 0 }]}
-                    />
-                  </ListItemButton>
-                )}
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    sx={[open ? { opacity: 1 } : { opacity: 0 }]}
+                  />
+                </ListItemButton>
               </ListItem>
             ))}
           </List>
