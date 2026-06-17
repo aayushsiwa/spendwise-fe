@@ -1,4 +1,9 @@
-import { Balance, Payment, TrendingUp } from '@mui/icons-material';
+import {
+  ArrowDownward,
+  ArrowUpward,
+  Balance,
+  Savings,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -15,7 +20,7 @@ const currencyFormat = (value: number) =>
   new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(value);
 
 const Summary = ({ summary }: { summary: SummaryMonth }) => {
@@ -23,42 +28,52 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
 
   const cards = [
     {
-      label: 'In + Out',
-      value: summary.total_income - summary.total_expense,
-      color: '#003f83',
-      icon: <Balance fontSize="large" />,
+      label: 'Income',
+      value: summary.total_income,
+      color: theme.palette.success.main,
+      icon: <ArrowUpward fontSize="large" />,
     },
     {
-      label: 'Spent',
+      label: 'Expenses',
       value: summary.total_expense,
-      color: '#E74C3C',
-      icon: <Payment fontSize="large" />,
+      color: theme.palette.error.main,
+      icon: <ArrowDownward fontSize="large" />,
     },
     {
-      label: 'Net Worth',
-      value: summary.net + summary.opening,
-      color: summary.net + summary.opening >= 0 ? '#2ECC71' : '#E74C3C',
-      icon: <TrendingUp fontSize="large" />,
+      label: 'Net Savings',
+      value: summary.net,
+      color:
+        summary.net >= 0
+          ? theme.palette.success.main
+          : theme.palette.error.main,
+      icon: <Savings fontSize="large" />,
+    },
+    {
+      label: 'Balance',
+      value: summary.opening + summary.net,
+      color: theme.palette.primary.main,
+      icon: <Balance fontSize="large" />,
     },
   ];
 
   return (
-    <Grid container spacing={2} justifyContent="center">
+    <Grid container spacing={2}>
       {cards.map((card, index) => (
-        <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
+        <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
           <Card
             sx={{
-              border: `2px solid ${alpha(card.color, 0.3)}`,
-              bgcolor: alpha(card.color, 0.05),
-              borderRadius: 1,
-              boxShadow: 1,
+              borderLeft: `4px solid ${card.color}`,
+              bgcolor: alpha(card.color, 0.03),
+              height: '100%',
             }}
           >
             <CardContent
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1,
+                gap: 2,
+                p: 2.5,
+                '&:last-child': { pb: 2.5 },
               }}
             >
               <Box
@@ -67,29 +82,26 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: 56,
-                  height: 56,
-                  borderRadius: '50%',
-                  bgcolor: alpha(card.color, 0.15),
+                  width: 48,
+                  height: 48,
+                  borderRadius: '12px',
+                  bgcolor: alpha(card.color, 0.1),
+                  flexShrink: 0,
                 }}
               >
                 {card.icon}
               </Box>
-
-              <Box>
+              <Box sx={{ minWidth: 0 }}>
                 <Typography
-                  sx={{
-                    fontWeight: 600,
-                    color: card.color,
-                    fontFamily: 'monospace',
-                  }}
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontWeight: 500, mb: 0.25 }}
                 >
-                  {card.label.toUpperCase()}
+                  {card.label}
                 </Typography>
-
                 <Typography
-                  variant="h5"
-                  sx={{ fontWeight: 700, color: theme.palette.text.primary }}
+                  variant="h6"
+                  sx={{ fontWeight: 700, color: card.color, lineHeight: 1.2 }}
                 >
                   {currencyFormat(card.value)}
                 </Typography>
