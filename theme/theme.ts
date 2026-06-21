@@ -48,7 +48,7 @@ export const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
         }),
   },
   typography: {
-    fontFamily: `'Inter','-apple-system','BlinkMacSystemFont','Segoe UI','Roboto',sans-serif`,
+    fontFamily: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif`,
     h1: { fontSize: '2.25rem', fontWeight: 700, letterSpacing: '-0.02em' },
     h2: { fontSize: '1.75rem', fontWeight: 600, letterSpacing: '-0.01em' },
     h3: { fontSize: '1.5rem', fontWeight: 600 },

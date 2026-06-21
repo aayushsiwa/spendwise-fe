@@ -7,12 +7,12 @@ import { TRecord } from '@/types/Records';
 import { QueryHookOptions } from '@/types/api';
 
 export type Pagination = {
-  has_next: boolean;
-  has_prev: boolean;
+  hasNext: boolean;
+  hasPrev: boolean;
   limit: number;
   page: number;
-  total_count: number;
-  total_pages: number;
+  totalCount: number;
+  totalPages: number;
 };
 
 type GetRecordsAPIResponse = Pagination & {
@@ -29,8 +29,8 @@ type GetRecordsRequest = {
   category?: string;
   type?: string;
   search?: string;
-  min_amount?: number;
-  max_amount?: number;
+  minAmount?: number;
+  maxAmount?: number;
 };
 
 export const getRecordsAPI = async (
@@ -72,8 +72,8 @@ export const useGetRecordsAPI = (
       filters.category,
       filters.type,
       filters.search,
-      filters.min_amount,
-      filters.max_amount,
+      filters.minAmount,
+      filters.maxAmount,
     ],
     queryFn: () => getRecordsAPI({ page, limit, ...filters }),
     refetchOnMount: false,
