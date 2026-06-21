@@ -12,14 +12,18 @@ import {
   ListItemText,
   AppBar as MuiAppBar,
   Drawer as MuiDrawer,
+  Snackbar,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { CSSObject, Theme, styled, useTheme } from '@mui/material/styles';
-import { useRouter } from 'next/router';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 
 import PeriodSelector from '@/lib/components/PeriodSelector/PeriodSelector';
 import ThemeToggle from '@/lib/components/ThemeToggle/ThemeToggle';
+
+import { useSidebar } from './Sidebar.hooks';
+import { SidebarItemComponent } from './SidebarItem';
 
 const drawerWidth = 240;
 
@@ -30,6 +34,8 @@ const openedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
@@ -39,6 +45,8 @@ const closedMixin = (theme: Theme): CSSObject => ({
   }),
   overflowX: 'hidden',
   width: `calc(${theme.spacing(7)} + 1px)`,
+  display: 'flex',
+  flexDirection: 'column',
   [theme.breakpoints.up('sm')]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
@@ -74,14 +82,16 @@ const AppBar = styled(MuiAppBar, {
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.enteringScreen,
         }),
+        [theme.breakpoints.down('md')]: {
+          marginLeft: 0,
+          width: '100%',
+        },
       },
     },
   ],
 }));
 
-const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme }) => ({
+const Drawer = styled(MuiDrawer)(({ theme }) => ({
   width: drawerWidth,
   flexShrink: 0,
   whiteSpace: 'nowrap',
@@ -124,6 +134,9 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
       },
     },
   ],
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(1),
+  },
 }));
 
 export interface SidebarMenuItem {
@@ -143,28 +156,23 @@ export interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({
   children,
-  title = 'Application',
+  title = 'SpendWise',
   menuItems = [],
   defaultOpen = false,
   showAppBar = true,
 }) => {
   const theme = useTheme();
-  const [open, setOpen] = useState(defaultOpen);
-  const router = useRouter();
-  const currentPath = router.pathname;
-
-  const handleDrawer = () => {
-    setOpen(!open);
-  };
-
-  const handleMenuItemClick = (item: SidebarMenuItem) => {
-    if (item.onClick) {
-      item.onClick();
-    }
-    if (item.href) {
-      router.push(item.href);
-    }
-  };
+  const largeView = useMediaQuery(theme.breakpoints.up('md'));
+  const {
+    open,
+    setOpen,
+    snackbar,
+    setSnackbar,
+    currentPath,
+    handleRefreshBalances,
+    handleDrawer,
+    handleMenuItemClick,
+  } = useSidebar(defaultOpen, largeView);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -178,47 +186,57 @@ const Sidebar: React.FC<SidebarProps> = ({
               display: 'flex',
               alignItems: 'center',
               py: 1.5,
+              justifyContent: 'space-between',
             }}
           >
-            <Grid size="auto">
-              <Typography
-                variant="h6"
-                component="div"
-                sx={[
-                  {
-                    fontWeight: 800,
-                    textAlign: 'left',
-                    px: 2,
-                    letterSpacing: 0.5,
-                  },
-                  open && { display: 'none' },
-                ]}
-              >
-                {open
-                  ? title.toUpperCase()
-                  : title
-                      .split(' ')
-                      .map((word) => word[0])
-                      .join('')
-                      .toUpperCase()}
-              </Typography>
-            </Grid>
+            <Box
+              sx={{
+                display: 'flex',
+                direction: largeView ? 'ltr' : 'rtl',
+                alignItems: 'center',
+              }}
+            >
+              <Grid size="auto">
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={[
+                    {
+                      fontWeight: 800,
+                      textAlign: 'left',
+                      px: 2,
+                      letterSpacing: 0.5,
+                      display: { md: open ? 'none' : 'block', xs: 'block' },
+                    },
+                  ]}
+                >
+                  {largeView && !open
+                    ? title
+                        .split(' ')
+                        .map((word) => word[0])
+                        .join('')
+                        .toUpperCase()
+                    : title.toUpperCase()}
+                </Typography>
+              </Grid>
 
-            <Grid size="grow">
-              <IconButton
-                color="inherit"
-                aria-label="toggle drawer"
-                onClick={handleDrawer}
-                edge="end"
-              >
-                <MenuIcon />
-              </IconButton>
-            </Grid>
-
+              <Grid size="grow">
+                <IconButton
+                  color="inherit"
+                  aria-label="toggle drawer"
+                  onClick={handleDrawer}
+                  edge="end"
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Grid>
+            </Box>
             <Grid
               sx={{
                 display: 'flex',
-                gap: 4,
+                gap: 1,
+                mr: 0.5,
+                alignItems: 'center',
               }}
             >
               <PeriodSelector />
@@ -228,7 +246,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         </AppBar>
       )}
 
-      <Drawer variant="permanent" open={open}>
+      <Drawer
+        variant={largeView ? 'permanent' : 'temporary'}
+        open={open}
+        onClose={() => setOpen(false)}
+      >
         <DrawerHeader>
           <Typography
             variant="h6"
@@ -242,48 +264,14 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {menuItems.length > 0 && (
           <List>
-            {menuItems.map((item, index) => (
-              <ListItem
-                key={`${item.text}-${index}`}
-                disablePadding
-                sx={{ display: 'block' }}
-              >
-                <ListItemButton
-                  onClick={() => handleMenuItemClick(item)}
-                  selected={item.href ? currentPath === item.href : false}
-                  sx={[
-                    {
-                      minHeight: 48,
-                      px: 2.5,
-                      color: 'inherit',
-                      textDecoration: 'none',
-                    },
-                    currentPath === item.href && {
-                      backgroundColor: theme.palette.action.selected,
-                      fontWeight: 600,
-                    },
-                    open
-                      ? { justifyContent: 'initial' }
-                      : { justifyContent: 'center' },
-                  ]}
-                >
-                  <ListItemIcon
-                    sx={[
-                      {
-                        minWidth: 0,
-                        justifyContent: 'center',
-                      },
-                      open ? { mr: 3 } : { mr: 'auto' },
-                    ]}
-                  >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.text}
-                    sx={[open ? { opacity: 1 } : { opacity: 0 }]}
-                  />
-                </ListItemButton>
-              </ListItem>
+            {menuItems.map((item) => (
+              <SidebarItemComponent
+                key={item.text}
+                item={item}
+                currentPath={currentPath}
+                open={open}
+                handleMenuItemClick={handleMenuItemClick}
+              />
             ))}
           </List>
         )}
@@ -293,6 +281,23 @@ const Sidebar: React.FC<SidebarProps> = ({
         {showAppBar && <DrawerHeader />}
         {children}
       </Main>
+
+      {snackbar && (
+        <Snackbar
+          open
+          autoHideDuration={3000}
+          onClose={() => setSnackbar(null)}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
+          <Alert
+            severity={snackbar.severity}
+            onClose={() => setSnackbar(null)}
+            variant="filled"
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      )}
     </Box>
   );
 };
