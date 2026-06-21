@@ -28,7 +28,7 @@ type GetRecordsRequest = {
   to?: string;
   category?: string;
   type?: string;
-  description?: string;
+  search?: string;
   min_amount?: number;
   max_amount?: number;
 };
@@ -71,7 +71,7 @@ export const useGetRecordsAPI = (
       filters.to,
       filters.category,
       filters.type,
-      filters.description,
+      filters.search,
       filters.min_amount,
       filters.max_amount,
     ],

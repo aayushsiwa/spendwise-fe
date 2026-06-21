@@ -3,29 +3,20 @@ import { AxiosResponse } from 'axios';
 
 import { PrivateAxios, queryClient } from '@/api/index';
 import { QueryKeys } from '@/constants/QueryKeys';
-import { Record } from '@/types/Records';
 
-type DeleteRecordAPIResponse = {
-  record: Record;
-};
-type DeleteRecordResponse = AxiosResponse<DeleteRecordAPIResponse>;
+type RefreshBalancesResponse = AxiosResponse<{ status: string }>;
 
-type DeleteRecordRequest = {
-  id: number;
-};
+export const refreshBalancesAPI =
+  async (): Promise<RefreshBalancesResponse> => {
+    const res = await PrivateAxios.post<{ status: string }>(
+      `/api/refresh`
+    );
+    return res;
+  };
 
-export const deleteRecordAPI = async ({
-  id,
-}: DeleteRecordRequest): Promise<DeleteRecordResponse> => {
-  const res = await PrivateAxios.delete<DeleteRecordAPIResponse>(
-    `/api/records/${id}`
-  );
-  return res;
-};
-
-export const useDeleteRecordAPI = () => {
+export const useRefreshBalancesAPI = () => {
   return useMutation({
-    mutationFn: deleteRecordAPI,
+    mutationFn: refreshBalancesAPI,
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.RECORDS] });
       queryClient.invalidateQueries({ queryKey: [QueryKeys.SUMMARY] });
