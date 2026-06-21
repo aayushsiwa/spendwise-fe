@@ -1,9 +1,10 @@
-import { useGetSummaryAPI } from '@/pages/api/summary/getSummary';
+import { useGetSummaryAPI } from '@/api/summary/getSummary';
+import { BaseQueryParams } from '@/types/queryParams';
 
-import { SummaryQueryParams, TSummaryContext } from './Summary';
+import { TSummaryContext } from './Summary';
 
 export const useSummaryProvider = (
-  params: SummaryQueryParams
+  params: BaseQueryParams
 ): Omit<TSummaryContext, 'setQueryParams'> => {
   const { data, isLoading, isError, isSuccess } = useGetSummaryAPI(params);
 

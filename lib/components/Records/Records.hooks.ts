@@ -5,35 +5,52 @@ import {
   TrendingUp,
 } from '@mui/icons-material';
 import { GridPaginationModel } from '@mui/x-data-grid';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { useRecordsContext } from '@/lib/context/Records/Records';
-import type { Record } from '@/types/Records';
+import { useCreateRecordAPI } from '@/api/records/createRecord';
+import { useDeleteRecordAPI } from '@/api/records/deleteRecords';
+import { useGetRecordsAPI } from '@/api/records/getRecords';
+import { useUpdateRecordAPI } from '@/api/records/updateRecords';
+import { usePeriodContext } from '@/lib/context/Period/Period';
+import type { Record, RecordsQueryParams } from '@/types/Records';
 
 import { RecordProps } from './Records';
 
 const useRecords = (): RecordProps => {
-  const {
-    records,
-    pagination: paginationResponse,
-    isGetRecordsError,
-    isGetRecordsLoading: isLoading,
-    error,
-    deleteRecord,
-    updateRecord,
-    createRecord,
-    queryParams,
-    setQueryParams,
-  } = useRecordsContext();
+  const { range } = usePeriodContext();
+
+  const updateRecord = useUpdateRecordAPI();
+  const deleteRecord = useDeleteRecordAPI();
+  const createRecord = useCreateRecordAPI();
+
+  const [queryParams, setQueryParams] = useState<{
+    page: number;
+    limit: number;
+  }>({ page: 1, limit: 10 });
+
+  const fullParams: RecordsQueryParams = { ...queryParams, ...range };
+
+  const { data, isLoading, isError, error } = useGetRecordsAPI(fullParams);
+
+  const { records, ...pagination } = data?.data ?? {
+    has_next: false,
+    has_prev: false,
+    limit: 0,
+    page: 0,
+    total_count: 0,
+    total_pages: 0,
+  };
 
   const [localRows, setLocalRows] = useState<Record[]>([]);
   const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
-    setLocalRows(records ?? []);
-  }, [records]);
+    if (!isAdding) {
+      setLocalRows(records ?? []);
+    }
+  }, [records, isAdding]);
 
-  const getTypeDetails = (type: string) => {
+  const getTypeDetails = useCallback((type: string) => {
     switch (type) {
       case 'income':
         return { color: '#00B894', icon: TrendingUp, bgColor: '#00B89410' };
@@ -44,15 +61,25 @@ const useRecords = (): RecordProps => {
       default:
         return { color: '#636E72', icon: Receipt, bgColor: '#636E7210' };
     }
-  };
+  }, []);
 
-  const handlePaginationModelChange = (model: GridPaginationModel) => {
-    setQueryParams({
-      ...queryParams,
-      page: model.page + 1,
-      limit: model.pageSize,
-    });
-  };
+  const handlePaginationModelChange = useCallback(
+    (model: GridPaginationModel) => {
+      const newPage = model.page + 1;
+      const newLimit = model.pageSize;
+
+      // 🚫 prevent redundant updates
+      if (newPage === queryParams.page && newLimit === queryParams.limit) {
+        return;
+      }
+
+      setQueryParams({
+        page: newPage,
+        limit: newLimit,
+      });
+    },
+    [setQueryParams, queryParams.page, queryParams.limit]
+  );
 
   const handleDeleteRecord = async (id: number) => {
     if (id === 9999) {
@@ -62,7 +89,7 @@ const useRecords = (): RecordProps => {
     }
     if (window.confirm('Are you sure you want to delete this record?')) {
       try {
-        await deleteRecord.mutateAsync({ id });
+        await deleteRecord.mutateAsync({ id, queryParams: fullParams });
       } catch (error) {
         console.error('Failed to delete record:', error);
       }
@@ -77,16 +104,15 @@ const useRecords = (): RecordProps => {
       const isNew = newRow.id === 9999;
 
       if (isNew) {
-        const { id, ...recordData } = newRow;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id: _unused, ...recordData } = newRow;
         const createdResponse = await createRecord.mutateAsync({
           record: recordData,
-          queryParams,
+          queryParams: fullParams,
         });
 
-        const created: Record =
-          createdResponse.data?.record ??
-          createdResponse.data ??
-          createdResponse;
+        const id = createdResponse.data?.id ?? 9999;
+        const created: Record = { ...recordData, id };
 
         setLocalRows((prev) => [created, ...prev.filter((r) => r.id !== 9999)]);
         return created;
@@ -109,15 +135,13 @@ const useRecords = (): RecordProps => {
     setLocalRows,
     records,
     isLoading,
-    paginationResponse,
+    pagination,
     handlePaginationModelChange,
     getTypeDetails,
     processRowUpdate,
     handleDeleteRecord,
-    isGetRecordsError,
-    error,
-    recordsQueryParams: queryParams,
-    setRecordsQueryParams: setQueryParams,
+    isGetRecordsError: isError,
+    error: error ?? undefined,
     isAdding,
     setIsAdding,
   };

@@ -1,27 +1,20 @@
 'use client';
 
 import { Receipt } from '@mui/icons-material';
-import { Delete } from '@mui/icons-material';
 import {
   Alert,
   Box,
-  Chip,
   CircularProgress,
   IconButton,
-  Theme,
   Tooltip,
   Typography,
-  alpha,
-  useTheme,
 } from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { FC, ReactComponentElement, ReactElement } from 'react';
+import { FC, useMemo } from 'react';
 
-import { currency } from '@/constants/Currency';
+import { Pagination } from '@/api/records/getRecords';
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
-import { RecordsQueryParams } from '@/lib/context/Records/Records';
-import { Pagination } from '@/pages/api/records/getRecords';
-import type { Record } from '@/types/Records';
+import type { Record, TRecord } from '@/types/Records';
+import { DateUtil } from '@/utils/DateUtils';
 
 import { getRecordsColumns } from './RecordsColumns';
 import RecordsTable from './RecordsTable';
@@ -29,9 +22,9 @@ import RecordsTable from './RecordsTable';
 export type RecordProps = {
   localRows: Record[];
   setLocalRows: React.Dispatch<React.SetStateAction<Record[]>>;
-  records: Record[] | undefined;
+  records: TRecord[] | undefined;
   isLoading?: boolean;
-  paginationResponse?: Pagination;
+  pagination: Pagination;
   handlePaginationModelChange: (model: {
     page: number;
     pageSize: number;
@@ -45,27 +38,10 @@ export type RecordProps = {
   handleDeleteRecord: (id: number) => void;
   isGetRecordsError?: boolean;
   error?: Error;
-  recordsQueryParams?: RecordsQueryParams;
-  setRecordsQueryParams: (params: RecordsQueryParams) => void;
   isAdding: boolean;
   setIsAdding: (adding: boolean) => void;
   isAddingAllowed?: false;
-};
-
-const Wrapper = (children: ReactElement, theme: Theme) => {
-  <Box
-    sx={{
-      height: '100%',
-      width: '100%',
-      backgroundColor: alpha(theme.palette.background.paper, 0.8),
-      backdropFilter: 'blur(10px)',
-      borderRadius: '16px',
-      overflow: 'hidden',
-      boxShadow: `0 4px 20px ${alpha(theme.palette.common.black, 0.08)}`,
-    }}
-  >
-    {children}
-  </Box>;
+  isCheckBoxSelectionAllowed?: boolean;
 };
 
 const Records: FC<RecordProps> = ({
@@ -73,24 +49,44 @@ const Records: FC<RecordProps> = ({
   setLocalRows,
   records,
   isLoading,
-  paginationResponse,
+  pagination,
   handlePaginationModelChange,
   getTypeDetails,
   processRowUpdate,
   handleDeleteRecord,
   isGetRecordsError,
   error,
-  recordsQueryParams,
   isAdding,
   setIsAdding,
   isAddingAllowed,
+  isCheckBoxSelectionAllowed = true,
 }: RecordProps) => {
-  const { categories, getCategoryColor } = useCategoriesContext();
-  const theme = useTheme();
+  const { getCategoryColor } = useCategoriesContext();
 
-  console.log(recordsQueryParams);
+  const columns = useMemo(
+    () =>
+      getRecordsColumns(getCategoryColor, getTypeDetails, handleDeleteRecord),
+    [getCategoryColor, getTypeDetails, handleDeleteRecord]
+  );
 
-  if (isLoading) {
+  const filteredColumns = useMemo(() => {
+    if (!isAddingAllowed) {
+      return columns.filter(
+        (col) => !['actions', 'note', 'type'].includes(col.field)
+      );
+    }
+    return columns;
+  }, [columns, isAddingAllowed]);
+
+  const paginationModel = useMemo(
+    () => ({
+      page: (pagination?.page ?? 1) - 1,
+      pageSize: pagination?.limit ?? 10,
+    }),
+    [pagination]
+  );
+
+  if (isLoading || !pagination) {
     return (
       <Box
         sx={{
@@ -129,20 +125,6 @@ const Records: FC<RecordProps> = ({
     );
   }
 
-  const columns = getRecordsColumns(
-    getCategoryColor,
-    getTypeDetails,
-    handleDeleteRecord
-  );
-
-  let filteredColumns = columns;
-
-  if (!isAddingAllowed) {
-    filteredColumns = columns.filter(
-      (col) => !['actions', 'note', 'type'].includes(col.field)
-    );
-  }
-
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
       {isAddingAllowed && (
@@ -153,7 +135,7 @@ const Records: FC<RecordProps> = ({
               onClick={() => {
                 const newRecord: Record = {
                   id: 9999,
-                  date: new Date().toISOString().split('T')[0],
+                  date: DateUtil.formattedDate(),
                   description: '',
                   category: 'misc',
                   amount: 0,
@@ -175,14 +157,12 @@ const Records: FC<RecordProps> = ({
         rows={localRows}
         columns={filteredColumns}
         loading={isLoading}
-        paginationModel={{
-          page: (recordsQueryParams?.page || 1) - 1,
-          pageSize: recordsQueryParams?.limit || 50,
-        }}
-        rowCount={paginationResponse?.total_count || 0}
+        paginationModel={paginationModel}
+        rowCount={pagination?.total_count}
         onPaginationModelChange={handlePaginationModelChange}
         processRowUpdate={processRowUpdate}
         getTypeDetails={getTypeDetails}
+        isCheckBoxSelectionAllowed={isCheckBoxSelectionAllowed}
       />
     </Box>
   );

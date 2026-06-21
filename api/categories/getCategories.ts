@@ -1,8 +1,8 @@
 import { QueryObserverResult, useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 
+import { PrivateAxios } from '@/api/index';
 import { QueryKeys } from '@/constants/QueryKeys';
-import { PrivateAxios } from '@/pages/api/index';
 import { Category } from '@/types/Categories';
 import { QueryHookOptions } from '@/types/api';
 

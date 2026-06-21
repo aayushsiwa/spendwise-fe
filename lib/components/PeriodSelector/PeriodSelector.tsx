@@ -9,19 +9,21 @@ import {
   SelectChangeEvent,
 } from '@mui/material';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { DateRange, RangeKeyDict } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 
 import { usePeriodContext } from '@/lib/context/Period/Period';
+import { PeriodRange } from '@/lib/context/Period/Period.hooks';
+import { DateUtil } from '@/utils/DateUtils';
 
 const PeriodSelector = () => {
   const { period, setPeriod, setRange } = usePeriodContext();
 
   const [customRange, setCustomRange] = useState({
-    startDate: new Date(),
-    endDate: new Date(),
+    from: DateUtil.formattedDate(),
+    to: DateUtil.formattedDate(),
     key: 'selection',
   });
 
@@ -32,14 +34,15 @@ const PeriodSelector = () => {
   };
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const selectRef = useRef<HTMLDivElement>(null);
 
   const months = Array.from({ length: 6 }).map((_, i) => {
     const d = dayjs().subtract(i, 'month');
     return {
       label: d.format('MMMM'),
       range: {
-        startDate: d.startOf('month').format('YYYY-MM-DD'),
-        endDate: d.endOf('month').format('YYYY-MM-DD'),
+        from: d.startOf('month').format('YYYY-MM-DD'),
+        to: d.endOf('month').format('YYYY-MM-DD'),
         key: 'selection',
       },
     };
@@ -47,16 +50,17 @@ const PeriodSelector = () => {
 
   const handleChange = (e: SelectChangeEvent) => {
     setPeriod(e.target.value);
+    let range: PeriodRange | undefined;
     // for cases when month is selected
     if (!Object.values(additionalRanges).includes(e.target.value)) {
       const selectedMonth = months.find((m) => m.label === e.target.value);
       if (selectedMonth) {
-        const newRange = {
-          startDate: selectedMonth.range.startDate,
-          endDate: selectedMonth.range.endDate,
+        range = {
+          from: selectedMonth.range.from,
+          to: selectedMonth.range.to,
           key: 'selection',
         };
-        setRange(newRange);
+        setRange(range);
       }
     }
 
@@ -64,23 +68,25 @@ const PeriodSelector = () => {
     if (e.target.value === 'yearToDate') {
       const startOfYear = dayjs().startOf('year').format('YYYY-MM-DD');
       const endOfYear = dayjs().format('YYYY-MM-DD');
-      setRange({
-        startDate: startOfYear,
-        endDate: endOfYear,
+      range = {
+        from: startOfYear,
+        to: endOfYear,
         key: 'selection',
-      });
+      };
+      setRange(range);
     }
     // TODO: handle everything case
     if (e.target.value === 'everything') {
       console.log('everything selected: todo pending');
-      setRange({
-        startDate: '2000-01-01',
-        endDate: dayjs().format('YYYY-MM-DD'),
+      range = {
+        from: '2000-01-01',
+        to: dayjs().format('YYYY-MM-DD'),
         key: 'selection',
-      });
+      };
+      setRange(range);
     }
     if (e.target.value === 'customRange') {
-      setAnchorEl(document.body);
+      setAnchorEl(selectRef.current);
     } else {
       setAnchorEl(null);
     }
@@ -88,13 +94,13 @@ const PeriodSelector = () => {
 
   const handleRangeChange = (ranges: RangeKeyDict) => {
     setCustomRange({
-      startDate: ranges.selection.startDate!,
-      endDate: ranges.selection.endDate!,
+      from: DateUtil.formattedDate(ranges.selection.startDate?.toISOString()),
+      to: DateUtil.formattedDate(ranges.selection.endDate?.toISOString()),
       key: 'selection',
     });
     setRange({
-      startDate: dayjs(ranges.selection.startDate).format('YYYY-MM-DD'),
-      endDate: dayjs(ranges.selection.endDate).format('YYYY-MM-DD'),
+      from: DateUtil.formattedDate(ranges.selection.startDate?.toISOString()),
+      to: DateUtil.formattedDate(ranges.selection.endDate?.toISOString()),
       key: 'selection',
     });
   };
@@ -104,6 +110,7 @@ const PeriodSelector = () => {
       <FormControl size="small" sx={{ minWidth: 180 }}>
         <InputLabel id="period-label">Period</InputLabel>
         <Select
+          ref={selectRef}
           labelId="period-label"
           value={period}
           label="Period"

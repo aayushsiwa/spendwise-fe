@@ -1,8 +1,9 @@
 import { Record, RecordType } from '@/types/Records';
+import { DateUtil } from '@/utils/DateUtils';
 
 export const blankRecord: Record = {
   id: 9999,
-  date: new Date().toISOString().slice(0, 10),
+  date: DateUtil.formattedDate(new Date().toISOString()),
   description: '',
   category: '',
   amount: 0,

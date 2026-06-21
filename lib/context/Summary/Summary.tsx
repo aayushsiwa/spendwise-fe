@@ -1,30 +1,19 @@
-import { FC, createContext, useContext, useState } from 'react';
+import { FC, createContext, useContext, useMemo } from 'react';
 
+import { usePeriodContext } from '@/lib/context/Period/Period';
 import { SummaryMonth } from '@/types/Summary';
+import { BaseQueryParams } from '@/types/queryParams';
+import { DateUtil } from '@/utils/DateUtils';
 
 import { useSummaryProvider } from './Summary.hooks';
 
 export type TSummaryContext = {
   summary?: SummaryMonth;
-  queryParams: SummaryQueryParams;
-  setQueryParams: (params: SummaryQueryParams) => void;
+  queryParams: BaseQueryParams;
   isLoading: boolean;
   isError: boolean;
   isSuccess: boolean;
 };
-
-type SummaryByMonthQueryParams = {
-  month: string;
-};
-
-type SummaryByDateRangeQueryParams = {
-  from: string;
-  to: string;
-};
-
-export type SummaryQueryParams =
-  | SummaryByMonthQueryParams
-  | SummaryByDateRangeQueryParams;
 
 export const SummaryContext = createContext<TSummaryContext>(
   {} as unknown as TSummaryContext
@@ -33,9 +22,14 @@ export const SummaryContext = createContext<TSummaryContext>(
 export const SummaryProvider: FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [queryParams, setQueryParams] = useState<SummaryQueryParams>({
-    month: new Date().toISOString().slice(0, 7),
-  });
+  const { range } = usePeriodContext();
+
+  const queryParams = useMemo<BaseQueryParams>(() => {
+    return {
+      from: DateUtil.formattedDate(range.from),
+      to: DateUtil.formattedDate(range.to),
+    };
+  }, [range.from, range.to]);
 
   const { summary, isLoading, isError, isSuccess } =
     useSummaryProvider(queryParams);
@@ -45,7 +39,6 @@ export const SummaryProvider: FC<{ children: React.ReactNode }> = ({
       value={{
         summary,
         queryParams,
-        setQueryParams,
         isLoading,
         isError,
         isSuccess,

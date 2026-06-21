@@ -1,57 +1,51 @@
-import { useEffect } from 'react';
-
+import { useGetSummaryAPI } from '@/api/summary/getSummary';
 import useRecords from '@/lib/components/Records/Records.hooks';
 import { usePeriodContext } from '@/lib/context/Period/Period';
-import { useSummaryContext } from '@/lib/context/Summary/Summary';
+import { DateUtil } from '@/utils/DateUtils';
 
 const useHome = () => {
-  const { range } = usePeriodContext();
-  const { summary, isLoading, isError, setQueryParams } = useSummaryContext();
   const {
     localRows,
     setLocalRows,
     records,
     isLoading: isGetRecordsLoading,
-    paginationResponse,
+    pagination,
     handlePaginationModelChange,
     getTypeDetails,
     processRowUpdate,
     handleDeleteRecord,
     isGetRecordsError,
     error,
-    recordsQueryParams,
-    setRecordsQueryParams,
     isAdding,
     setIsAdding,
   } = useRecords();
 
-  useEffect(() => {
-    if (range?.startDate && range?.endDate) {
-      setQueryParams({
-        from: range.startDate,
-        to: range.endDate,
-      });
-    }
-  }, [range, setQueryParams]);
+  const { range } = usePeriodContext();
+
+  const queryParams = {
+    from: DateUtil.formattedDate(range.from),
+    to: DateUtil.formattedDate(range.to),
+  };
+
+  const { data: summary, isLoading, isError } = useGetSummaryAPI(queryParams);
 
   return {
     summary,
-    isLoading,
-    isError,
+    records,
+    isLoading: isLoading,
+    isError: isError,
     recordProps: {
       localRows,
       setLocalRows,
       records,
       isGetRecordsLoading,
-      paginationResponse,
+      pagination,
       handlePaginationModelChange,
       getTypeDetails,
       processRowUpdate,
       handleDeleteRecord,
       isGetRecordsError,
       error,
-      recordsQueryParams,
-      setRecordsQueryParams,
       isAdding,
       setIsAdding,
     },

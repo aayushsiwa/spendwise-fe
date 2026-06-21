@@ -1,84 +1,95 @@
-import { Box, Typography, useTheme } from '@mui/material';
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Card, CardContent, Typography, useTheme } from '@mui/material';
+import { LineChart } from '@mui/x-charts/LineChart';
 
 type BalanceData = {
-  date: string; // e.g. '2025-09-01'
-  balance: number; // balance on that date
+  date: string;
+  balance: number;
 };
 
 const BalanceChart = ({ data }: { data: BalanceData[] }) => {
   const theme = useTheme();
 
   return (
-    <Box
-      sx={{
-        borderRadius: 3,
-        boxShadow: 2,
-        height: '100%',
-        border: '1px solid',
-        borderColor: 'divider',
-      }}
-    >
-      <Typography variant="h6" sx={{ fontWeight: 700, ml: 2, mt: 1 }}>
-        Your Account
-      </Typography>
-
-      <ResponsiveContainer width="100%" height={400}>
+    <Card>
+      <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+          Balance Over Time
+        </Typography>
         <LineChart
-          data={data}
-          margin={{ top: 20, right: 30, left: 0, bottom: 50 }}
+          height={350}
+          dataset={data}
+          series={[
+            {
+              dataKey: 'balance',
+              label: 'Balance',
+              color: theme.palette.primary.main,
+              area: true,
+              showMark: data.length < 60,
+              curve: 'monotoneX',
+            },
+          ]}
+          xAxis={[
+            {
+              dataKey: 'date',
+              scaleType: 'point',
+              tickLabelStyle: {
+                angle: -40,
+                textAnchor: 'end',
+                fontSize: 11,
+              },
+              valueFormatter: (value: string) =>
+                new Date(value).toLocaleDateString('en-IN', {
+                  day: 'numeric',
+                  month: 'short',
+                }),
+            },
+          ]}
+          yAxis={[
+            {
+              tickLabelStyle: { fontSize: 12 },
+              valueFormatter: (value: number) =>
+                new Intl.NumberFormat('en-IN', {
+                  style: 'currency',
+                  currency: 'INR',
+                  maximumFractionDigits: 0,
+                }).format(value as number),
+            },
+          ]}
+          sx={{
+            '.MuiChartsGrid-line': {
+              stroke: theme.palette.divider,
+              strokeDasharray: '4 4',
+            },
+            '.MuiAreaElement-root': {
+              fill: `url(#gradient)`,
+            },
+            '.MuiLineElement-root': {
+              strokeWidth: 2.5,
+            },
+            '.MuiMarkElement-root': {
+              stroke: theme.palette.primary.main,
+              fill: theme.palette.background.paper,
+              strokeWidth: 2,
+            },
+          }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
-          <XAxis
-            dataKey="date"
-            tick={{ fontSize: 12 }}
-            angle={-45}
-            textAnchor="end"
-          />
-          <YAxis tick={{ fontSize: 12 }} />
-          <Tooltip
-            formatter={(value: number) =>
-              new Intl.NumberFormat('en-IN', {
-                style: 'currency',
-                currency: 'INR',
-                maximumFractionDigits: 0,
-              }).format(value)
-            }
-            labelStyle={{
-              color: theme.palette.text.secondary, // tooltip label (date)
-              fontWeight: 600,
-            }}
-            itemStyle={{
-              color: theme.palette.text.primary, // value color
-              fontWeight: 700,
-            }}
-            contentStyle={{
-              backgroundColor: theme.palette.background.paper, // tooltip box background
-              borderRadius: 8,
-              borderColor: theme.palette.divider,
-              padding: '10px 12px',
-            }}
-          />
-
-          <Line
-            type="monotone"
-            dataKey="balance"
-            stroke={'blue'}
-            strokeWidth={3}
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
+          <defs>
+            <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="0%"
+                stopColor={theme.palette.primary.main}
+                stopOpacity={0.3}
+              />
+              <stop
+                offset="100%"
+                stopColor={theme.palette.primary.main}
+                stopOpacity={0}
+              />
+            </linearGradient>
+          </defs>
         </LineChart>
-      </ResponsiveContainer>
-    </Box>
+      </CardContent>
+    </Card>
   );
 };
 

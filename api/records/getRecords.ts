@@ -1,36 +1,36 @@
 import { QueryObserverResult, useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 
+import { PrivateAxios } from '@/api/index';
 import { QueryKeys } from '@/constants/QueryKeys';
-import { PrivateAxios } from '@/pages/api/index';
 import { TRecord } from '@/types/Records';
 import { QueryHookOptions } from '@/types/api';
 
 export type Pagination = {
-  has_next: boolean;
-  has_prev: boolean;
+  hasNext: boolean;
+  hasPrev: boolean;
   limit: number;
   page: number;
-  total_count: number;
-  total_pages: number;
+  totalCount: number;
+  totalPages: number;
 };
 
-type GetRecordsAPIResponse = {
+type GetRecordsAPIResponse = Pagination & {
   records: TRecord[];
-  pagination: Pagination;
 };
+
 type GetRecordsResponse = AxiosResponse<GetRecordsAPIResponse>;
 
 type GetRecordsRequest = {
   page?: number;
   limit?: number;
-  start_date?: string;
-  end_date?: string;
+  from?: string;
+  to?: string;
   category?: string;
   type?: string;
-  description?: string;
-  min_amount?: number;
-  max_amount?: number;
+  search?: string;
+  minAmount?: number;
+  maxAmount?: number;
 };
 
 export const getRecordsAPI = async (
@@ -53,15 +53,7 @@ export const getRecordsAPI = async (
   return {
     ...res,
     data: {
-      records: res.data.records ?? [],
-      pagination: res.data.pagination ?? {
-        has_next: false,
-        has_prev: false,
-        limit: 10,
-        page: 1,
-        total_count: 0,
-        total_pages: 0,
-      },
+      ...res.data,
     },
   };
 };
@@ -71,7 +63,18 @@ export const useGetRecordsAPI = (
   options?: QueryHookOptions<GetRecordsResponse>
 ): QueryObserverResult<GetRecordsResponse> => {
   return useQuery({
-    queryKey: [QueryKeys.RECORDS, { page, limit, ...filters }],
+    queryKey: [
+      QueryKeys.RECORDS,
+      page,
+      limit,
+      filters.from,
+      filters.to,
+      filters.category,
+      filters.type,
+      filters.search,
+      filters.minAmount,
+      filters.maxAmount,
+    ],
     queryFn: () => getRecordsAPI({ page, limit, ...filters }),
     refetchOnMount: false,
     staleTime: 2 * 60 * 1000, // 2 minutes

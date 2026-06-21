@@ -1,26 +1,22 @@
-import { Receipt } from '@mui/icons-material';
 import { Box, alpha, useTheme } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import { ReactElement } from 'react';
+import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 
 import type { Record } from '@/types/Records';
-import { RecordsUtil } from '@/utils/RecordsUtils';
-
-import Records from './Records';
 
 type RecordsTableProps = {
   rows: Record[];
-  columns: any[];
+  columns: GridColDef<Record>[];
   loading?: boolean;
   paginationModel: { page: number; pageSize: number };
   rowCount: number;
-  onPaginationModelChange: (model: any) => void;
+  onPaginationModelChange: (model: GridPaginationModel) => void;
   processRowUpdate: (newRow: Record, oldRow: Record) => Promise<Record>;
   getTypeDetails: (type: string) => {
     color: string;
-    icon: typeof Receipt;
+    icon: typeof import('@mui/icons-material').Receipt;
     bgColor: string;
   };
+  isCheckBoxSelectionAllowed?: boolean;
 };
 
 const RecordsTable = ({
@@ -32,6 +28,7 @@ const RecordsTable = ({
   onPaginationModelChange,
   processRowUpdate,
   getTypeDetails,
+  isCheckBoxSelectionAllowed,
 }: RecordsTableProps) => {
   const theme = useTheme();
 
@@ -48,7 +45,6 @@ const RecordsTable = ({
         rows={rows}
         getRowId={(row) => row.id}
         columns={columns}
-        pagination
         paginationMode="server"
         paginationModel={paginationModel}
         rowCount={rowCount}
@@ -56,14 +52,14 @@ const RecordsTable = ({
         onPaginationModelChange={onPaginationModelChange}
         loading={loading}
         processRowUpdate={processRowUpdate}
-        checkboxSelection
+        checkboxSelection={isCheckBoxSelectionAllowed}
         disableRowSelectionOnClick
         sx={{
           width: '100%',
           height: '100%',
           border: 'none',
           backgroundColor: 'transparent',
-          '& .MuiDataGrid-row[data-id="new"]': {
+          '& .MuiDataGrid-row[data-id="9999"]': {
             backgroundColor: alpha(theme.palette.success.light, 0.08),
             '&:hover': {
               backgroundColor: alpha(theme.palette.success.light, 0.12),

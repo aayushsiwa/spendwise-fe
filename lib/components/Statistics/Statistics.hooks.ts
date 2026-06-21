@@ -1,35 +1,16 @@
 import { useEffect, useState } from 'react';
 
 import { usePeriodContext } from '@/lib/context/Period/Period';
-import { useRecordsContext } from '@/lib/context/Records/Records';
-import { useGetSummaryAPI } from '@/pages/api/summary/getSummary';
 import { TRecord } from '@/types/Records';
+import { SummaryMonth } from '@/types/Summary';
 
-const useStatistics = () => {
+const useStatistics = (summary: SummaryMonth, records: TRecord[]) => {
   const { range } = usePeriodContext();
-  const {
-    data: summary,
-    isLoading,
-    error,
-  } = useGetSummaryAPI({
-    from: range.startDate,
-    to: range.endDate,
-  });
-  const { records, setQueryParams } = useRecordsContext();
-
-  useEffect(() => {
-    if (range?.startDate && range?.endDate) {
-      setQueryParams({
-        from: range.startDate,
-        to: range.endDate,
-      });
-    }
-  }, [range, setQueryParams]);
 
   const [data, setData] = useState<{ date: string; balance: number }[]>([]);
 
   useEffect(() => {
-    if (!range?.startDate || !range?.endDate || !summary) {
+    if (!range?.from || !range?.to || !summary) {
       setData([]);
       return;
     }
@@ -45,8 +26,8 @@ const useStatistics = () => {
     }
 
     // Step 2: Build full date range
-    const startDate = new Date(range.startDate);
-    const endDate = new Date(range.endDate);
+    const startDate = new Date(range.from);
+    const endDate = new Date(range.to);
     const filled: { date: string; balance: number }[] = [];
 
     let prevBalance: number | null = summary.opening ?? null; // 👈 start from opening
@@ -71,7 +52,7 @@ const useStatistics = () => {
     setData(filled);
   }, [records, range, summary]);
 
-  return { summary, isLoading, error, data };
+  return { summary, data };
 };
 
 export default useStatistics;

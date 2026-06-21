@@ -30,3 +30,16 @@ export enum RecordType {
   EXPENSE = 'expense',
   TRANSFER = 'transfer',
 }
+
+export type RecordsQueryParams = {
+  page?: number;
+  limit?: number;
+  from?: string;
+  to?: string;
+  category?: string;
+  type?: string;
+  search?: string;
+  description?: string;
+  min_amount?: number;
+  max_amount?: number;
+};

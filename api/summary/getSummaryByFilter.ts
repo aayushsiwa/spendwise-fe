@@ -1,7 +1,7 @@
 import { QueryObserverResult, useQuery } from '@tanstack/react-query';
 
+import { PrivateAxios } from '@/api/index';
 import { QueryKeys } from '@/constants/QueryKeys';
-import { PrivateAxios } from '@/pages/api/index';
 import { SummaryMonth } from '@/types/Summary';
 
 export type GetSummaryByFilterAPIResponse = { summary: SummaryMonth };
@@ -43,7 +43,7 @@ export const useGetSummaryByFilterAPI = (
   params: GetSummaryByFilterRequest = {}
 ): QueryObserverResult<SummaryMonth> => {
   return useQuery({
-    queryKey: [QueryKeys.SUMMARY, params],
+    queryKey: [QueryKeys.SUMMARY_FILTER, params],
     queryFn: () => getSummaryByFilterAPI(params),
     refetchOnMount: false,
     staleTime: 2 * 60 * 1000, // 2 minutes

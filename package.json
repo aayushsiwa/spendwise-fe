@@ -1,12 +1,12 @@
 {
-  "name": "expense-tracker-v1",
+  "name": "spendwise",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack -p 5173",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "type-check": "tsc --noEmit",
     "format:check": "prettier --check .",
     "format:write": "prettier --write ."
@@ -14,18 +14,19 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@mui/icons-material": "^7.2.0",
-    "@mui/material": "^7.2.0",
-    "@mui/x-data-grid": "^7.29.0",
-    "@tanstack/react-query": "^5.83.0",
-    "@types/react-date-range": "^1.4.10",
-    "axios": "^1.11.0",
-    "dayjs": "^1.11.18",
-    "next": "15.4.6",
+    "@mui/icons-material": "^9.1.1",
+    "@mui/material": "^9.1.1",
+    "@mui/x-charts": "^9.6.0",
+    "@mui/x-data-grid": "^9.6.0",
+    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-query-devtools": "^5.101.0",
+    "axios": "^1.18.0",
+    "dayjs": "^1.11.21",
+    "next": "16.2.9",
     "react": "19.1.0",
     "react-date-range": "^2.0.1",
     "react-dom": "19.1.0",
-    "recharts": "^3.1.2"
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.8.1",

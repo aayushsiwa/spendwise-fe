@@ -4,14 +4,16 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { getDesignTokens } from '@/theme/theme';
 
+export type ThemeMode = 'light' | 'dark' | 'system';
+
 interface ColorModeContextProps {
-  toggleColorMode: () => void;
-  mode: 'light' | 'dark';
+  mode: ThemeMode; // selected mode
+  setMode: (mode: ThemeMode) => void;
 }
 
 const ColorModeContext = createContext<ColorModeContextProps>({
-  toggleColorMode: () => {},
-  mode: 'light',
+  mode: 'system',
+  setMode: () => {},
 });
 
 export const useColorMode = () => useContext(ColorModeContext);
@@ -19,42 +21,63 @@ export const useColorMode = () => useContext(ColorModeContext);
 export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [mode, setMode] = useState<ThemeMode>('system');
+  const [resolvedMode, setResolvedMode] = useState<'light' | 'dark'>('light');
+  const [mounted, setMounted] = useState(false);
 
-  // Load theme preference on first render
+  // Client-only logic
   useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') as
-      | 'light'
-      | 'dark'
-      | null;
-    if (storedTheme) {
-      setMode(storedTheme);
-    } else {
-      const systemPrefersDark = window.matchMedia(
+    const stored = localStorage.getItem('theme') as ThemeMode | null;
+    const selectedMode = stored ?? 'system';
+    setMode(selectedMode);
+
+    if (selectedMode === 'system') {
+      const prefersDark = window.matchMedia(
         '(prefers-color-scheme: dark)'
       ).matches;
-      setMode(systemPrefersDark ? 'dark' : 'light');
+      setResolvedMode(prefersDark ? 'dark' : 'light');
+    } else {
+      setResolvedMode(selectedMode);
     }
+
+    setMounted(true);
   }, []);
 
-  const colorMode = useMemo(
+  // Update resolved mode when user changes theme
+  useEffect(() => {
+    if (!mounted) return;
+
+    if (mode === 'system') {
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      setResolvedMode(prefersDark ? 'dark' : 'light');
+    } else {
+      setResolvedMode(mode);
+    }
+  }, [mode, mounted]);
+
+  const theme = useMemo(
+    () => createTheme(getDesignTokens(resolvedMode)),
+    [resolvedMode]
+  );
+
+  const value = useMemo(
     () => ({
       mode,
-      toggleColorMode: () => {
-        setMode((prev) => {
-          const newMode = prev === 'light' ? 'dark' : 'light';
-          localStorage.setItem('theme', newMode);
-          return newMode;
-        });
+      setMode: (newMode: ThemeMode) => {
+        localStorage.setItem('theme', newMode);
+        setMode(newMode);
       },
     }),
     [mode]
   );
 
-  const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
+  // Prevent hydration mismatch
+  if (!mounted) return null;
 
   return (
-    <ColorModeContext.Provider value={colorMode}>
+    <ColorModeContext.Provider value={value}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {children}
