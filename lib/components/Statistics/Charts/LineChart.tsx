@@ -1,4 +1,10 @@
-import { Card, CardContent, Typography, useTheme } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { LineChart } from '@mui/x-charts/LineChart';
 
 type BalanceData = {
@@ -8,15 +14,28 @@ type BalanceData = {
 
 const BalanceChart = ({ data }: { data: BalanceData[] }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
     <Card>
-      <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+      <CardContent
+        sx={{
+          p: isMobile ? 1.5 : 2.5,
+          '&:last-child': { pb: isMobile ? 1.5 : 2.5 },
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 700,
+            mb: 1,
+            fontSize: isMobile ? '1rem' : undefined,
+          }}
+        >
           Balance Over Time
         </Typography>
         <LineChart
-          height={350}
+          height={isMobile ? 200 : 350}
           dataset={data}
           series={[
             {
@@ -24,7 +43,7 @@ const BalanceChart = ({ data }: { data: BalanceData[] }) => {
               label: 'Balance',
               color: theme.palette.primary.main,
               area: true,
-              showMark: data.length < 60,
+              showMark: false,
               curve: 'monotoneX',
             },
           ]}
@@ -33,20 +52,20 @@ const BalanceChart = ({ data }: { data: BalanceData[] }) => {
               dataKey: 'date',
               scaleType: 'point',
               tickLabelStyle: {
-                angle: -40,
-                textAnchor: 'end',
-                fontSize: 11,
+                angle: isMobile ? 0 : -40,
+                textAnchor: isMobile ? 'middle' : 'end',
+                fontSize: isMobile ? 10 : 11,
               },
               valueFormatter: (value: string) =>
                 new Date(value).toLocaleDateString('en-IN', {
                   day: 'numeric',
-                  month: 'short',
+                  month: isMobile ? 'numeric' : 'short',
                 }),
             },
           ]}
           yAxis={[
             {
-              tickLabelStyle: { fontSize: 12 },
+              tickLabelStyle: { fontSize: isMobile ? 10 : 12 },
               valueFormatter: (value: number) =>
                 new Intl.NumberFormat('en-IN', {
                   style: 'currency',
@@ -64,7 +83,7 @@ const BalanceChart = ({ data }: { data: BalanceData[] }) => {
               fill: `url(#gradient)`,
             },
             '.MuiLineElement-root': {
-              strokeWidth: 2.5,
+              strokeWidth: isMobile ? 2 : 2.5,
             },
             '.MuiMarkElement-root': {
               stroke: theme.palette.primary.main,
