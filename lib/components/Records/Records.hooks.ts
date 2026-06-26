@@ -33,12 +33,12 @@ const useRecords = (): RecordProps => {
   const { data, isLoading, isError, error } = useGetRecordsAPI(fullParams);
 
   const { records, ...pagination } = data?.data ?? {
-    has_next: false,
-    has_prev: false,
+    hasNext: false,
+    hasPrev: false,
     limit: 0,
     page: 0,
-    total_count: 0,
-    total_pages: 0,
+    totalCount: 0,
+    totalPages: 0,
   };
 
   const [localRows, setLocalRows] = useState<Record[]>([]);
@@ -81,15 +81,10 @@ const useRecords = (): RecordProps => {
     [setQueryParams, queryParams.page, queryParams.limit]
   );
 
-  const handleDeleteRecord = async (id: number) => {
-    if (id === 9999) {
-      setLocalRows((prev) => prev.filter((r) => r.id !== 9999));
-      setIsAdding(false);
-      return;
-    }
+  const handleDeleteRecord = async (ID: string) => {
     if (window.confirm('Are you sure you want to delete this record?')) {
       try {
-        await deleteRecord.mutateAsync({ id, queryParams: fullParams });
+        await deleteRecord.mutateAsync({ ID });
       } catch (error) {
         console.error('Failed to delete record:', error);
       }

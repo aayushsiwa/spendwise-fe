@@ -11,14 +11,14 @@ type DeleteRecordAPIResponse = {
 type DeleteRecordResponse = AxiosResponse<DeleteRecordAPIResponse>;
 
 type DeleteRecordRequest = {
-  id: number;
+  ID: string;
 };
 
 export const deleteRecordAPI = async ({
-  id,
+  ID,
 }: DeleteRecordRequest): Promise<DeleteRecordResponse> => {
   const res = await PrivateAxios.delete<DeleteRecordAPIResponse>(
-    `/api/records/${id}`
+    `/api/records/${ID}`
   );
   return res;
 };

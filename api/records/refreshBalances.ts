@@ -8,9 +8,7 @@ type RefreshBalancesResponse = AxiosResponse<{ status: string }>;
 
 export const refreshBalancesAPI =
   async (): Promise<RefreshBalancesResponse> => {
-    const res = await PrivateAxios.post<{ status: string }>(
-      `/api/refresh`
-    );
+    const res = await PrivateAxios.post<{ status: string }>(`/api/refresh`);
     return res;
   };
 

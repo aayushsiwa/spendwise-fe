@@ -11,16 +11,16 @@ type UpdateRecordAPIResponse = {
 type UpdateRecordResponse = AxiosResponse<UpdateRecordAPIResponse>;
 
 type UpdateRecordRequest = {
-  id: number;
-  record: Partial<Omit<Record, 'id'>>;
+  ID: string;
+  record: Partial<Omit<Record, 'ID'>>;
 };
 
 export const updateRecordAPI = async ({
-  id,
+  ID,
   record,
 }: UpdateRecordRequest): Promise<UpdateRecordResponse> => {
   const res = await PrivateAxios.patch<UpdateRecordAPIResponse>(
-    `/api/records/${id}`,
+    `/api/records/${ID}`,
     record
   );
 

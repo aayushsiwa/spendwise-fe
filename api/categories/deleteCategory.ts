@@ -7,9 +7,9 @@ import { QueryKeys } from '@/constants/QueryKeys';
 type DeleteCategoryResponse = AxiosResponse<void>;
 
 export const deleteCategoryAPI = async (
-  id: number
+  ID: string
 ): Promise<DeleteCategoryResponse> => {
-  const res = await PrivateAxios.delete(`/api/categories/${id}`);
+  const res = await PrivateAxios.delete(`/api/categories/${ID}`);
   return res;
 };
 

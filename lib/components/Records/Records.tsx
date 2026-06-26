@@ -35,7 +35,7 @@ export type RecordProps = {
     bgColor: string;
   };
   processRowUpdate: (newRow: Record, oldRow: Record) => Promise<Record>;
-  handleDeleteRecord: (id: number) => void;
+  handleDeleteRecord: (ID: string) => Promise<void>;
   isGetRecordsError?: boolean;
   error?: Error;
   isAdding: boolean;
