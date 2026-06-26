@@ -1,4 +1,4 @@
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { Download, Menu as MenuIcon, Refresh } from '@mui/icons-material';
 import {
   Alert,
   Box,
@@ -7,10 +7,6 @@ import {
   Grid,
   IconButton,
   List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   AppBar as MuiAppBar,
   Drawer as MuiDrawer,
   Snackbar,
@@ -276,6 +272,32 @@ const Sidebar: React.FC<SidebarProps> = ({
             ))}
           </List>
         )}
+
+        <Box sx={{ mt: 'auto', mb: 2 }}>
+          <Divider sx={{ mb: 1 }} />
+
+          <SidebarItemComponent
+            item={{
+              text: 'Export CSV',
+              icon: <Download />,
+              href: '/api/export/csv?download=true',
+            }}
+            currentPath={currentPath}
+            open={open}
+            handleMenuItemClick={handleMenuItemClick}
+          />
+
+          <SidebarItemComponent
+            item={{
+              text: 'Recalculate Balances',
+              icon: <Refresh />,
+              onClick: handleRefreshBalances,
+            }}
+            currentPath={currentPath}
+            open={open}
+            handleMenuItemClick={handleMenuItemClick}
+          />
+        </Box>
       </Drawer>
 
       <Main open={open}>
