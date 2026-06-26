@@ -29,18 +29,18 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
   const cards = [
     {
       label: 'Income',
-      value: summary.total_income,
+      value: summary.totalIncome,
       color: theme.palette.success.main,
       icon: <ArrowUpward fontSize="large" />,
     },
     {
       label: 'Expenses',
-      value: summary.total_expense,
+      value: summary.totalExpense,
       color: theme.palette.error.main,
       icon: <ArrowDownward fontSize="large" />,
     },
     {
-      label: 'Net Savings',
+      label: 'Net',
       value: summary.net,
       color:
         summary.net >= 0
@@ -59,7 +59,7 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
   return (
     <Grid container spacing={2}>
       {cards.map((card, index) => (
-        <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid key={index} size={{ xs: 6, md: 3 }}>
           <Card
             sx={{
               borderLeft: `4px solid ${card.color}`,
@@ -72,8 +72,10 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 2,
-                p: 2.5,
-                '&:last-child': { pb: 2.5 },
+                p: { xs: 1, md: 2 },
+                '&:last-child': {
+                  pb: { xs: 1, md: 2 },
+                },
               }}
             >
               <Box
@@ -87,21 +89,33 @@ const Summary = ({ summary }: { summary: SummaryMonth }) => {
                   borderRadius: '12px',
                   bgcolor: alpha(card.color, 0.1),
                   flexShrink: 0,
+                  border: `1px solid ${card.color}`,
                 }}
               >
                 {card.icon}
               </Box>
-              <Box sx={{ minWidth: 0 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  minWidth: 0,
+                }}
+              >
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  sx={{ fontWeight: 500, mb: 0.25 }}
+                  sx={{ fontWeight: 800 }}
                 >
                   {card.label}
                 </Typography>
                 <Typography
-                  variant="h6"
-                  sx={{ fontWeight: 700, color: card.color, lineHeight: 1.2 }}
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: theme.typography.h6.fontSize,
+                    color: card.color,
+                    m: 0,
+                    p: 0,
+                  }}
                 >
                   {currencyFormat(card.value)}
                 </Typography>
