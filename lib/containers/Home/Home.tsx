@@ -2,25 +2,23 @@ import { InboxOutlined } from '@mui/icons-material';
 import {
   Box,
   CircularProgress,
-  Grid,
-  Stack,
   Typography,
   alpha,
+  useMediaQuery,
   useTheme,
 } from '@mui/material';
 import { FC } from 'react';
 
-import Records from '@/lib/components/Records/Records';
-import Statistics from '@/lib/components/Statistics/Statistics';
-import Summary from '@/lib/components/Summary/Summary';
-
+import DesktopView from './DesktopView';
 import useHome from './Home.hooks';
+import MobileView from './MobileView';
 
 const Home: FC = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { summary, isLoading, isError, recordProps, records } = useHome();
 
-  if (isLoading || !summary) {
+  if (isLoading) {
     return (
       <Box
         sx={{
@@ -35,7 +33,7 @@ const Home: FC = () => {
     );
   }
 
-  if (isError) {
+  if (isError || !summary) {
     return (
       <Box
         sx={{
@@ -78,35 +76,22 @@ const Home: FC = () => {
     );
   }
 
+  if (isMobile) {
+    return (
+      <MobileView
+        summary={summary}
+        records={records}
+        recordProps={recordProps}
+      />
+    );
+  }
+
   return (
-    <Grid container spacing={2}>
-      <Grid size={{ xs: 12 }}>
-        <Summary summary={summary} />
-      </Grid>
-      <Grid size={{ xs: 12, lg: 8 }}>
-        <Stack spacing={2}>
-          <Statistics summary={summary} records={records ?? []} />
-        </Stack>
-      </Grid>
-      <Grid
-        size={{ xs: 12, md: 4 }}
-        sx={{
-          borderRadius: 1,
-          boxShadow: 2,
-          height: '100%',
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Records
-          {...recordProps}
-          isAddingAllowed={false}
-          isCheckBoxSelectionAllowed={false}
-        />
-      </Grid>
-      {/* third line */}
-      <Grid size={8}></Grid>
-    </Grid>
+    <DesktopView
+      summary={summary}
+      records={records}
+      recordProps={recordProps}
+    />
   );
 };
 

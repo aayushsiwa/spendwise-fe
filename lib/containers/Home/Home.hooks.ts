@@ -14,10 +14,9 @@ const useHome = () => {
     getTypeDetails,
     processRowUpdate,
     handleDeleteRecord,
+    handleCreateRecord,
     isGetRecordsError,
     error,
-    isAdding,
-    setIsAdding,
   } = useRecords();
 
   const { range } = usePeriodContext();
@@ -44,10 +43,9 @@ const useHome = () => {
       getTypeDetails,
       processRowUpdate,
       handleDeleteRecord,
+      handleCreateRecord,
       isGetRecordsError,
       error,
-      isAdding,
-      setIsAdding,
     },
   };
 };
