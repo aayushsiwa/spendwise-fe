@@ -1,15 +1,22 @@
 import { Button, Grid, InputLabel, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 
-import { useRecordsContext } from '@/lib/context/Records/Records';
-import { useCreateRecordAPI } from '@/pages/api/records/createRecord';
+import { useCreateRecordAPI } from '@/api/records/createRecord';
+import { useAppSnackbar } from '@/lib/context/Snackbar/Snackbar';
 import { RecordType, RecordTypes } from '@/types/Records';
+import { getApiErrorMessage } from '@/utils/apiError';
+import {
+  getRecordValidationMessage,
+  hasRecordValidationErrors,
+  normalizeRecord,
+  validateRecord,
+} from '@/validations/Record';
 
 import Toast from '../Toasts/Toast';
 
 const AddRecord = () => {
-  const { queryParams } = useRecordsContext();
   const createRecord = useCreateRecordAPI();
+  const { showSnackbar } = useAppSnackbar();
 
   const [date, setDate] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -21,28 +28,30 @@ const AddRecord = () => {
   const [showSuccessToast, setShowSuccessToast] = useState<boolean>(false);
 
   const handleSubmit = async () => {
-    if (!date || !description || !amount || !category || !type) {
-      setError('All fields are required.');
+    const normalizedRecord = normalizeRecord({
+      date,
+      description,
+      amount,
+      category,
+      type,
+      note,
+    });
+
+    const errors = validateRecord(normalizedRecord);
+    if (hasRecordValidationErrors(errors)) {
+      const message = getRecordValidationMessage(errors);
+      setError(message);
       return;
     }
 
     try {
       await createRecord.mutateAsync({
-        record: {
-          date,
-          description,
-          amount: parseFloat(amount),
-          category,
-          type,
-          note,
-        },
-        queryParams,
+        record: normalizedRecord,
       });
 
       setShowSuccessToast(true);
       setError('');
 
-      // Reset form
       setDate('');
       setDescription('');
       setAmount('');
@@ -50,11 +59,9 @@ const AddRecord = () => {
       setType(RecordType.EXPENSE);
       setNote('');
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Failed to add record');
-      }
+      const message = getApiErrorMessage(err, 'Failed to add record');
+      setError(message);
+      showSnackbar(message, 'error');
     }
   };
 

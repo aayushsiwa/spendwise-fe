@@ -1,21 +1,16 @@
 'use client';
 
-import { Receipt } from '@mui/icons-material';
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-  Typography,
-} from '@mui/material';
-import { FC, useMemo } from 'react';
+import { Add, Receipt } from '@mui/icons-material';
+import { Alert, Box, CircularProgress, Fab, Typography } from '@mui/material';
+import { FC, useEffect, useMemo, useState } from 'react';
 
 import { Pagination } from '@/api/records/getRecords';
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
+import { useAppSnackbar } from '@/lib/context/Snackbar/Snackbar';
 import type { Record, TRecord } from '@/types/Records';
-import { DateUtil } from '@/utils/DateUtils';
+import { getApiErrorMessage } from '@/utils/apiError';
 
+import RecordDetailDialog from './RecordDetailDialog';
 import { getRecordsColumns } from './RecordsColumns';
 import RecordsTable from './RecordsTable';
 
@@ -36,17 +31,14 @@ export type RecordProps = {
   };
   processRowUpdate: (newRow: Record, oldRow: Record) => Promise<Record>;
   handleDeleteRecord: (ID: string) => Promise<void>;
+  handleCreateRecord: (record: Omit<Record, 'ID'>) => Promise<Record>;
   isGetRecordsError?: boolean;
   error?: Error;
-  isAdding: boolean;
-  setIsAdding: (adding: boolean) => void;
-  isAddingAllowed?: false;
   isCheckBoxSelectionAllowed?: boolean;
 };
 
 const Records: FC<RecordProps> = ({
   localRows,
-  setLocalRows,
   records,
   isLoading,
   pagination,
@@ -54,29 +46,43 @@ const Records: FC<RecordProps> = ({
   getTypeDetails,
   processRowUpdate,
   handleDeleteRecord,
+  handleCreateRecord,
   isGetRecordsError,
   error,
-  isAdding,
-  setIsAdding,
-  isAddingAllowed,
   isCheckBoxSelectionAllowed = true,
 }: RecordProps) => {
   const { getCategoryColor } = useCategoriesContext();
+  const { showSnackbar } = useAppSnackbar();
+  const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
+  const [dialogMode, setDialogMode] = useState<'create' | 'edit' | null>(null);
+
+  const recordsErrorMessage =
+    error || isGetRecordsError
+      ? getApiErrorMessage(error, 'Failed to load records')
+      : '';
+
+  useEffect(() => {
+    if (recordsErrorMessage) {
+      showSnackbar(recordsErrorMessage, 'error');
+    }
+  }, [recordsErrorMessage, showSnackbar]);
+
+  const handleViewRecord = (record: Record) => {
+    setSelectedRecord(record);
+    setDialogMode('edit');
+  };
 
   const columns = useMemo(
-    () =>
-      getRecordsColumns(getCategoryColor, getTypeDetails, handleDeleteRecord),
-    [getCategoryColor, getTypeDetails, handleDeleteRecord]
+    () => getRecordsColumns(getCategoryColor, getTypeDetails, handleViewRecord),
+    [getCategoryColor, getTypeDetails]
   );
 
-  const filteredColumns = useMemo(() => {
-    if (!isAddingAllowed) {
-      return columns.filter(
-        (col) => !['actions', 'note', 'type'].includes(col.field)
-      );
-    }
-    return columns;
-  }, [columns, isAddingAllowed]);
+  const hasCategory = localRows.some((row) => row.category);
+  const filteredColumns = useMemo(
+    () =>
+      hasCategory ? columns : columns.filter((col) => col.field !== 'category'),
+    [columns, hasCategory]
+  );
 
   const paginationModel = useMemo(
     () => ({
@@ -85,6 +91,30 @@ const Records: FC<RecordProps> = ({
     }),
     [pagination]
   );
+
+  const handleFabClick = () => {
+    setDialogMode('create');
+  };
+
+  const handleDialogSave = async (updatedRecord: Record) => {
+    if (dialogMode === 'create') {
+      await handleCreateRecord({
+        date: updatedRecord.date,
+        description: updatedRecord.description,
+        category: updatedRecord.category,
+        amount: updatedRecord.amount,
+        type: updatedRecord.type,
+        note: updatedRecord.note,
+      });
+    } else if (selectedRecord) {
+      await processRowUpdate(updatedRecord, selectedRecord);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setDialogMode(null);
+    setSelectedRecord(null);
+  };
 
   if (isLoading || !pagination) {
     return (
@@ -104,7 +134,7 @@ const Records: FC<RecordProps> = ({
   if (error || isGetRecordsError) {
     return (
       <Box sx={{ p: 2 }}>
-        <Alert severity="error">Failed to load records: {error?.message}</Alert>
+        <Alert severity="error">{recordsErrorMessage}</Alert>
       </Box>
     );
   }
@@ -126,44 +156,34 @@ const Records: FC<RecordProps> = ({
   }
 
   return (
-    <Box sx={{ height: '100%', width: '100%' }}>
-      {isAddingAllowed && (
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
-          <Tooltip title="Add new record">
-            <IconButton
-              color="primary"
-              onClick={() => {
-                const newRecord: Record = {
-                  id: 9999,
-                  date: DateUtil.formattedDate(),
-                  description: '',
-                  category: 'misc',
-                  amount: 0,
-                  type: 'expense',
-                  note: '',
-                };
-                setLocalRows((prev) => [newRecord, ...prev]);
-                setIsAdding(true);
-              }}
-              disabled={isAdding}
-            >
-              <Receipt />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      )}
-
+    <Box sx={{ width: '100%', height: '100%' }}>
       <RecordsTable
         rows={localRows}
         columns={filteredColumns}
         loading={isLoading}
         paginationModel={paginationModel}
-        rowCount={pagination?.total_count}
+        rowCount={pagination?.totalCount}
         onPaginationModelChange={handlePaginationModelChange}
         processRowUpdate={processRowUpdate}
         getTypeDetails={getTypeDetails}
         isCheckBoxSelectionAllowed={isCheckBoxSelectionAllowed}
       />
+
+      <RecordDetailDialog
+        record={dialogMode === 'create' ? null : selectedRecord}
+        open={dialogMode !== null}
+        onClose={handleDialogClose}
+        onSave={handleDialogSave}
+        onDelete={handleDeleteRecord}
+      />
+
+      <Fab
+        color="primary"
+        onClick={handleFabClick}
+        sx={{ position: 'fixed', bottom: 24, right: 24 }}
+      >
+        <Add />
+      </Fab>
     </Box>
   );
 };
