@@ -64,3 +64,25 @@ export const validateRecord = (
 
   return errors;
 };
+
+export const hasRecordValidationErrors = (errors: RecordValidationErrors) => {
+  return Object.keys(errors).length > 0;
+};
+
+export const getRecordValidationMessage = (errors: RecordValidationErrors) => {
+  return Object.values(errors).join(', ');
+};
+
+export const normalizeRecord = (
+  record: RecordValidationInput
+): RecordFormData => ({
+  date: record.date.trim(),
+  description: record.description.trim(),
+  amount:
+    typeof record.amount === 'string'
+      ? parseFloat(record.amount.replace(/[^0-9.-]/g, ''))
+      : record.amount,
+  category: record.category.trim(),
+  type: record.type,
+  note: record.note.trim(),
+});
