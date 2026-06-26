@@ -40,7 +40,12 @@ export const useSidebar = (defaultOpen: boolean, largeView: boolean) => {
       item.onClick();
     }
     if (item.href) {
-      router.push(item.href);
+      // Handle download URLs by triggering browser navigation
+      if (item.href.includes('download=true')) {
+        window.location.assign(item.href);
+      } else {
+        router.push(item.href);
+      }
     }
     if (!largeView) {
       setOpen(false);

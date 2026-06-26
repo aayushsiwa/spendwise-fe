@@ -4,4 +4,6 @@ export enum QueryKeys {
   SUMMARIES = 'summaries',
   SUMMARY = 'summary',
   SUMMARY_FILTER = 'summary-filter',
+  BUDGETS = 'budgets',
+  BUDGET_PROGRESS = 'budget-progress',
 }

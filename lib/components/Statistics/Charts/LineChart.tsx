@@ -43,7 +43,7 @@ const BalanceChart = ({ data }: { data: BalanceData[] }) => {
               label: 'Balance',
               color: theme.palette.primary.main,
               area: true,
-              showMark: false,
+              showMark: data.length <= 1,
               curve: 'monotoneX',
             },
           ]}

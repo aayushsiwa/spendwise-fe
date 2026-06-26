@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 import { Record, RecordTypes } from '@/types/Records';
+
+dayjs.extend(customParseFormat);
 
 export type RecordFormData = Omit<Record, 'ID'>;
 type RecordValidationInput = Omit<RecordFormData, 'amount'> & {
@@ -31,7 +34,7 @@ export const validateRecord = (
     errors.date = 'Date is required';
   } else if (
     !/^\d{4}-\d{2}-\d{2}$/.test(record.date) ||
-    !dayjs(record.date).isValid()
+    !dayjs(record.date, 'YYYY-MM-DD', true).isValid()
   ) {
     errors.date = 'Date must be in YYYY-MM-DD format';
   }

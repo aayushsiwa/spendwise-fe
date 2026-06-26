@@ -146,7 +146,6 @@ const RecordsTable = ({
               borderLeft: `4px solid ${theme.palette.info.main}`,
             },
             '& .MuiDataGrid-virtualScroller': {
-              overflow: 'hidden',
               '&::-webkit-scrollbar': {
                 width: '8px',
                 height: '8px',
