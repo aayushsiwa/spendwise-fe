@@ -138,7 +138,14 @@ const RecordDetailDialog = ({
   const isBusy = saving || deleting;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={() => {
+        if (!isBusy) onClose();
+      }}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>
         <Typography fontWeight={700}>
           {isCreate ? 'Add Record' : 'Edit Record'}
@@ -226,7 +233,7 @@ const RecordDetailDialog = ({
         </Box>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
-        {!isCreate && (
+        {!isCreate && onDelete && (
           <Button color="error" onClick={handleDelete} disabled={isBusy}>
             Delete
           </Button>
@@ -235,9 +242,15 @@ const RecordDetailDialog = ({
           <Button onClick={onClose} disabled={isBusy}>
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleSave} disabled={isBusy}>
-            {isCreate ? 'Create' : 'Save'}
-          </Button>
+          {onSave && (
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              disabled={isBusy}
+            >
+              {isCreate ? 'Create' : 'Save'}
+            </Button>
+          )}
         </Box>
       </DialogActions>
     </Dialog>
