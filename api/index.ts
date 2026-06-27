@@ -1,3 +1,4 @@
+import { baseApiURL } from '@/constants/config';
 import { DefaultOptions, QueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
@@ -26,5 +27,5 @@ if (typeof window !== 'undefined') {
 }
 
 export const PrivateAxios = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: baseApiURL,
 });

@@ -14,7 +14,7 @@ const DesktopView: FC<HomeViewProps> = ({ summary, records, recordProps }) => {
       <Grid size={{ xs: 12 }}>
         <Summary summary={summary} />
       </Grid>
-      <Grid size={{ xs: 12, lg: 8 }}>
+      <Grid size={{ xs: 12, md: 8 }}>
         <Stack spacing={2}>
           <Statistics summary={summary} records={records ?? []} />
         </Stack>
