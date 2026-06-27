@@ -114,7 +114,10 @@ const useRecords = (): RecordProps => {
       const response = await createRecord.mutateAsync({
         record: normalizedRecord,
       });
-      const ID = response.data?.ID ?? '';
+      const ID = response.data?.ID;
+      if (!ID) {
+        throw new Error('No ID returned from server');
+      }
       const created: Record = { ...normalizedRecord, ID };
       setLocalRows((prev) => [created, ...prev]);
       return created;

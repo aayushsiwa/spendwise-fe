@@ -40,7 +40,8 @@ export const useSidebar = (defaultOpen: boolean, largeView: boolean) => {
       item.onClick();
     }
     if (item.href) {
-      if (item.href.startsWith('/api/')) {
+      // Handle download URLs by triggering browser navigation
+      if (item.href.includes('download=true')) {
         window.location.assign(item.href);
       } else {
         router.push(item.href);
