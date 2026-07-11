@@ -1,3 +1,5 @@
+import { Grid } from '@mui/material';
+
 import { TRecord } from '@/types/Records';
 import { SummaryMonth } from '@/types/Summary';
 
@@ -13,7 +15,13 @@ const Statistics = ({
 }) => {
   const { data } = useStatistics(summary, records);
 
-  return <BalanceChart data={data} />;
+  return (
+    <Grid container spacing={2}>
+      <Grid size={{ xs: 12 }}>
+        <BalanceChart data={data} />
+      </Grid>
+    </Grid>
+  );
 };
 
 export default Statistics;

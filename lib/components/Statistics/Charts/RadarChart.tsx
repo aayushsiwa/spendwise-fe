@@ -1,4 +1,4 @@
-import { CircularProgress } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -6,49 +6,63 @@ import {
   Radar,
   RadarChart,
   ResponsiveContainer,
-  Tooltip,
 } from 'recharts';
 
-import Toast from '../../Toasts/Toast';
-import useStatistics from '../Statistics.hooks';
+import { useCategoriesContext } from '@/lib/context/Categories/Categories';
+import { SummaryMonth } from '@/types/Summary';
 
-const SimpleRadarChart = () => {
-  const { summary, isLoading, error } = useStatistics();
+type SimpleRadarChartProps = {
+  summary: SummaryMonth;
+};
 
-  if (isLoading) {
+const SimpleRadarChart = ({ summary }: SimpleRadarChartProps) => {
+  const { getCategoryColor } = useCategoriesContext();
+
+  const data = [
+    ...(summary?.expenses?.map((e) => ({
+      category: e.category,
+      expense: e.amount,
+      income: 0,
+    })) ?? []),
+    ...(summary?.incomes
+      ?.filter(
+        (inc) => !summary.expenses?.some((exp) => exp.category === inc.category)
+      )
+      .map((inc) => ({
+        category: inc.category,
+        expense: 0,
+        income: inc.amount,
+      })) ?? []),
+  ];
+
+  if (data.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '20px' }}>
-        <CircularProgress />
-      </div>
+      <Box textAlign="center" py={4}>
+        <Typography color="text.secondary">No category data</Typography>
+      </Box>
     );
-  }
-
-  if (!summary) {
-    return (
-      <div style={{ textAlign: 'center', padding: '20px' }}>
-        <p>No data available</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <Toast message={error.message} variant="error" />;
   }
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <RadarChart
-        cx="50%"
-        cy="50%"
-        outerRadius="80%"
-        data={summary.expenses}
-        layout="centric"
-      >
+    <ResponsiveContainer width="100%" height={300}>
+      <RadarChart cx="50%" cy="50%" outerRadius="75%" data={data}>
         <PolarGrid gridType="circle" />
-        <PolarAngleAxis dataKey="category" />
-        <PolarRadiusAxis />
-        <Tooltip />
-        <Radar dataKey="amount" stroke="red" fill="red" fillOpacity={0.6} />
+        <PolarAngleAxis dataKey="category" tick={{ fontSize: 12 }} />
+        <PolarRadiusAxis tick={false} axisLine={false} />
+        <Radar
+          dataKey="expense"
+          stroke="#E17055"
+          fill="#E17055"
+          fillOpacity={0.3}
+          name="Expense"
+        />
+        <Radar
+          dataKey="income"
+          stroke="#00B894"
+          fill="#00B894"
+          fillOpacity={0.3}
+          name="Income"
+        />
       </RadarChart>
     </ResponsiveContainer>
   );

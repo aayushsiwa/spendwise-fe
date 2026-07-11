@@ -117,13 +117,12 @@ const UploadCSV = () => {
           <Button
             size="small"
             onClick={() => {
-              const blob = new Blob(
-                [
-                  `date,description,category,amount,type,note
-        2025-01-01,Swiggy order,food,-250,expense,lunch`,
-                ],
-                { type: 'text/csv' }
-              );
+              const csvContent = [
+                'date,description,category,amount,type,note',
+                '2025-01-01,Swiggy order,food,-250,expense,lunch',
+                '2025-01-02,Salary,income,50000,income,monthly salary'
+              ].join('\n');
+              const blob = new Blob([csvContent], { type: 'text/csv' });
 
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');
@@ -145,24 +144,58 @@ const UploadCSV = () => {
 
         <Stack spacing={1}>
           <Typography variant="body2">
-            <strong>Date:</strong> date, transaction_date, txn_date
+            <strong>Date *:</strong> date, transaction_date, txn_date,
+            value_date, posting_date
           </Typography>
           <Typography variant="body2">
-            <strong>Description:</strong> description, details, narration
+            <strong>Description:</strong> description, details, narration,
+            particulars
           </Typography>
           <Typography variant="body2">
-            <strong>Category:</strong> category, type
+            <strong>Category:</strong> category, subcategory, sub_category
           </Typography>
           <Typography variant="body2">
-            <strong>Amount:</strong> amount, value, amt
+            <strong>Amount *:</strong> amount, value, amt, transaction_amount,
+            txn_amount
           </Typography>
           <Typography variant="body2">
-            <strong>Type:</strong> type, transaction_type (optional)
+            <strong>Type:</strong> type, transaction_type, dr/cr, debit_credit
+            (optional)
           </Typography>
           <Typography variant="body2">
-            <strong>Note:</strong> note, remarks, comment (optional)
+            <strong>Note:</strong> note, remarks, comment, reference (optional)
           </Typography>
         </Stack>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Typography variant="subtitle2" fontWeight={600} mb={1}>
+          Column Detection
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={1}>
+          Headers are case-insensitive. Underscores, spaces, slashes, and
+          hyphens are stripped before matching. For example,{' '}
+          <code>Transaction Date</code>,<code> transaction_date</code>, and{' '}
+          <code>txn_date</code> all match the &quot;date&quot; field.
+        </Typography>
+
+        <Typography variant="subtitle2" fontWeight={600} mb={1}>
+          Type Inference
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={1}>
+          If the type column is missing or empty, the sign of the amount
+          determines the type: negative → expense, positive → income.
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={2}>
+          When type is provided, these values are recognised:
+          <br />
+          <strong>Expense:</strong> dr, debit, expense, payment, withdrawal,
+          sent
+          <br />
+          <strong>Income:</strong> cr, credit, income, deposit, refund, received
+          <br />
+          <strong>Transfer:</strong> transfer
+        </Typography>
 
         <Divider sx={{ my: 2 }} />
 
@@ -184,15 +217,8 @@ const UploadCSV = () => {
           <br />
           2025-01-01,Swiggy order,food,-250,expense,lunch
           <br />
-          2025-01-02,Salary,income,50000,income,monthly salary
+          2025-01-02,Salary,,50000,income,monthly salary
         </Box>
-
-        <Divider sx={{ my: 2 }} />
-
-        <Typography variant="body2" color="text.secondary">
-          💡 Tip: Negative amounts are treated as expenses automatically if type
-          is not provided.
-        </Typography>
       </Paper>
     </Box>
   );

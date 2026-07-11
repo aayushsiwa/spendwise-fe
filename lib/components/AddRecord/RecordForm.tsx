@@ -76,7 +76,6 @@ const RecordForm: React.FC<RecordFormProps> = ({
               onChange={handleFieldChange('date')}
               fullWidth
               margin="normal"
-              InputLabelProps={{ shrink: true }}
               required
             />
           </FormControl>

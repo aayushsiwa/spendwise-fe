@@ -1,5 +1,5 @@
 export interface TRecord {
-  id: number;
+  ID: string;
   date: string;
   description: string;
   category: string;
@@ -10,7 +10,7 @@ export interface TRecord {
 }
 
 export interface Record {
-  id: number;
+  ID: string;
   date: string;
   description: string;
   category: string;
@@ -39,7 +39,6 @@ export type RecordsQueryParams = {
   category?: string;
   type?: string;
   search?: string;
-  description?: string;
-  min_amount?: number;
-  max_amount?: number;
+  minAmount?: number;
+  maxAmount?: number;
 };

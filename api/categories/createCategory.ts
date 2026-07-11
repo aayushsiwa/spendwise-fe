@@ -9,7 +9,7 @@ type CreateCategoryAPIResponse = Category[];
 type CreateCategoryResponse = AxiosResponse<CreateCategoryAPIResponse>;
 
 export const createCategoryAPI = async (
-  category: Omit<Category, 'id'>
+  category: Omit<Category, 'ID'>
 ): Promise<CreateCategoryResponse> => {
   const res = await PrivateAxios.post<CreateCategoryAPIResponse>(
     `/api/categories`,

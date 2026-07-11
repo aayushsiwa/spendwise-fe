@@ -1,5 +1,5 @@
 export type CategoryDetail = {
-  category_id: number;
+  categoryID: string;
   category: string;
   amount: number;
 };
@@ -10,6 +10,6 @@ export type SummaryMonth = {
   net: number;
   opening: number;
   closing: number;
-  total_expense: number;
-  total_income: number;
+  totalExpense: number;
+  totalIncome: number;
 };

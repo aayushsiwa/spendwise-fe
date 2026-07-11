@@ -12,12 +12,21 @@ import { useDeleteRecordAPI } from '@/api/records/deleteRecords';
 import { useGetRecordsAPI } from '@/api/records/getRecords';
 import { useUpdateRecordAPI } from '@/api/records/updateRecords';
 import { usePeriodContext } from '@/lib/context/Period/Period';
+import { useAppSnackbar } from '@/lib/context/Snackbar/Snackbar';
 import type { Record, RecordsQueryParams } from '@/types/Records';
+import { getApiErrorMessage } from '@/utils/apiError';
+import {
+  getRecordValidationMessage,
+  hasRecordValidationErrors,
+  normalizeRecord,
+  validateRecord,
+} from '@/validations/Record';
 
 import { RecordProps } from './Records';
 
 const useRecords = (): RecordProps => {
   const { range } = usePeriodContext();
+  const { showSnackbar } = useAppSnackbar();
 
   const updateRecord = useUpdateRecordAPI();
   const deleteRecord = useDeleteRecordAPI();
@@ -33,22 +42,19 @@ const useRecords = (): RecordProps => {
   const { data, isLoading, isError, error } = useGetRecordsAPI(fullParams);
 
   const { records, ...pagination } = data?.data ?? {
-    has_next: false,
-    has_prev: false,
+    hasNext: false,
+    hasPrev: false,
     limit: 0,
     page: 0,
-    total_count: 0,
-    total_pages: 0,
+    totalCount: 0,
+    totalPages: 0,
   };
 
   const [localRows, setLocalRows] = useState<Record[]>([]);
-  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
-    if (!isAdding) {
-      setLocalRows(records ?? []);
-    }
-  }, [records, isAdding]);
+    setLocalRows(records ?? []);
+  }, [records]);
 
   const getTypeDetails = useCallback((type: string) => {
     switch (type) {
@@ -68,7 +74,6 @@ const useRecords = (): RecordProps => {
       const newPage = model.page + 1;
       const newLimit = model.pageSize;
 
-      // 🚫 prevent redundant updates
       if (newPage === queryParams.page && newLimit === queryParams.limit) {
         return;
       }
@@ -81,18 +86,45 @@ const useRecords = (): RecordProps => {
     [setQueryParams, queryParams.page, queryParams.limit]
   );
 
-  const handleDeleteRecord = async (id: number) => {
-    if (id === 9999) {
-      setLocalRows((prev) => prev.filter((r) => r.id !== 9999));
-      setIsAdding(false);
-      return;
-    }
+  const handleDeleteRecord = async (ID: string) => {
     if (window.confirm('Are you sure you want to delete this record?')) {
       try {
-        await deleteRecord.mutateAsync({ id, queryParams: fullParams });
+        await deleteRecord.mutateAsync({ ID });
       } catch (error) {
-        console.error('Failed to delete record:', error);
+        const message = getApiErrorMessage(error, 'Failed to delete record');
+        showSnackbar(message, 'error');
+        throw error;
       }
+    }
+  };
+
+  const handleCreateRecord = async (
+    recordData: Omit<Record, 'ID'>
+  ): Promise<Record> => {
+    const normalizedRecord = normalizeRecord(recordData);
+    const validationErrors = validateRecord(normalizedRecord);
+
+    if (hasRecordValidationErrors(validationErrors)) {
+      const message = getRecordValidationMessage(validationErrors);
+      showSnackbar(message, 'error');
+      throw new Error(message);
+    }
+
+    try {
+      const response = await createRecord.mutateAsync({
+        record: normalizedRecord,
+      });
+      const ID = response.data?.ID;
+      if (!ID) {
+        throw new Error('No ID returned from server');
+      }
+      const created: Record = { ...normalizedRecord, ID };
+      setLocalRows((prev) => [created, ...prev]);
+      return created;
+    } catch (error) {
+      const message = getApiErrorMessage(error, 'Failed to add record');
+      showSnackbar(message, 'error');
+      throw error;
     }
   };
 
@@ -101,32 +133,39 @@ const useRecords = (): RecordProps => {
     oldRow: Record
   ): Promise<Record> => {
     try {
-      const isNew = newRow.id === 9999;
+      const { ID, ...recordData } = newRow;
+      const normalizedRecord = normalizeRecord(recordData);
+      const validationErrors = validateRecord(normalizedRecord);
 
-      if (isNew) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { id: _unused, ...recordData } = newRow;
-        const createdResponse = await createRecord.mutateAsync({
-          record: recordData,
-          queryParams: fullParams,
-        });
-
-        const id = createdResponse.data?.id ?? 9999;
-        const created: Record = { ...recordData, id };
-
-        setLocalRows((prev) => [created, ...prev.filter((r) => r.id !== 9999)]);
-        return created;
-      } else {
-        const { id, ...recordData } = newRow;
-        await updateRecord.mutateAsync({ id, record: recordData, queryParams });
-        setLocalRows((prev) =>
-          prev.map((r) => (r.id === newRow.id ? newRow : r))
-        );
-        return newRow;
+      if (hasRecordValidationErrors(validationErrors)) {
+        const message = getRecordValidationMessage(validationErrors);
+        throw new Error(message);
       }
+
+      const changes: Partial<Omit<Record, 'ID'>> = {};
+      for (const key of Object.keys(
+        normalizedRecord
+      ) as (keyof typeof normalizedRecord)[]) {
+        if (normalizedRecord[key] !== oldRow[key]) {
+          changes[key] = normalizedRecord[key] as never;
+        }
+      }
+
+      if (Object.keys(changes).length === 0) {
+        return { ...newRow, ...normalizedRecord };
+      }
+
+      await updateRecord.mutateAsync({ ID, record: changes });
+      setLocalRows((prev) =>
+        prev.map((r) =>
+          r.ID === newRow.ID ? { ...newRow, ...normalizedRecord } : r
+        )
+      );
+      return { ...newRow, ...normalizedRecord };
     } catch (error) {
-      console.error('Failed to update record:', error);
-      return oldRow;
+      const message = getApiErrorMessage(error, 'Failed to update record');
+      showSnackbar(message, 'error');
+      throw error instanceof Error ? error : new Error(message);
     }
   };
 
@@ -140,10 +179,9 @@ const useRecords = (): RecordProps => {
     getTypeDetails,
     processRowUpdate,
     handleDeleteRecord,
+    handleCreateRecord,
     isGetRecordsError: isError,
     error: error ?? undefined,
-    isAdding,
-    setIsAdding,
   };
 };
 

@@ -1,5 +1,5 @@
 export interface Category {
-  id: number;
+  ID: string;
   name: string;
   icon: string;
   color: string;

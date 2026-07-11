@@ -7,12 +7,12 @@ import { Record } from '@/types/Records';
 
 type CreateRecordAPIResponse = {
   message: string;
-  id: number;
+  ID: string;
 };
 type CreateRecordResponse = AxiosResponse<CreateRecordAPIResponse>;
 
 type CreateRecordRequest = {
-  record: Omit<Record, 'id'>;
+  record: Omit<Record, 'ID'>;
 };
 
 export const createRecordAPI = async ({

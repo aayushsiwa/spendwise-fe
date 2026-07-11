@@ -1,7 +1,7 @@
-import { useCreateRecordAPI } from '@/pages/api/records/createRecord';
-import { useDeleteRecordAPI } from '@/pages/api/records/deleteRecords';
-import { useGetRecordsAPI } from '@/pages/api/records/getRecords';
-import { useUpdateRecordAPI } from '@/pages/api/records/updateRecords';
+import { useCreateRecordAPI } from '@/api/records/createRecord';
+import { useDeleteRecordAPI } from '@/api/records/deleteRecords';
+import { useGetRecordsAPI } from '@/api/records/getRecords';
+import { useUpdateRecordAPI } from '@/api/records/updateRecords';
 
 import { RecordsQueryParams, TRecordsContext } from './Records';
 
@@ -19,13 +19,13 @@ export const useRecordsProvider = (
   const deleteRecord = useDeleteRecordAPI();
   const createRecord = useCreateRecordAPI();
 
-  const { records, ...pagination } = getRecordsResponse?.data ?? {
-    has_next: false,
-    has_prev: false,
+  const { records = [], ...pagination } = getRecordsResponse?.data ?? {
+    hasNext: false,
+    hasPrev: false,
     limit: 0,
     page: 0,
-    total_count: 0,
-    total_pages: 0,
+    totalCount: 0,
+    totalPages: 0,
   };
 
   return {

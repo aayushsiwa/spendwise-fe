@@ -1,18 +1,50 @@
-import { Delete, Receipt } from '@mui/icons-material';
+import { Receipt, Visibility } from '@mui/icons-material';
 import {
   Box,
   Chip,
   IconButton,
+  MenuItem,
+  Select,
   Tooltip,
   Typography,
   alpha,
 } from '@mui/material';
-import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import {
+  GridColDef,
+  GridRenderCellParams,
+  GridRenderEditCellParams,
+} from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 
+import { useCategoriesContext } from '@/lib/context/Categories/Categories';
 import { Record } from '@/types/Records';
 import { DateUtil } from '@/utils/DateUtils';
 import { RecordsUtil } from '@/utils/RecordsUtils';
+
+function CategoryEditCell(props: GridRenderEditCellParams) {
+  const { id, value, field, api } = props;
+  const { categories } = useCategoriesContext();
+
+  const handleChange = (event: { target: { value: unknown } }) => {
+    api.setEditCellValue({ id, field, value: event.target.value });
+  };
+
+  return (
+    <Select
+      value={value || ''}
+      onChange={handleChange}
+      autoFocus
+      fullWidth
+      sx={{ height: '100%' }}
+    >
+      {categories?.map((cat) => (
+          <MenuItem key={cat.ID} value={cat.name}>
+          {cat.name}
+        </MenuItem>
+      ))}
+    </Select>
+  );
+}
 
 export const getRecordsColumns = (
   getCategoryColor: (name: string) => string,
@@ -21,15 +53,26 @@ export const getRecordsColumns = (
     icon: typeof Receipt;
     bgColor: string;
   },
-  handleDeleteRecord: (id: number) => void
+  handleViewRecord: (record: Record) => void
 ): GridColDef<Record>[] => [
+  {
+    field: 'view',
+    headerName: '',
+    width: 48,
+    sortable: false,
+    align: 'center',
+    renderCell: (params) => (
+      <IconButton size="small" onClick={() => handleViewRecord(params.row)}>
+        <Visibility fontSize="small" />
+      </IconButton>
+    ),
+  },
   {
     field: 'date',
     headerName: 'Date',
     flex: 0.6,
     editable: true,
-    headerAlign: 'center',
-    align: 'center',
+
     renderCell: (params: GridRenderCellParams) => {
       const date = DateUtil.formattedDate(params.value);
       const today = DateUtil.formattedDate();
@@ -57,9 +100,6 @@ export const getRecordsColumns = (
     renderCell: (params) => (
       <Tooltip title={params.value} placement="top" arrow>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {/* <Receipt
-            sx={{ fontSize: 18, color: 'text.secondary', opacity: 0.7 }}
-          /> */}
           <Typography variant="body2" fontWeight={600}>
             {params.value}
           </Typography>
@@ -72,7 +112,11 @@ export const getRecordsColumns = (
     headerName: 'Category',
     flex: 0.7,
     editable: true,
+    renderEditCell: (params) => <CategoryEditCell {...params} />,
     renderCell: (params) => {
+      if (!params.value) {
+        return null;
+      }
       const color = getCategoryColor(params.value);
       return (
         <Chip
@@ -93,85 +137,15 @@ export const getRecordsColumns = (
     headerName: 'Amount',
     flex: 0.8,
     editable: true,
-    align: 'center',
-    valueGetter: (value, row) => {
-      return RecordsUtil.formatAmount(value, row.type);
-    },
-    // renderCell: (params) => {
-    //   // const amount = RecordsUtil.formatAmount(params.value, params.row.type);
-    //   return (
-    //     <Typography
-    //       fontWeight={700}
-    //       color={params.row.type === 'expense' ? 'error.main' : 'text.primary'}
-    //     >
-    //       {params.value}
-    //     </Typography>
-    //   );
-    // },
-  },
-  {
-    field: 'type',
-    headerName: 'Type',
-    flex: 0.6,
-    editable: true,
     renderCell: (params) => {
-      const { color, icon: Icon, bgColor } = getTypeDetails(params.value);
       return (
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            px: 1.5,
-            py: 0.5,
-            gap: 1,
-            backgroundColor: bgColor,
-            borderRadius: '999px',
-          }}
+        <Typography
+          fontWeight={700}
+          color={params.row.type === 'expense' ? 'error.main' : 'text.primary'}
         >
-          <Icon sx={{ fontSize: 16, color }} />
-          <Typography fontWeight={600} fontSize="0.75rem" color={color}>
-            {params.value}
-          </Typography>
-        </Box>
+          {RecordsUtil.formatAmount(params.value, params.row.type)}
+        </Typography>
       );
     },
-  },
-  {
-    field: 'note',
-    headerName: 'Note',
-    flex: 1,
-    editable: true,
-    renderCell: (params) => (
-      <Tooltip title={params.value || 'No note'} placement="top" arrow>
-        <Typography
-          variant="body2"
-          sx={{
-            fontSize: '0.8rem',
-            color: 'text.secondary',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            maxWidth: '200px',
-          }}
-        >
-          {params.value || '—'}
-        </Typography>
-      </Tooltip>
-    ),
-  },
-  {
-    field: 'actions',
-    headerName: 'Actions',
-    flex: 0.5,
-    sortable: false,
-    renderCell: (params) => (
-      <IconButton
-        size="small"
-        onClick={() => handleDeleteRecord(params.row.id)}
-        sx={{ color: '#E17055' }}
-      >
-        <Delete fontSize="small" />
-      </IconButton>
-    ),
   },
 ];

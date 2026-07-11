@@ -20,14 +20,16 @@ const useStatistics = (summary: SummaryMonth, records: TRecord[]) => {
     for (const r of records || []) {
       const dateKey = r.date.split('T')[0];
       const existing = latestPerDateMap.get(dateKey);
-      if (!existing || r.id > existing.id) {
+      if (!existing || new Date(r.date).getTime() > new Date(existing.date).getTime()) {
         latestPerDateMap.set(dateKey, r);
       }
     }
 
-    // Step 2: Build full date range
+    // Step 2: Build full date range (cap at today)
     const startDate = new Date(range.from);
-    const endDate = new Date(range.to);
+    const endDate = new Date(
+      Math.min(new Date(range.to).getTime(), new Date().getTime())
+    );
     const filled: { date: string; balance: number }[] = [];
 
     let prevBalance: number | null = summary.opening ?? null; // 👈 start from opening
