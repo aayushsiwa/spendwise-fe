@@ -1,12 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import {
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
-  Radar,
-  RadarChart,
-  ResponsiveContainer,
-} from 'recharts';
+import { RadarChart } from '@mui/x-charts/RadarChart';
 
 import { SummaryMonth } from '@/types/Summary';
 
@@ -15,22 +8,31 @@ type SimpleRadarChartProps = {
 };
 
 const SimpleRadarChart = ({ summary }: SimpleRadarChartProps) => {
-  const data = [
-    ...(summary?.expenses?.map((e) => ({
-      category: e.category,
-      expense: e.amount,
-      income: 0,
-    })) ?? []),
-    ...(summary?.incomes
-      ?.filter(
-        (inc) => !summary.expenses?.some((exp) => exp.category === inc.category)
-      )
-      .map((inc) => ({
-        category: inc.category,
-        expense: 0,
-        income: inc.amount,
-      })) ?? []),
-  ];
+  const categorySet = new Set<string>();
+  const expenses = summary?.expenses || [];
+  const incomes = summary?.incomes || [];
+
+  for (const exp of expenses) {
+    categorySet.add(exp.category);
+  }
+
+  for (const inc of incomes) {
+    if (!expenses.some((exp) => exp.category === inc.category)) {
+      categorySet.add(inc.category);
+    }
+  }
+
+  const categories = Array.from(categorySet);
+
+  const expenseData = expenses.map((exp) => exp.amount);
+  const incomeData = expenses.map((exp) => 0);
+
+  const uniqueIncomes = incomes.filter(
+    (inc) => !expenses.some((exp) => exp.category === inc.category)
+  );
+  const uniqueIncomeValues = uniqueIncomes.map((inc) => inc.amount);
+
+  const data = [...expenseData, ...uniqueIncomeValues];
 
   if (data.length === 0) {
     return (
@@ -41,27 +43,26 @@ const SimpleRadarChart = ({ summary }: SimpleRadarChartProps) => {
   }
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <RadarChart cx="50%" cy="50%" outerRadius="75%" data={data}>
-        <PolarGrid gridType="circle" />
-        <PolarAngleAxis dataKey="category" tick={{ fontSize: 12 }} />
-        <PolarRadiusAxis tick={false} axisLine={false} />
-        <Radar
-          dataKey="expense"
-          stroke="#E17055"
-          fill="#E17055"
-          fillOpacity={0.3}
-          name="Expense"
-        />
-        <Radar
-          dataKey="income"
-          stroke="#00B894"
-          fill="#00B894"
-          fillOpacity={0.3}
-          name="Income"
-        />
-      </RadarChart>
-    </ResponsiveContainer>
+    <Box sx={{ width: '100%', height: 300 }}>
+      <RadarChart
+        height={300}
+        series={[
+          {
+            label: 'Expense',
+            data: expenseData,
+            color: '#E17055',
+          },
+          {
+            label: 'Income',
+            data: uniqueIncomeValues,
+            color: '#00B894',
+          },
+        ]}
+        radar={{
+          metrics: categories,
+        }}
+      />
+    </Box>
   );
 };
 
