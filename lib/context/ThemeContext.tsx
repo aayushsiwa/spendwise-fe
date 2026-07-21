@@ -1,13 +1,17 @@
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  ThemeProvider,
+  createTheme,
+  useColorScheme,
+} from '@mui/material/styles';
+import { createContext, useContext, useMemo } from 'react';
 
-import { getDesignTokens } from '@/theme/theme';
+import { themeOptions } from '@/theme/theme';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 interface ColorModeContextProps {
-  mode: ThemeMode; // selected mode
+  mode: ThemeMode;
   setMode: (mode: ThemeMode) => void;
 }
 
@@ -18,70 +22,35 @@ const ColorModeContext = createContext<ColorModeContextProps>({
 
 export const useColorMode = () => useContext(ColorModeContext);
 
-export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [mode, setMode] = useState<ThemeMode>('system');
-  const [resolvedMode, setResolvedMode] = useState<'light' | 'dark'>('light');
-  const [mounted, setMounted] = useState(false);
+const theme = createTheme(themeOptions);
 
-  // Client-only logic
-  useEffect(() => {
-    const stored = localStorage.getItem('theme') as ThemeMode | null;
-    const selectedMode = stored ?? 'system';
-    setMode(selectedMode);
-
-    if (selectedMode === 'system') {
-      const prefersDark = window.matchMedia(
-        '(prefers-color-scheme: dark)'
-      ).matches;
-      setResolvedMode(prefersDark ? 'dark' : 'light');
-    } else {
-      setResolvedMode(selectedMode);
-    }
-
-    setMounted(true);
-  }, []);
-
-  // Update resolved mode when user changes theme
-  useEffect(() => {
-    if (!mounted) return;
-
-    if (mode === 'system') {
-      const prefersDark = window.matchMedia(
-        '(prefers-color-scheme: dark)'
-      ).matches;
-      setResolvedMode(prefersDark ? 'dark' : 'light');
-    } else {
-      setResolvedMode(mode);
-    }
-  }, [mode, mounted]);
-
-  const theme = useMemo(
-    () => createTheme(getDesignTokens(resolvedMode)),
-    [resolvedMode]
-  );
+function ModeProvider({ children }: { children: React.ReactNode }) {
+  const { mode, setMode } = useColorScheme();
 
   const value = useMemo(
     () => ({
-      mode,
+      mode: (mode ?? 'system') as ThemeMode,
       setMode: (newMode: ThemeMode) => {
-        localStorage.setItem('theme', newMode);
-        setMode(newMode);
+        setMode(newMode === 'system' ? 'system' : newMode);
       },
     }),
-    [mode]
+    [mode, setMode]
   );
-
-  // Prevent hydration mismatch
-  if (!mounted) return null;
 
   return (
     <ColorModeContext.Provider value={value}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {children}
-      </ThemeProvider>
+      {children}
     </ColorModeContext.Provider>
+  );
+}
+
+export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  return (
+    <ThemeProvider theme={theme} defaultMode="system" modeStorageKey="theme">
+      <CssBaseline />
+      <ModeProvider>{children}</ModeProvider>
+    </ThemeProvider>
   );
 };
