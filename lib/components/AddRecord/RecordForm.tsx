@@ -1,9 +1,7 @@
 import {
   Box,
   Button,
-  FormControl,
   Grid,
-  InputLabel,
   MenuItem,
   TextField,
   Typography,
@@ -65,112 +63,100 @@ const RecordForm: React.FC<RecordFormProps> = ({
     <Box component="form" onSubmit={handleSubmit} noValidate>
       <Grid container>
         <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth>
-            <InputLabel shrink htmlFor="date-input">
-              Date *
-            </InputLabel>
-            <TextField
-              id="date-input"
-              type="date"
-              value={formData.date}
-              onChange={handleFieldChange('date')}
-              fullWidth
-              margin="normal"
-              required
-            />
-          </FormControl>
+          <TextField
+            label="Date"
+            type="date"
+            value={formData.date}
+            onChange={handleFieldChange('date')}
+            fullWidth
+            margin="normal"
+            required
+            slotProps={{
+              inputLabel: { shrink: true },
+            }}
+          />
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth>
-            <TextField
-              label="Description"
-              type="text"
-              value={formData.description}
-              onChange={handleFieldChange('description')}
-              fullWidth
-              margin="normal"
-              required
-              placeholder="Enter transaction description"
-            />
-          </FormControl>
+          <TextField
+            label="Description"
+            type="text"
+            value={formData.description}
+            onChange={handleFieldChange('description')}
+            fullWidth
+            margin="normal"
+            required
+            placeholder="Enter transaction description"
+          />
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth>
-            <TextField
-              label="Amount"
-              type="number"
-              value={formData.amount}
-              onChange={handleFieldChange('amount')}
-              fullWidth
-              margin="normal"
-              required
-              slotProps={{
-                htmlInput: {
-                  min: 0,
-                  step: 0.01,
-                },
-              }}
-              placeholder="0.00"
-            />
-          </FormControl>
+          <TextField
+            label="Amount"
+            type="number"
+            value={formData.amount}
+            onChange={handleFieldChange('amount')}
+            fullWidth
+            margin="normal"
+            required
+            slotProps={{
+              htmlInput: {
+                min: 0,
+                step: 0.01,
+              },
+            }}
+            placeholder="0.00"
+          />
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth>
-            <TextField
-              select
-              label="Category"
-              value={formData.category}
-              onChange={handleFieldChange('category')}
-              fullWidth
-              margin="normal"
-              required
-            >
-              {categories.map((cat) => (
-                <MenuItem key={cat} value={cat}>
-                  {cat}
-                </MenuItem>
-              ))}
-            </TextField>
-          </FormControl>
+          <TextField
+            select
+            label="Category"
+            value={formData.category}
+            onChange={handleFieldChange('category')}
+            fullWidth
+            margin="normal"
+            required
+          >
+            {categories.map((cat) => (
+              <MenuItem key={cat} value={cat}>
+                {cat}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth>
-            <TextField
-              select
-              label="Type"
-              value={formData.type}
-              onChange={handleFieldChange('type')}
-              fullWidth
-              margin="normal"
-              required
-            >
-              {types.map((t) => (
-                <MenuItem key={t} value={t}>
-                  {t}
-                </MenuItem>
-              ))}
-            </TextField>
-          </FormControl>
+          <TextField
+            select
+            label="Type"
+            value={formData.type}
+            onChange={handleFieldChange('type')}
+            fullWidth
+            margin="normal"
+            required
+          >
+            {types.map((t) => (
+              <MenuItem key={t} value={t}>
+                {t}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth>
-            <TextField
-              label="Note"
-              type="text"
-              value={formData.note}
-              onChange={handleFieldChange('note')}
-              fullWidth
-              margin="normal"
-              multiline
-              rows={2}
-              placeholder="Optional notes"
-            />
-          </FormControl>
+          <TextField
+            label="Note"
+            type="text"
+            value={formData.note}
+            onChange={handleFieldChange('note')}
+            fullWidth
+            margin="normal"
+            multiline
+            rows={2}
+            placeholder="Optional notes"
+          />
         </Grid>
 
         <Grid size={{ xs: 12 }}>
