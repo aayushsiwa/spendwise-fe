@@ -8,7 +8,14 @@ import {
   MenuItem,
   TextField,
   Typography,
+  InputAdornment,
+  Select,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  OutlinedInput,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import { useEffect, useState } from 'react';
 
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
@@ -147,12 +154,12 @@ const RecordDetailDialog = ({
       fullWidth
     >
       <DialogTitle>
-        <Typography fontWeight={700}>
+        <Typography sx={{ fontWeight: 700 }}>
           {isCreate ? 'Add Record' : 'Edit Record'}
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Box display="flex" flexDirection="column" gap={2} pt={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           <TextField
             label="Description"
             value={edit.description}
@@ -162,35 +169,52 @@ const RecordDetailDialog = ({
             error={!!validationErrors.description}
             helperText={validationErrors.description}
           />
-          <TextField
-            label="Amount"
-            type="number"
-            value={edit.amount}
-            onChange={(e) => handleChange('amount', e.target.value)}
+          <FormControl
             fullWidth
             error={!!validationErrors.amount}
-            helperText={validationErrors.amount}
-          />
-          <TextField
-            select
-            label="Type"
-            value={edit.type}
-            onChange={(e) => handleChange('type', e.target.value)}
-            fullWidth
-            error={!!validationErrors.type}
-            helperText={validationErrors.type}
+            variant="outlined"
           >
-            <MenuItem value="expense">Expense</MenuItem>
-            <MenuItem value="income">Income</MenuItem>
-            <MenuItem value="transfer">Transfer</MenuItem>
-          </TextField>
+            <InputLabel htmlFor="amount-field">Amount</InputLabel>
+            <OutlinedInput
+              id="amount-field"
+              type="number"
+              label="Amount"
+              value={edit.amount}
+              onChange={(e) => handleChange('amount', e.target.value)}
+              endAdornment={
+                <InputAdornment position="end">
+                  <Select
+                    value={edit.type}
+                    onChange={(e: SelectChangeEvent) =>
+                      handleChange('type', e.target.value)
+                    }
+                    size="small"
+                    variant="standard"
+                    disableUnderline
+                    sx={{
+                      minWidth: 90,
+                      fontSize: '0.95rem',
+                      '.MuiSelect-select': { p: '3px 12px 3px 8px' },
+                    }}
+                  >
+                    <MenuItem value="expense">Expense</MenuItem>
+                    <MenuItem value="income">Income</MenuItem>
+                    <MenuItem value="transfer">Transfer</MenuItem>
+                  </Select>
+                </InputAdornment>
+              }
+            />
+            {validationErrors.amount && (
+              <FormHelperText>{validationErrors.amount}</FormHelperText>
+            )}
+          </FormControl>
           <TextField
             label="Date"
             type="date"
             value={edit.date}
             onChange={(e) => handleChange('date', e.target.value)}
             fullWidth
-            InputLabelProps={{ shrink: true }}
+            slotProps={{ inputLabel: { shrink: true } }}
             error={!!validationErrors.date}
             helperText={validationErrors.date}
           />
@@ -238,16 +262,12 @@ const RecordDetailDialog = ({
             Delete
           </Button>
         )}
-        <Box display="flex" gap={1} ml="auto">
+        <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
           <Button onClick={onClose} disabled={isBusy}>
             Cancel
           </Button>
           {onSave && (
-            <Button
-              variant="contained"
-              onClick={handleSave}
-              disabled={isBusy}
-            >
+            <Button variant="contained" onClick={handleSave} disabled={isBusy}>
               {isCreate ? 'Create' : 'Save'}
             </Button>
           )}

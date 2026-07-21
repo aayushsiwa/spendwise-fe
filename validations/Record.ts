@@ -1,14 +1,11 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
-import { Record, RecordTypes } from '@/types/Records';
+import { Record, RecordType, RecordTypes } from '@/types/Records';
 
 dayjs.extend(customParseFormat);
 
 export type RecordFormData = Omit<Record, 'ID'>;
-type RecordValidationInput = Omit<RecordFormData, 'amount'> & {
-  amount: number | string;
-};
 
 export type RecordValidationErrors = Partial<{
   date: string;
@@ -22,13 +19,9 @@ export type RecordValidationErrors = Partial<{
 const recordTypes = new Set<RecordTypes>(['income', 'expense', 'transfer']);
 
 export const validateRecord = (
-  record: RecordValidationInput
+  record: RecordFormData
 ): RecordValidationErrors => {
   const errors: RecordValidationErrors = {};
-  const amount =
-    typeof record.amount === 'string'
-      ? parseFloat(record.amount.replace(/[^0-9.-]/g, ''))
-      : record.amount;
 
   if (!record.date.trim()) {
     errors.date = 'Date is required';
@@ -49,9 +42,9 @@ export const validateRecord = (
     errors.category = 'Category is required';
   }
 
-  if (Number.isNaN(amount)) {
+  if (Number.isNaN(record.amount)) {
     errors.amount = 'Amount is required';
-  } else if (amount <= 0) {
+  } else if (record.amount <= 0) {
     errors.amount = 'Amount must be greater than 0';
   }
 
@@ -76,16 +69,11 @@ export const getRecordValidationMessage = (errors: RecordValidationErrors) => {
   return Object.values(errors).join(', ');
 };
 
-export const normalizeRecord = (
-  record: RecordValidationInput
-): RecordFormData => ({
+export const normalizeRecord = (record: RecordFormData): RecordFormData => ({
   date: record.date.trim(),
   description: record.description.trim(),
-  amount:
-    typeof record.amount === 'string'
-      ? parseFloat(record.amount.replace(/[^0-9.-]/g, ''))
-      : record.amount,
+  amount: Math.abs(Number(record.amount)),
   category: record.category.trim(),
-  type: record.type,
+  type: record.amount && record.amount < 0 ? RecordType.EXPENSE : record.type,
   note: record.note.trim(),
 });

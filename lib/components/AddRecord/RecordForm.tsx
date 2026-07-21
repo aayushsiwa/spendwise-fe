@@ -106,9 +106,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
               fullWidth
               margin="normal"
               required
-              inputProps={{
-                min: 0,
-                step: 0.01,
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                  step: 0.01,
+                },
               }}
               placeholder="0.00"
             />

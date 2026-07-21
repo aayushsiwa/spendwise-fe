@@ -20,7 +20,7 @@ const AddRecord = () => {
 
   const [date, setDate] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [amount, setAmount] = useState<string>('');
+  const [amount, setAmount] = useState<number>(0);
   const [category, setCategory] = useState<string>('');
   const [type, setType] = useState<RecordTypes>(RecordType.EXPENSE);
   const [note, setNote] = useState<string>('');
@@ -54,7 +54,7 @@ const AddRecord = () => {
 
       setDate('');
       setDescription('');
-      setAmount('');
+      setAmount(0);
       setCategory('');
       setType(RecordType.EXPENSE);
       setNote('');
@@ -90,7 +90,7 @@ const AddRecord = () => {
         <TextField
           type="number"
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => setAmount(parseFloat(e.target.value))}
         />
       </Grid>
 

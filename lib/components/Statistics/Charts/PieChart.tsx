@@ -13,7 +13,7 @@ const SimplePieChart = ({ summary }: SimplePieChartProps) => {
 
   if (!summary?.expenses || summary.expenses.length === 0) {
     return (
-      <Box textAlign="center" py={4}>
+      <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography color="text.secondary">No expense data</Typography>
       </Box>
     );

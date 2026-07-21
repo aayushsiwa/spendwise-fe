@@ -8,7 +8,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-import { useCategoriesContext } from '@/lib/context/Categories/Categories';
 import { SummaryMonth } from '@/types/Summary';
 
 type SimpleRadarChartProps = {
@@ -16,8 +15,6 @@ type SimpleRadarChartProps = {
 };
 
 const SimpleRadarChart = ({ summary }: SimpleRadarChartProps) => {
-  const { getCategoryColor } = useCategoriesContext();
-
   const data = [
     ...(summary?.expenses?.map((e) => ({
       category: e.category,
@@ -37,7 +34,7 @@ const SimpleRadarChart = ({ summary }: SimpleRadarChartProps) => {
 
   if (data.length === 0) {
     return (
-      <Box textAlign="center" py={4}>
+      <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography color="text.secondary">No category data</Typography>
       </Box>
     );
