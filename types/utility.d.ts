@@ -3,5 +3,5 @@ declare namespace Utility {
   type DefaultFunction = () => void;
   type DefaultAsyncFunction = () => Promise<void>;
 
-  type DefaultObject = { [key: string]: any };
+  type DefaultObject = { [key: string]: unknown };
 }

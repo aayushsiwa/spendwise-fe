@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { ReactNode, useState } from 'react';
+import { useState } from 'react';
 
 import { useRefreshBalancesAPI } from '@/api/records/refreshBalances';
 
