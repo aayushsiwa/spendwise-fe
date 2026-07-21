@@ -60,14 +60,12 @@ function AmountEditCell(props: GridRenderEditCellParams) {
     currentType === 'expense'
       ? value && Number(value) > 0
         ? `-${Math.abs(Number(value))}`
-        : value?.toString() ?? ''
+        : (value?.toString() ?? '')
       : value && Number(value) < 0
-      ? Math.abs(Number(value)).toString()
-      : value?.toString() ?? '';
+        ? Math.abs(Number(value)).toString()
+        : (value?.toString() ?? '');
 
-  const handleAmountChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const edited = e.target.value;
     const newValue = edited === '' ? '' : Number(edited);
     api.setEditCellValue({ id, field, value: newValue });

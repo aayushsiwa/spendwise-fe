@@ -32,7 +32,8 @@ const SimplePieChart = ({ summary }: SimplePieChartProps) => {
             })),
             innerRadius: 60,
             outerRadius: 80,
-            arcLabel: (item) => `${item.label} ${((item.value / summary.expenses.reduce((sum, e) => sum + e.amount, 0)) * 100).toFixed(0)}%`,
+            arcLabel: (item) =>
+              `${item.label} ${((item.value / summary.expenses.reduce((sum, e) => sum + e.amount, 0)) * 100).toFixed(0)}%`,
             arcLabelMinAngle: 30,
           },
         ]}

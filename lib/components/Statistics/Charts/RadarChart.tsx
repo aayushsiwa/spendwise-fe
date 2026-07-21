@@ -25,7 +25,7 @@ const SimpleRadarChart = ({ summary }: SimpleRadarChartProps) => {
   const categories = Array.from(categorySet);
 
   const expenseData = expenses.map((exp) => exp.amount);
-  const incomeData = expenses.map((exp) => 0);
+  // const incomeData = expenses.map((exp) => 0);
 
   const uniqueIncomes = incomes.filter(
     (inc) => !expenses.some((exp) => exp.category === inc.category)
