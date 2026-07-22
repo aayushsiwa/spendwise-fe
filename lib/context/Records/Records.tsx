@@ -7,18 +7,6 @@ export type TRecordsContext = {
   records: TRecord[];
   pagination: Pagination;
   queryParams: RecordsQueryParams;
-  updateRecord: {
-    mutateAsync: (vars: any) => Promise<any>;
-    isPending: boolean;
-  };
-  deleteRecord: {
-    mutateAsync: (vars: any) => Promise<any>;
-    isPending: boolean;
-  };
-  createRecord: {
-    mutateAsync: (vars: any) => Promise<any>;
-    isPending: boolean;
-  };
   isGetRecordsSuccess: boolean;
   isGetRecordsLoading: boolean;
   isGetRecordsError: boolean;

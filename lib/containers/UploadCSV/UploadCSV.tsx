@@ -36,8 +36,8 @@ const UploadCSV = () => {
   };
 
   return (
-    <Box p={3}>
-      <Typography variant="h5" fontWeight={700} mb={2}>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
         Upload CSV
       </Typography>
 
@@ -73,8 +73,8 @@ const UploadCSV = () => {
         </Button>
 
         {file && (
-          <Box mt={2}>
-            <Typography fontWeight={600}>{file.name}</Typography>
+          <Box sx={{ mt: 2 }}>
+            <Typography sx={{ fontWeight: 600 }}>{file.name}</Typography>
             <Typography variant="body2" color="text.secondary">
               {(file.size / 1024).toFixed(2)} KB
             </Typography>
@@ -84,7 +84,7 @@ const UploadCSV = () => {
         {isPending && <LinearProgress sx={{ mt: 2 }} />}
 
         {error && (
-          <Typography color="error" mt={2}>
+          <Typography color="error" sx={{ mt: 2 }}>
             {error}
           </Typography>
         )}
@@ -110,7 +110,7 @@ const UploadCSV = () => {
             mb: 1,
           }}
         >
-          <Typography variant="h6" fontWeight={600}>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
             CSV Format Guidelines
           </Typography>
 
@@ -120,7 +120,7 @@ const UploadCSV = () => {
               const csvContent = [
                 'date,description,category,amount,type,note',
                 '2025-01-01,Swiggy order,food,-250,expense,lunch',
-                '2025-01-02,Salary,income,50000,income,monthly salary'
+                '2025-01-02,Salary,,50000,income,monthly salary',
               ].join('\n');
               const blob = new Blob([csvContent], { type: 'text/csv' });
 
@@ -135,7 +135,7 @@ const UploadCSV = () => {
           </Button>
         </Box>
 
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Your CSV should contain headers. We automatically detect columns based
           on common names.
         </Typography>
@@ -169,24 +169,24 @@ const UploadCSV = () => {
 
         <Divider sx={{ my: 2 }} />
 
-        <Typography variant="subtitle2" fontWeight={600} mb={1}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
           Column Detection
         </Typography>
-        <Typography variant="body2" color="text.secondary" mb={1}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
           Headers are case-insensitive. Underscores, spaces, slashes, and
           hyphens are stripped before matching. For example,{' '}
           <code>Transaction Date</code>,<code> transaction_date</code>, and{' '}
           <code>txn_date</code> all match the &quot;date&quot; field.
         </Typography>
 
-        <Typography variant="subtitle2" fontWeight={600} mb={1}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
           Type Inference
         </Typography>
-        <Typography variant="body2" color="text.secondary" mb={1}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
           If the type column is missing or empty, the sign of the amount
           determines the type: negative → expense, positive → income.
         </Typography>
-        <Typography variant="body2" color="text.secondary" mb={2}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           When type is provided, these values are recognised:
           <br />
           <strong>Expense:</strong> dr, debit, expense, payment, withdrawal,
@@ -199,7 +199,7 @@ const UploadCSV = () => {
 
         <Divider sx={{ my: 2 }} />
 
-        <Typography variant="subtitle2" fontWeight={600} mb={1}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
           Example CSV:
         </Typography>
 

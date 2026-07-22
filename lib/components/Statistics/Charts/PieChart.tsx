@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
 import { SummaryMonth } from '@/types/Summary';
@@ -13,36 +13,33 @@ const SimplePieChart = ({ summary }: SimplePieChartProps) => {
 
   if (!summary?.expenses || summary.expenses.length === 0) {
     return (
-      <Box textAlign="center" py={4}>
+      <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography color="text.secondary">No expense data</Typography>
       </Box>
     );
   }
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <PieChart>
-        <Pie
-          data={summary.expenses}
-          dataKey="amount"
-          nameKey="category"
-          cx="50%"
-          cy="50%"
-          innerRadius={60}
-          outerRadius={80}
-          label={({ name, percent }: { name?: string; percent?: number }) =>
-            `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
-          }
-        >
-          {summary.expenses.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={getCategoryColor(entry.category) || '#8884d8'}
-            />
-          ))}
-        </Pie>
-      </PieChart>
-    </ResponsiveContainer>
+    <Box sx={{ width: '100%', height: 300 }}>
+      <PieChart
+        series={[
+          {
+            data: summary.expenses.map((entry, index) => ({
+              id: index,
+              value: entry.amount,
+              label: entry.category,
+              color: getCategoryColor(entry.category) || '#8884d8',
+            })),
+            innerRadius: 60,
+            outerRadius: 80,
+            arcLabel: (item) =>
+              `${item.label} ${((item.value / summary.totalExpense) * 100).toFixed(0)}%`,
+            arcLabelMinAngle: 30,
+          },
+        ]}
+        height={300}
+      />
+    </Box>
   );
 };
 

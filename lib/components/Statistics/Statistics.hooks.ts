@@ -20,7 +20,10 @@ const useStatistics = (summary: SummaryMonth, records: TRecord[]) => {
     for (const r of records || []) {
       const dateKey = r.date.split('T')[0];
       const existing = latestPerDateMap.get(dateKey);
-      if (!existing || new Date(r.date).getTime() > new Date(existing.date).getTime()) {
+      if (
+        !existing ||
+        new Date(r.date).getTime() > new Date(existing.date).getTime()
+      ) {
         latestPerDateMap.set(dateKey, r);
       }
     }

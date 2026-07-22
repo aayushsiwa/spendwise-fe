@@ -1,14 +1,6 @@
 import { Box, Typography } from '@mui/material';
-import {
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
-  Radar,
-  RadarChart,
-  ResponsiveContainer,
-} from 'recharts';
+import { RadarChart } from '@mui/x-charts/RadarChart';
 
-import { useCategoriesContext } from '@/lib/context/Categories/Categories';
 import { SummaryMonth } from '@/types/Summary';
 
 type SimpleRadarChartProps = {
@@ -16,55 +8,61 @@ type SimpleRadarChartProps = {
 };
 
 const SimpleRadarChart = ({ summary }: SimpleRadarChartProps) => {
-  const { getCategoryColor } = useCategoriesContext();
+  const categorySet = new Set<string>();
+  const expenses = summary?.expenses || [];
+  const incomes = summary?.incomes || [];
 
-  const data = [
-    ...(summary?.expenses?.map((e) => ({
-      category: e.category,
-      expense: e.amount,
-      income: 0,
-    })) ?? []),
-    ...(summary?.incomes
-      ?.filter(
-        (inc) => !summary.expenses?.some((exp) => exp.category === inc.category)
-      )
-      .map((inc) => ({
-        category: inc.category,
-        expense: 0,
-        income: inc.amount,
-      })) ?? []),
-  ];
+  for (const exp of expenses) {
+    categorySet.add(exp.category);
+  }
 
-  if (data.length === 0) {
+  for (const inc of incomes) {
+    categorySet.add(inc.category);
+  }
+
+  const categories = Array.from(categorySet);
+
+  // Generate data arrays in the same order as categories
+  const expenseData = categories.map((category) => {
+    const exp = expenses.find((e) => e.category === category);
+    return exp ? exp.amount : 0;
+  });
+
+  const incomeData = categories.map((category) => {
+    const inc = incomes.find((i) => i.category === category);
+    return inc ? inc.amount : 0;
+  });
+
+  // Check if both series are empty
+  if (expenseData.every((v) => v === 0) && incomeData.every((v) => v === 0)) {
     return (
-      <Box textAlign="center" py={4}>
+      <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography color="text.secondary">No category data</Typography>
       </Box>
     );
   }
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <RadarChart cx="50%" cy="50%" outerRadius="75%" data={data}>
-        <PolarGrid gridType="circle" />
-        <PolarAngleAxis dataKey="category" tick={{ fontSize: 12 }} />
-        <PolarRadiusAxis tick={false} axisLine={false} />
-        <Radar
-          dataKey="expense"
-          stroke="#E17055"
-          fill="#E17055"
-          fillOpacity={0.3}
-          name="Expense"
-        />
-        <Radar
-          dataKey="income"
-          stroke="#00B894"
-          fill="#00B894"
-          fillOpacity={0.3}
-          name="Income"
-        />
-      </RadarChart>
-    </ResponsiveContainer>
+    <Box sx={{ width: '100%', height: 300 }}>
+      <RadarChart
+        height={300}
+        series={[
+          {
+            label: 'Expense',
+            data: expenseData,
+            color: '#E17055',
+          },
+          {
+            label: 'Income',
+            data: incomeData,
+            color: '#00B894',
+          },
+        ]}
+        radar={{
+          metrics: categories,
+        }}
+      />
+    </Box>
   );
 };
 

@@ -66,7 +66,11 @@ const Home: FC = () => {
             color: alpha(theme.palette.text.secondary, 0.3),
           }}
         />
-        <Typography variant="h5" color="text.secondary" fontWeight={600}>
+        <Typography
+          variant="h5"
+          color="text.secondary"
+          sx={{ fontWeight: 600 }}
+        >
           No records found
         </Typography>
         <Typography variant="body2" color="text.secondary">

@@ -2,6 +2,7 @@ import {
   Card,
   CardContent,
   Typography,
+  alpha,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -80,7 +81,7 @@ const BalanceChart = ({ data }: { data: BalanceData[] }) => {
               strokeDasharray: '4 4',
             },
             '.MuiAreaElement-root': {
-              fill: `url(#gradient)`,
+              fill: alpha(theme.palette.primary.main, 0.15),
             },
             '.MuiLineElement-root': {
               strokeWidth: isMobile ? 2 : 2.5,
@@ -91,22 +92,7 @@ const BalanceChart = ({ data }: { data: BalanceData[] }) => {
               strokeWidth: 2,
             },
           }}
-        >
-          <defs>
-            <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="0%"
-                stopColor={theme.palette.primary.main}
-                stopOpacity={0.3}
-              />
-              <stop
-                offset="100%"
-                stopColor={theme.palette.primary.main}
-                stopOpacity={0}
-              />
-            </linearGradient>
-          </defs>
-        </LineChart>
+        />
       </CardContent>
     </Card>
   );

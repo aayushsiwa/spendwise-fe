@@ -8,9 +8,9 @@ import { GridPaginationModel } from '@mui/x-data-grid';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useCreateRecordAPI } from '@/api/records/createRecord';
-import { useDeleteRecordAPI } from '@/api/records/deleteRecords';
+import { useDeleteRecordAPI } from '@/api/records/deleteRecord';
 import { useGetRecordsAPI } from '@/api/records/getRecords';
-import { useUpdateRecordAPI } from '@/api/records/updateRecords';
+import { useUpdateRecordAPI } from '@/api/records/updateRecord';
 import { usePeriodContext } from '@/lib/context/Period/Period';
 import { useAppSnackbar } from '@/lib/context/Snackbar/Snackbar';
 import type { Record, RecordsQueryParams } from '@/types/Records';

@@ -54,6 +54,7 @@ const RecordsTable = ({
           processRowUpdate={processRowUpdate}
           checkboxSelection={isCheckBoxSelectionAllowed}
           disableRowSelectionOnClick
+          getRowClassName={(params) => `row-type-${params.row.type}`}
           sx={{
             width: '100%',
             height: '100%',

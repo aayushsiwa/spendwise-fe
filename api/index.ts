@@ -1,6 +1,7 @@
-import { baseApiURL } from '@/constants/config';
 import { DefaultOptions, QueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+
+import { baseApiURL } from '@/constants/config';
 
 const queryClientOptions: DefaultOptions = {
   queries: {
