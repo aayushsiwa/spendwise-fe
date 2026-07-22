@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 
-import { Record, RecordType, RecordTypes } from '@/types/Records';
+import { Record, RecordTypes } from '@/types/Records';
 
 dayjs.extend(customParseFormat);
 

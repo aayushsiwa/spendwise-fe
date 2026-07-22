@@ -4,9 +4,7 @@ import { Head, Html, Main, NextScript } from 'next/document';
 export default function Document() {
   return (
     <Html lang="en" suppressHydrationWarning>
-      <Head>
-        <title>SpendWise</title>
-      </Head>
+      <Head>SpendWise</Head>
       <body>
         <InitColorSchemeScript attribute="data" modeStorageKey="theme" />
         <Main />
