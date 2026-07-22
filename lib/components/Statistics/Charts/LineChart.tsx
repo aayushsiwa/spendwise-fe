@@ -2,6 +2,7 @@ import {
   Card,
   CardContent,
   Typography,
+  alpha,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -80,7 +81,7 @@ const BalanceChart = ({ data }: { data: BalanceData[] }) => {
               strokeDasharray: '4 4',
             },
             '.MuiAreaElement-root': {
-              fill: `rgba(99, 102, 241, 0.15)`,
+              fill: alpha(theme.palette.primary.main, 0.15),
             },
             '.MuiLineElement-root': {
               strokeWidth: isMobile ? 2 : 2.5,

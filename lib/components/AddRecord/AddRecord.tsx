@@ -90,7 +90,10 @@ const AddRecord = () => {
         <TextField
           type="number"
           value={amount}
-          onChange={(e) => setAmount(parseFloat(e.target.value))}
+          onChange={(e) => {
+            const value = e.target.value;
+            setAmount(value === '' ? 0 : parseFloat(value));
+          }}
         />
       </Grid>
 

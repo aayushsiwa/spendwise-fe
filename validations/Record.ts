@@ -74,6 +74,6 @@ export const normalizeRecord = (record: RecordFormData): RecordFormData => ({
   description: record.description.trim(),
   amount: Math.abs(Number(record.amount)),
   category: record.category.trim(),
-  type: record.amount && record.amount < 0 ? RecordType.EXPENSE : record.type,
+  type: record.type,
   note: record.note.trim(),
 });

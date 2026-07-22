@@ -120,7 +120,7 @@ const UploadCSV = () => {
               const csvContent = [
                 'date,description,category,amount,type,note',
                 '2025-01-01,Swiggy order,food,-250,expense,lunch',
-                '2025-01-02,Salary,income,50000,income,monthly salary',
+                '2025-01-02,Salary,,50000,income,monthly salary',
               ].join('\n');
               const blob = new Blob([csvContent], { type: 'text/csv' });
 

@@ -17,24 +17,24 @@ const SimpleRadarChart = ({ summary }: SimpleRadarChartProps) => {
   }
 
   for (const inc of incomes) {
-    if (!expenses.some((exp) => exp.category === inc.category)) {
-      categorySet.add(inc.category);
-    }
+    categorySet.add(inc.category);
   }
 
   const categories = Array.from(categorySet);
 
-  const expenseData = expenses.map((exp) => exp.amount);
-  // const incomeData = expenses.map((exp) => 0);
+  // Generate data arrays in the same order as categories
+  const expenseData = categories.map((category) => {
+    const exp = expenses.find((e) => e.category === category);
+    return exp ? exp.amount : 0;
+  });
 
-  const uniqueIncomes = incomes.filter(
-    (inc) => !expenses.some((exp) => exp.category === inc.category)
-  );
-  const uniqueIncomeValues = uniqueIncomes.map((inc) => inc.amount);
+  const incomeData = categories.map((category) => {
+    const inc = incomes.find((i) => i.category === category);
+    return inc ? inc.amount : 0;
+  });
 
-  const data = [...expenseData, ...uniqueIncomeValues];
-
-  if (data.length === 0) {
+  // Check if both series are empty
+  if (expenseData.every((v) => v === 0) && incomeData.every((v) => v === 0)) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography color="text.secondary">No category data</Typography>
@@ -54,7 +54,7 @@ const SimpleRadarChart = ({ summary }: SimpleRadarChartProps) => {
           },
           {
             label: 'Income',
-            data: uniqueIncomeValues,
+            data: incomeData,
             color: '#00B894',
           },
         ]}

@@ -86,6 +86,26 @@ const RecordDetailDialog = ({
     field: T,
     value: string
   ) => {
+    // For amount field, ensure the value doesn't contradict the selected type
+    if (field === 'amount' && value !== '' && value !== '-') {
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue) && numValue < 0) {
+        // User entered a negative amount - adjust type to expense
+        setEdit((current) => ({
+          ...current,
+          [field]: value,
+          type: 'expense',
+        }));
+        setValidationErrors((current) => {
+          const next = { ...current };
+          delete next[field];
+          delete next.type;
+          return next;
+        });
+        return;
+      }
+    }
+
     setEdit((current) => ({ ...current, [field]: value }));
     setValidationErrors((current) => {
       if (!current[field]) {

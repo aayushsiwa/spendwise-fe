@@ -67,8 +67,42 @@ function AmountEditCell(props: GridRenderEditCellParams) {
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const edited = e.target.value;
-    const newValue = edited === '' ? '' : Number(edited);
-    api.setEditCellValue({ id, field, value: newValue });
+    // Preserve bare "-" during editing
+    if (edited === '-') {
+      api.setEditCellValue({ id, field, value: '-' });
+      return;
+    }
+    // Handle empty input
+    if (edited === '') {
+      api.setEditCellValue({ id, field, value: '' });
+      return;
+    }
+    // Parse numeric value
+    const parsed = Number(edited);
+    if (isNaN(parsed)) {
+      return; // Don't update if invalid
+    }
+    // Normalize sign according to currentType
+    let normalized = parsed;
+    if (currentType === 'expense' && parsed > 0) {
+      normalized = -Math.abs(parsed);
+    } else if (currentType !== 'expense' && parsed < 0) {
+      normalized = Math.abs(parsed);
+    }
+    api.setEditCellValue({ id, field, value: normalized });
+
+    // Synchronize type if user entered a sign that implies different type
+    if (parsed < 0 && currentType !== 'expense') {
+      setCurrentType('expense');
+      if (api.state.editRows[id]) {
+        api.state.editRows[id].type = { value: 'expense' };
+      }
+    } else if (parsed > 0 && currentType === 'expense') {
+      setCurrentType('income');
+      if (api.state.editRows[id]) {
+        api.state.editRows[id].type = { value: 'income' };
+      }
+    }
   };
 
   const handleTypeChange = (event: SelectChangeEvent) => {
