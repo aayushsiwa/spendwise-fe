@@ -149,6 +149,7 @@ export interface SidebarProps {
   menuItems?: SidebarMenuItem[];
   defaultOpen?: boolean;
   showAppBar?: boolean;
+  showPeriodSelector?: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -157,6 +158,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   menuItems = [],
   defaultOpen = false,
   showAppBar = true,
+  showPeriodSelector = true,
 }) => {
   const theme = useTheme();
   const largeView = useMediaQuery(theme.breakpoints.up('md'));
@@ -236,7 +238,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 alignItems: 'center',
               }}
             >
-              <PeriodSelector />
+              {showPeriodSelector && <PeriodSelector />}
               <ThemeToggle />
             </Grid>
           </Grid>

@@ -1,15 +1,32 @@
-import { CloudUpload, Dashboard as DashboardIcon } from '@mui/icons-material';
+import {
+  Category as CategoryIcon,
+  CloudUpload,
+  Dashboard as DashboardIcon,
+  Receipt,
+} from '@mui/icons-material';
 import { FC, PropsWithChildren } from 'react';
 
 import Sidebar, { SidebarMenuItem } from '@/lib/components/Sidebar/Sidebar';
 import { SummaryProvider } from '@/lib/context/Summary/Summary';
 
-const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
+export type BaseLayoutProps = {
+  showPeriodSelector?: boolean;
+};
+
+const BaseLayout: FC<PropsWithChildren<BaseLayoutProps>> = ({
+  children,
+  showPeriodSelector,
+}) => {
   const menuItems: SidebarMenuItem[] = [
     {
       text: 'Dashboard',
       icon: <DashboardIcon />,
       href: '/',
+    },
+    {
+      text: 'Transactions',
+      icon: <Receipt />,
+      href: '/transactions',
     },
     {
       text: 'Upload',
@@ -30,6 +47,7 @@ const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
         menuItems={menuItems}
         defaultOpen={false}
         showAppBar={true}
+        showPeriodSelector={showPeriodSelector}
       >
         {children}
       </Sidebar>
