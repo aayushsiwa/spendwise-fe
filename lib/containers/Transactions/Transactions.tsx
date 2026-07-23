@@ -4,7 +4,7 @@ import Records from '@/lib/components/Records/Records';
 import TransactionsFilter from '@/lib/components/Transactions/TransactionsFilter';
 import { CategoriesContextProvider } from '@/lib/context/Categories/Categories';
 
-import useTransactions from './Transactions.hooks';
+import { useRecords } from '@/lib/hooks/useRecords';
 
 const Transactions = () => {
   const {
@@ -22,7 +22,7 @@ const Transactions = () => {
     error,
     filters,
     setFilters,
-  } = useTransactions();
+  } = useRecords({ defaultPageSize: 10 });
 
   return (
     <CategoriesContextProvider>

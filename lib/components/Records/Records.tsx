@@ -1,7 +1,7 @@
 'use client';
 
-import { Add, Receipt } from '@mui/icons-material';
-import { Alert, Box, CircularProgress, Fab, Typography } from '@mui/material';
+import { Receipt } from '@mui/icons-material';
+import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { FC, useEffect, useMemo, useState } from 'react';
 
 import { Pagination } from '@/api/records/getRecords';
@@ -97,16 +97,7 @@ const Records: FC<RecordProps> = ({
   };
 
   const handleDialogSave = async (updatedRecord: Record) => {
-    if (dialogMode === 'create') {
-      await handleCreateRecord({
-        date: updatedRecord.date,
-        description: updatedRecord.description,
-        category: updatedRecord.category,
-        amount: updatedRecord.amount,
-        type: updatedRecord.type,
-        note: updatedRecord.note,
-      });
-    } else if (selectedRecord) {
+    if (selectedRecord) {
       await processRowUpdate(updatedRecord, selectedRecord);
     }
   };
@@ -171,8 +162,8 @@ const Records: FC<RecordProps> = ({
       />
 
       <RecordDetailDialog
-        record={dialogMode === 'create' ? null : selectedRecord}
-        open={dialogMode !== null}
+        record={selectedRecord}
+        open={selectedRecord !== null}
         onClose={handleDialogClose}
         onSave={handleDialogSave}
         onDelete={handleDeleteRecord}

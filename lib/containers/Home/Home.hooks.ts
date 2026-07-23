@@ -1,5 +1,5 @@
 import { useGetSummaryAPI } from '@/api/summary/getSummary';
-import useRecords from '@/lib/components/Records/Records.hooks';
+import { useRecords } from '@/lib/hooks/useRecords';
 import { usePeriodContext } from '@/lib/context/Period/Period';
 import { DateUtil } from '@/utils/DateUtils';
 
@@ -17,7 +17,7 @@ const useHome = () => {
     handleCreateRecord,
     isGetRecordsError,
     error,
-  } = useRecords();
+  } = useRecords({ usePeriodContext: true });
 
   const { range } = usePeriodContext();
 

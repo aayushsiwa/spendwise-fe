@@ -1,18 +1,18 @@
+import { useCallback, useEffect, useState, useRef } from 'react';
+import { GridPaginationModel } from '@mui/x-data-grid';
 import {
   Receipt,
   SwapHoriz,
   TrendingDown,
   TrendingUp,
 } from '@mui/icons-material';
-import { GridPaginationModel } from '@mui/x-data-grid';
-import { useCallback, useEffect, useRef, useState } from 'react';
-
-import { useCreateRecordAPI } from '@/api/records/createRecord';
+import {
+  useCreateRecordAPI,
+} from '@/api/records/createRecord';
 import { useDeleteRecordAPI } from '@/api/records/deleteRecord';
 import { useGetRecordsAPI } from '@/api/records/getRecords';
 import { useUpdateRecordAPI } from '@/api/records/updateRecord';
-import { RecordProps } from '@/lib/components/Records/Records';
-import { FiltersState } from '@/lib/components/Transactions/TransactionsFilter';
+import { usePeriodContext } from '@/lib/context/Period/Period';
 import { useAppSnackbar } from '@/lib/context/Snackbar/Snackbar';
 import type { Record, RecordsQueryParams } from '@/types/Records';
 import { getApiErrorMessage } from '@/utils/apiError';
@@ -23,10 +23,34 @@ import {
   validateRecord,
 } from '@/validations/Record';
 
-const useTransactions = (): RecordProps & {
-  filters: FiltersState;
-  setFilters: React.Dispatch<React.SetStateAction<FiltersState>>;
-} => {
+export type RecordsFilter = {
+  search: string;
+  type: string;
+  category: string;
+  from: string;
+  to: string;
+};
+
+export type UseRecordsConfig = {
+  defaultPageSize?: number;
+  initialFilters?: Partial<RecordsFilter>;
+  usePeriodContext?: boolean;
+};
+
+const defaultFilters: RecordsFilter = {
+  search: '',
+  type: '',
+  category: '',
+  from: '',
+  to: '',
+};
+
+export function useRecords({
+  defaultPageSize = 10,
+  initialFilters = {},
+  usePeriodContext: enablePeriodCtx = false,
+}: UseRecordsConfig = {}) {
+  const period = enablePeriodCtx ? usePeriodContext() : undefined;
   const { showSnackbar } = useAppSnackbar();
   const updateRecord = useUpdateRecordAPI();
   const deleteRecord = useDeleteRecordAPI();
@@ -35,16 +59,15 @@ const useTransactions = (): RecordProps & {
   const [queryParams, setQueryParams] = useState<{
     page: number;
     limit: number;
-  }>({ page: 1, limit: 10 });
-
-  const [filters, setFilters] = useState<FiltersState>({
-    search: '',
-    type: '',
-    category: '',
-    from: '',
-    to: '',
+  }>({
+    page: 1,
+    limit: defaultPageSize,
   });
 
+  const [filters, setFilters] = useState<RecordsFilter>({
+    ...defaultFilters,
+    ...initialFilters,
+  });
   const [debouncedSearch, setDebouncedSearch] = useState(filters.search);
 
   useEffect(() => {
@@ -53,7 +76,6 @@ const useTransactions = (): RecordProps & {
   }, [filters.search]);
 
   const prevFilters = useRef({ ...filters, debouncedSearch });
-
   useEffect(() => {
     const prev = prevFilters.current;
     if (
@@ -63,7 +85,7 @@ const useTransactions = (): RecordProps & {
       prev.from !== filters.from ||
       prev.to !== filters.to
     ) {
-      setQueryParams((qp) => ({ ...qp, page: 1 }));
+      setQueryParams((q) => ({ ...q, page: 1 }));
     }
     prevFilters.current = { ...filters, debouncedSearch };
   }, [filters, debouncedSearch]);
@@ -75,10 +97,10 @@ const useTransactions = (): RecordProps & {
     ...(filters.category && { category: filters.category }),
     ...(filters.from && { from: filters.from }),
     ...(filters.to && { to: filters.to }),
+    ...(period?.range || {}),
   };
 
   const { data, isLoading, isError, error } = useGetRecordsAPI(fullParams);
-
   const { records, ...pagination } = data?.data ?? {
     hasNext: false,
     hasPrev: false,
@@ -89,7 +111,6 @@ const useTransactions = (): RecordProps & {
   };
 
   const [localRows, setLocalRows] = useState<Record[]>([]);
-
   useEffect(() => {
     setLocalRows(records ?? []);
   }, [records]);
@@ -111,11 +132,9 @@ const useTransactions = (): RecordProps & {
     (model: GridPaginationModel) => {
       const newPage = model.page + 1;
       const newLimit = model.pageSize;
-
       if (newPage === queryParams.page && newLimit === queryParams.limit) {
         return;
       }
-
       setQueryParams({
         page: newPage,
         limit: newLimit,
@@ -141,18 +160,19 @@ const useTransactions = (): RecordProps & {
   ): Promise<Record> => {
     const normalizedRecord = normalizeRecord(recordData);
     const validationErrors = validateRecord(normalizedRecord);
-
     if (hasRecordValidationErrors(validationErrors)) {
       const message = getRecordValidationMessage(validationErrors);
       showSnackbar(message, 'error');
       throw new Error(message);
     }
-
     try {
       const response = await createRecord.mutateAsync({
         record: normalizedRecord,
       });
-      const ID = response.data?.ID ?? '';
+      const ID = response.data?.ID;
+      if (!ID) {
+        throw new Error('No ID returned from server');
+      }
       const created: Record = { ...normalizedRecord, ID };
       setLocalRows((prev) => [created, ...prev]);
       return created;
@@ -171,25 +191,19 @@ const useTransactions = (): RecordProps & {
       const { ID, ...recordData } = newRow;
       const normalizedRecord = normalizeRecord(recordData);
       const validationErrors = validateRecord(normalizedRecord);
-
       if (hasRecordValidationErrors(validationErrors)) {
         const message = getRecordValidationMessage(validationErrors);
         throw new Error(message);
       }
-
       const changes: Partial<Omit<Record, 'ID'>> = {};
-      for (const key of Object.keys(
-        normalizedRecord
-      ) as (keyof typeof normalizedRecord)[]) {
+      for (const key of Object.keys(normalizedRecord) as (keyof typeof normalizedRecord)[]) {
         if (normalizedRecord[key] !== oldRow[key]) {
           changes[key] = normalizedRecord[key] as never;
         }
       }
-
       if (Object.keys(changes).length === 0) {
         return { ...newRow, ...normalizedRecord };
       }
-
       await updateRecord.mutateAsync({ ID, record: changes });
       setLocalRows((prev) =>
         prev.map((r) =>
@@ -219,7 +233,7 @@ const useTransactions = (): RecordProps & {
     error: error ?? undefined,
     filters,
     setFilters,
+    queryParams,
+    setQueryParams,
   };
-};
-
-export default useTransactions;
+}
