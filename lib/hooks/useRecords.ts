@@ -8,6 +8,10 @@ import { GridPaginationModel } from '@mui/x-data-grid';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useCreateRecordAPI } from '@/api/records/createRecord';
+import type {
+  CreateRecordRequest,
+  CreateRecordResponse,
+} from '@/api/records/createRecord';
 import { useDeleteRecordAPI } from '@/api/records/deleteRecord';
 import { useGetRecordsAPI } from '@/api/records/getRecords';
 import { useUpdateRecordAPI } from '@/api/records/updateRecord';
@@ -24,8 +28,10 @@ import {
 
 async function createRecordWithValidation(
   recordData: Omit<Record, 'ID'>,
-  createRecord: { mutateAsync: (args: { record: Omit<Record, 'ID'> }) => Promise<any> },
-  showSnackbar: (message: string, severity: 'error' | 'success') => void,
+  createRecord: {
+    mutateAsync: (args: CreateRecordRequest) => Promise<CreateRecordResponse>;
+  },
+  showSnackbar: (message: string, severity: 'error' | 'success') => void
 ): Promise<Record> {
   const normalizedRecord = normalizeRecord(recordData);
   const validationErrors = validateRecord(normalizedRecord);
@@ -35,7 +41,9 @@ async function createRecordWithValidation(
     throw new Error(message);
   }
   try {
-    const response = await createRecord.mutateAsync({ record: normalizedRecord });
+    const response = await createRecord.mutateAsync({
+      record: normalizedRecord,
+    });
     const ID = response.data?.ID;
     if (!ID) {
       throw new Error('No ID returned from server');
@@ -194,7 +202,11 @@ export function useRecords({
   const handleCreateRecord = async (
     recordData: Omit<Record, 'ID'>
   ): Promise<Record> => {
-    const created = await createRecordWithValidation(recordData, createRecord, showSnackbar);
+    const created = await createRecordWithValidation(
+      recordData,
+      createRecord,
+      showSnackbar
+    );
     setLocalRows((prev) => [created, ...prev]);
     return created;
   };

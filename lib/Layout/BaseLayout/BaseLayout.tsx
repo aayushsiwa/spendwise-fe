@@ -6,20 +6,11 @@ import {
 } from '@mui/icons-material';
 import { FC, PropsWithChildren, useState } from 'react';
 
-import { useCreateRecordAPI } from '@/api/records/createRecord';
 import RecordDetailDialog from '@/lib/components/Records/RecordDetailDialog';
 import Sidebar, { SidebarMenuItem } from '@/lib/components/Sidebar/Sidebar';
-import { useAppSnackbar } from '@/lib/context/Snackbar/Snackbar';
 import { SummaryProvider } from '@/lib/context/Summary/Summary';
 import { useCreateRecord } from '@/lib/hooks/useRecords';
 import type { Record } from '@/types/Records';
-import { getApiErrorMessage } from '@/utils/apiError';
-import {
-  getRecordValidationMessage,
-  hasRecordValidationErrors,
-  normalizeRecord,
-  validateRecord,
-} from '@/validations/Record';
 
 export type BaseLayoutProps = {
   showPeriodSelector?: boolean;
@@ -56,8 +47,7 @@ const BaseLayout: FC<PropsWithChildren<BaseLayoutProps>> = ({
   ];
 
   const handleCreateRecord = async (recordData: Record): Promise<void> => {
-    const { ID, ...data } = recordData;
-    await create(data);
+    await create(recordData);
     setCreateDialogOpen(false);
   };
 

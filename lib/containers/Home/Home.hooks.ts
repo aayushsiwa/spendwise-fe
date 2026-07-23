@@ -1,6 +1,6 @@
 import { useGetSummaryAPI } from '@/api/summary/getSummary';
-import { useRecords } from '@/lib/hooks/useRecords';
 import { usePeriodContext } from '@/lib/context/Period/Period';
+import { useRecords } from '@/lib/hooks/useRecords';
 import { DateUtil } from '@/utils/DateUtils';
 
 const useHome = () => {

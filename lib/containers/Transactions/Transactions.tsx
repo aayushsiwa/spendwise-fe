@@ -3,7 +3,6 @@ import { Box, Paper, Typography } from '@mui/material';
 import Records from '@/lib/components/Records/Records';
 import TransactionsFilter from '@/lib/components/Transactions/TransactionsFilter';
 import { CategoriesContextProvider } from '@/lib/context/Categories/Categories';
-
 import { useRecords } from '@/lib/hooks/useRecords';
 
 const Transactions = () => {
