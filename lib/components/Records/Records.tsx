@@ -148,6 +148,7 @@ const Records: FC<RecordProps> = ({
           alignItems: 'center',
           height: '100%',
           color: 'text.secondary',
+          p: 2,
         }}
       >
         <Typography variant="h6">No records found</Typography>
