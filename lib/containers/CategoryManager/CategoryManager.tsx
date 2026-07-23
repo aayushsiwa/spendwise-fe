@@ -122,6 +122,7 @@ const CategoryManager = () => {
         {categories?.map((cat) => (
           // move card to other component
           <CategoryCard
+            key={cat.ID}
             cat={cat}
             openEdit={openEdit}
             setDeleteConfirm={setDeleteConfirm}
