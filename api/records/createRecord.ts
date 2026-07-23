@@ -9,9 +9,9 @@ type CreateRecordAPIResponse = {
   message: string;
   ID: string;
 };
-type CreateRecordResponse = AxiosResponse<CreateRecordAPIResponse>;
+export type CreateRecordResponse = AxiosResponse<CreateRecordAPIResponse>;
 
-type CreateRecordRequest = {
+export type CreateRecordRequest = {
   record: Omit<Record, 'ID'>;
 };
 
