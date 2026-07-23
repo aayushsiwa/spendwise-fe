@@ -58,8 +58,10 @@ const TransactionsFilter = ({ filters, onChange }: TransactionsFilterProps) => {
         sx={{ minWidth: 200 }}
       />
       <FormControl size="small" sx={{ minWidth: 120 }}>
-        <InputLabel>Type</InputLabel>
+        <InputLabel id="type-label">Type</InputLabel>
         <Select
+          labelId="type-label"
+          id="type-select"
           value={filters.type}
           label="Type"
           onChange={(e) => onChange({ ...filters, type: e.target.value })}
@@ -71,8 +73,10 @@ const TransactionsFilter = ({ filters, onChange }: TransactionsFilterProps) => {
         </Select>
       </FormControl>
       <FormControl size="small" sx={{ minWidth: 140 }}>
-        <InputLabel>Category</InputLabel>
+        <InputLabel id="category-label">Category</InputLabel>
         <Select
+          labelId="category-label"
+          id="category-select"
           value={filters.category}
           label="Category"
           onChange={(e) => onChange({ ...filters, category: e.target.value })}

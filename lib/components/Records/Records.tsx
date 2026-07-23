@@ -54,7 +54,6 @@ const Records: FC<RecordProps> = ({
   const { getCategoryColor } = useCategoriesContext();
   const { showSnackbar } = useAppSnackbar();
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
-  const [dialogMode, setDialogMode] = useState<'create' | 'edit' | null>(null);
 
   const recordsErrorMessage =
     error || isGetRecordsError
@@ -69,7 +68,6 @@ const Records: FC<RecordProps> = ({
 
   const handleViewRecord = (record: Record) => {
     setSelectedRecord(record);
-    setDialogMode('edit');
   };
 
   const columns = useMemo(
@@ -92,10 +90,6 @@ const Records: FC<RecordProps> = ({
     [pagination]
   );
 
-  const handleFabClick = () => {
-    setDialogMode('create');
-  };
-
   const handleDialogSave = async (updatedRecord: Record) => {
     if (selectedRecord) {
       await processRowUpdate(updatedRecord, selectedRecord);
@@ -103,7 +97,6 @@ const Records: FC<RecordProps> = ({
   };
 
   const handleDialogClose = () => {
-    setDialogMode(null);
     setSelectedRecord(null);
   };
 
@@ -168,14 +161,6 @@ const Records: FC<RecordProps> = ({
         onSave={handleDialogSave}
         onDelete={handleDeleteRecord}
       />
-
-      <Fab
-        color="primary"
-        onClick={handleFabClick}
-        sx={{ position: 'fixed', bottom: 24, right: 24 }}
-      >
-        <Add />
-      </Fab>
     </Box>
   );
 };

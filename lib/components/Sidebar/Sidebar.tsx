@@ -165,6 +165,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   defaultOpen = false,
   showAppBar = true,
   showPeriodSelector = true,
+  globalFab,
 }) => {
   const theme = useTheme();
   const largeView = useMediaQuery(theme.breakpoints.up('md'));
