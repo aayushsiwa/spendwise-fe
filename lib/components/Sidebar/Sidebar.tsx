@@ -1,9 +1,10 @@
-import { Download, Menu as MenuIcon, Refresh } from '@mui/icons-material';
+import { Add, Download, Menu as MenuIcon, Refresh } from '@mui/icons-material';
 import {
   Alert,
   Box,
   CssBaseline,
   Divider,
+  Fab,
   Grid,
   IconButton,
   List,
@@ -149,6 +150,12 @@ export interface SidebarProps {
   menuItems?: SidebarMenuItem[];
   defaultOpen?: boolean;
   showAppBar?: boolean;
+  showPeriodSelector?: boolean;
+  globalFab?: {
+    onClick: () => void;
+    icon?: React.ReactNode;
+    label?: string;
+  };
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -157,6 +164,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   menuItems = [],
   defaultOpen = false,
   showAppBar = true,
+  showPeriodSelector = true,
+  globalFab,
 }) => {
   const theme = useTheme();
   const largeView = useMediaQuery(theme.breakpoints.up('md'));
@@ -236,7 +245,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 alignItems: 'center',
               }}
             >
-              <PeriodSelector />
+              {showPeriodSelector && <PeriodSelector />}
               <ThemeToggle />
             </Grid>
           </Grid>
@@ -320,6 +329,18 @@ const Sidebar: React.FC<SidebarProps> = ({
             {snackbar.message}
           </Alert>
         </Snackbar>
+      )}
+
+      {globalFab && (
+        <Fab
+          color="primary"
+          aria-label={globalFab.label ?? 'Add'}
+          title={globalFab.label ?? 'Add'}
+          onClick={globalFab.onClick}
+          sx={{ position: 'fixed', bottom: 24, right: 24 }}
+        >
+          {globalFab.icon ?? <Add />}
+        </Fab>
       )}
     </Box>
   );

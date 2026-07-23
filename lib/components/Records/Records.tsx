@@ -1,7 +1,7 @@
 'use client';
 
-import { Add, Receipt } from '@mui/icons-material';
-import { Alert, Box, CircularProgress, Fab, Typography } from '@mui/material';
+import { Receipt } from '@mui/icons-material';
+import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { FC, useEffect, useMemo, useState } from 'react';
 
 import { Pagination } from '@/api/records/getRecords';
@@ -31,7 +31,6 @@ export type RecordProps = {
   };
   processRowUpdate: (newRow: Record, oldRow: Record) => Promise<Record>;
   handleDeleteRecord: (ID: string) => Promise<void>;
-  handleCreateRecord: (record: Omit<Record, 'ID'>) => Promise<Record>;
   isGetRecordsError?: boolean;
   error?: Error;
   isCheckBoxSelectionAllowed?: boolean;
@@ -46,7 +45,6 @@ const Records: FC<RecordProps> = ({
   getTypeDetails,
   processRowUpdate,
   handleDeleteRecord,
-  handleCreateRecord,
   isGetRecordsError,
   error,
   isCheckBoxSelectionAllowed = true,
@@ -54,7 +52,6 @@ const Records: FC<RecordProps> = ({
   const { getCategoryColor } = useCategoriesContext();
   const { showSnackbar } = useAppSnackbar();
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
-  const [dialogMode, setDialogMode] = useState<'create' | 'edit' | null>(null);
 
   const recordsErrorMessage =
     error || isGetRecordsError
@@ -69,7 +66,6 @@ const Records: FC<RecordProps> = ({
 
   const handleViewRecord = (record: Record) => {
     setSelectedRecord(record);
-    setDialogMode('edit');
   };
 
   const columns = useMemo(
@@ -92,27 +88,13 @@ const Records: FC<RecordProps> = ({
     [pagination]
   );
 
-  const handleFabClick = () => {
-    setDialogMode('create');
-  };
-
   const handleDialogSave = async (updatedRecord: Record) => {
-    if (dialogMode === 'create') {
-      await handleCreateRecord({
-        date: updatedRecord.date,
-        description: updatedRecord.description,
-        category: updatedRecord.category,
-        amount: updatedRecord.amount,
-        type: updatedRecord.type,
-        note: updatedRecord.note,
-      });
-    } else if (selectedRecord) {
+    if (selectedRecord) {
       await processRowUpdate(updatedRecord, selectedRecord);
     }
   };
 
   const handleDialogClose = () => {
-    setDialogMode(null);
     setSelectedRecord(null);
   };
 
@@ -148,6 +130,7 @@ const Records: FC<RecordProps> = ({
           alignItems: 'center',
           height: '100%',
           color: 'text.secondary',
+          p: 2,
         }}
       >
         <Typography variant="h6">No records found</Typography>
@@ -170,20 +153,12 @@ const Records: FC<RecordProps> = ({
       />
 
       <RecordDetailDialog
-        record={dialogMode === 'create' ? null : selectedRecord}
-        open={dialogMode !== null}
+        record={selectedRecord}
+        open={selectedRecord !== null}
         onClose={handleDialogClose}
         onSave={handleDialogSave}
         onDelete={handleDeleteRecord}
       />
-
-      <Fab
-        color="primary"
-        onClick={handleFabClick}
-        sx={{ position: 'fixed', bottom: 24, right: 24 }}
-      >
-        <Add />
-      </Fab>
     </Box>
   );
 };

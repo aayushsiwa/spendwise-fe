@@ -1,9 +1,6 @@
 import { ThemeOptions } from '@mui/material/styles';
 
 export const themeOptions: ThemeOptions = {
-  cssVariables: {
-    colorSchemeSelector: 'data',
-  },
   colorSchemes: {
     light: {
       palette: {

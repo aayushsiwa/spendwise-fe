@@ -5,9 +5,13 @@ import {
   TrendingUp,
 } from '@mui/icons-material';
 import { GridPaginationModel } from '@mui/x-data-grid';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useCreateRecordAPI } from '@/api/records/createRecord';
+import type {
+  CreateRecordRequest,
+  CreateRecordResponse,
+} from '@/api/records/createRecord';
 import { useDeleteRecordAPI } from '@/api/records/deleteRecord';
 import { useGetRecordsAPI } from '@/api/records/getRecords';
 import { useUpdateRecordAPI } from '@/api/records/updateRecord';
@@ -22,12 +26,76 @@ import {
   validateRecord,
 } from '@/validations/Record';
 
-import { RecordProps } from './Records';
+async function createRecordWithValidation(
+  recordData: Omit<Record, 'ID'>,
+  createRecord: {
+    mutateAsync: (args: CreateRecordRequest) => Promise<CreateRecordResponse>;
+  },
+  showSnackbar: (message: string, severity: 'error' | 'success') => void
+): Promise<Record> {
+  const normalizedRecord = normalizeRecord(recordData);
+  const validationErrors = validateRecord(normalizedRecord);
+  if (hasRecordValidationErrors(validationErrors)) {
+    const message = getRecordValidationMessage(validationErrors);
+    showSnackbar(message, 'error');
+    throw new Error(message);
+  }
+  try {
+    const response = await createRecord.mutateAsync({
+      record: normalizedRecord,
+    });
+    const ID = response.data?.ID;
+    if (!ID) {
+      throw new Error('No ID returned from server');
+    }
+    return { ...normalizedRecord, ID };
+  } catch (error) {
+    const message = getApiErrorMessage(error, 'Failed to create record');
+    showSnackbar(message, 'error');
+    throw error;
+  }
+}
 
-const useRecords = (): RecordProps => {
-  const { range } = usePeriodContext();
+export function useCreateRecord() {
   const { showSnackbar } = useAppSnackbar();
+  const createRecord = useCreateRecordAPI();
 
+  return {
+    create: (recordData: Omit<Record, 'ID'>) =>
+      createRecordWithValidation(recordData, createRecord, showSnackbar),
+  };
+}
+
+export type RecordsFilter = {
+  search: string;
+  type: string;
+  category: string;
+  from: string;
+  to: string;
+};
+
+export type UseRecordsConfig = {
+  defaultPageSize?: number;
+  initialFilters?: Partial<RecordsFilter>;
+  usePeriodContext?: boolean;
+};
+
+export const defaultFilters: RecordsFilter = {
+  search: '',
+  type: '',
+  category: '',
+  from: '',
+  to: '',
+};
+
+export function useRecords({
+  defaultPageSize = 10,
+  initialFilters = {},
+  usePeriodContext: enablePeriodCtx = false,
+}: UseRecordsConfig = {}) {
+  const periodContext = usePeriodContext();
+  const period = enablePeriodCtx ? periodContext : undefined;
+  const { showSnackbar } = useAppSnackbar();
   const updateRecord = useUpdateRecordAPI();
   const deleteRecord = useDeleteRecordAPI();
   const createRecord = useCreateRecordAPI();
@@ -35,12 +103,48 @@ const useRecords = (): RecordProps => {
   const [queryParams, setQueryParams] = useState<{
     page: number;
     limit: number;
-  }>({ page: 1, limit: 10 });
+  }>({
+    page: 1,
+    limit: defaultPageSize,
+  });
 
-  const fullParams: RecordsQueryParams = { ...queryParams, ...range };
+  const [filters, setFilters] = useState<RecordsFilter>({
+    ...defaultFilters,
+    ...initialFilters,
+  });
+  const [debouncedSearch, setDebouncedSearch] = useState(filters.search);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(filters.search), 300);
+    return () => clearTimeout(timer);
+  }, [filters.search]);
+
+  const prevFilters = useRef({ ...filters, debouncedSearch });
+  useEffect(() => {
+    const prev = prevFilters.current;
+    if (
+      prev.debouncedSearch !== debouncedSearch ||
+      prev.type !== filters.type ||
+      prev.category !== filters.category ||
+      prev.from !== filters.from ||
+      prev.to !== filters.to
+    ) {
+      setQueryParams((q) => ({ ...q, page: 1 }));
+    }
+    prevFilters.current = { ...filters, debouncedSearch };
+  }, [filters, debouncedSearch]);
+
+  const fullParams: RecordsQueryParams = {
+    ...queryParams,
+    ...(debouncedSearch && { search: debouncedSearch }),
+    ...(filters.type && { type: filters.type }),
+    ...(filters.category && { category: filters.category }),
+    ...(filters.from && { from: filters.from }),
+    ...(filters.to && { to: filters.to }),
+    ...(period?.range || {}),
+  };
 
   const { data, isLoading, isError, error } = useGetRecordsAPI(fullParams);
-
   const { records, ...pagination } = data?.data ?? {
     hasNext: false,
     hasPrev: false,
@@ -51,7 +155,6 @@ const useRecords = (): RecordProps => {
   };
 
   const [localRows, setLocalRows] = useState<Record[]>([]);
-
   useEffect(() => {
     setLocalRows(records ?? []);
   }, [records]);
@@ -73,11 +176,9 @@ const useRecords = (): RecordProps => {
     (model: GridPaginationModel) => {
       const newPage = model.page + 1;
       const newLimit = model.pageSize;
-
       if (newPage === queryParams.page && newLimit === queryParams.limit) {
         return;
       }
-
       setQueryParams({
         page: newPage,
         limit: newLimit,
@@ -101,31 +202,13 @@ const useRecords = (): RecordProps => {
   const handleCreateRecord = async (
     recordData: Omit<Record, 'ID'>
   ): Promise<Record> => {
-    const normalizedRecord = normalizeRecord(recordData);
-    const validationErrors = validateRecord(normalizedRecord);
-
-    if (hasRecordValidationErrors(validationErrors)) {
-      const message = getRecordValidationMessage(validationErrors);
-      showSnackbar(message, 'error');
-      throw new Error(message);
-    }
-
-    try {
-      const response = await createRecord.mutateAsync({
-        record: normalizedRecord,
-      });
-      const ID = response.data?.ID;
-      if (!ID) {
-        throw new Error('No ID returned from server');
-      }
-      const created: Record = { ...normalizedRecord, ID };
-      setLocalRows((prev) => [created, ...prev]);
-      return created;
-    } catch (error) {
-      const message = getApiErrorMessage(error, 'Failed to add record');
-      showSnackbar(message, 'error');
-      throw error;
-    }
+    const created = await createRecordWithValidation(
+      recordData,
+      createRecord,
+      showSnackbar
+    );
+    setLocalRows((prev) => [created, ...prev]);
+    return created;
   };
 
   const processRowUpdate = async (
@@ -136,12 +219,10 @@ const useRecords = (): RecordProps => {
       const { ID, ...recordData } = newRow;
       const normalizedRecord = normalizeRecord(recordData);
       const validationErrors = validateRecord(normalizedRecord);
-
       if (hasRecordValidationErrors(validationErrors)) {
         const message = getRecordValidationMessage(validationErrors);
         throw new Error(message);
       }
-
       const changes: Partial<Omit<Record, 'ID'>> = {};
       for (const key of Object.keys(
         normalizedRecord
@@ -150,11 +231,9 @@ const useRecords = (): RecordProps => {
           changes[key] = normalizedRecord[key] as never;
         }
       }
-
       if (Object.keys(changes).length === 0) {
         return { ...newRow, ...normalizedRecord };
       }
-
       await updateRecord.mutateAsync({ ID, record: changes });
       setLocalRows((prev) =>
         prev.map((r) =>
@@ -182,7 +261,7 @@ const useRecords = (): RecordProps => {
     handleCreateRecord,
     isGetRecordsError: isError,
     error: error ?? undefined,
+    filters,
+    setFilters,
   };
-};
-
-export default useRecords;
+}
