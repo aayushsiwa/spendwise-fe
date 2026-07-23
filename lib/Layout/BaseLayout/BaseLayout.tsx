@@ -16,6 +16,11 @@ const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
       icon: <CloudUpload />,
       href: '/upload/csv',
     },
+    {
+      text: 'Categories',
+      icon: <CategoryIcon />,
+      href: '/categories',
+    },
   ];
 
   return (
