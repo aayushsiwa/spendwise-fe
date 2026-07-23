@@ -14,7 +14,6 @@ const useHome = () => {
     getTypeDetails,
     processRowUpdate,
     handleDeleteRecord,
-    handleCreateRecord,
     isGetRecordsError,
     error,
   } = useRecords({ usePeriodContext: true });
@@ -43,7 +42,6 @@ const useHome = () => {
       getTypeDetails,
       processRowUpdate,
       handleDeleteRecord,
-      handleCreateRecord,
       isGetRecordsError,
       error,
     },

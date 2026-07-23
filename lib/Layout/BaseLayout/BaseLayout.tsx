@@ -11,6 +11,7 @@ import RecordDetailDialog from '@/lib/components/Records/RecordDetailDialog';
 import Sidebar, { SidebarMenuItem } from '@/lib/components/Sidebar/Sidebar';
 import { useAppSnackbar } from '@/lib/context/Snackbar/Snackbar';
 import { SummaryProvider } from '@/lib/context/Summary/Summary';
+import { useCreateRecord } from '@/lib/hooks/useRecords';
 import type { Record } from '@/types/Records';
 import { getApiErrorMessage } from '@/utils/apiError';
 import {
@@ -28,8 +29,7 @@ const BaseLayout: FC<PropsWithChildren<BaseLayoutProps>> = ({
   children,
   showPeriodSelector,
 }) => {
-  const { showSnackbar } = useAppSnackbar();
-  const createRecord = useCreateRecordAPI();
+  const { create } = useCreateRecord();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const menuItems: SidebarMenuItem[] = [
@@ -57,21 +57,8 @@ const BaseLayout: FC<PropsWithChildren<BaseLayoutProps>> = ({
 
   const handleCreateRecord = async (recordData: Record): Promise<void> => {
     const { ID, ...data } = recordData;
-    const normalizedRecord = normalizeRecord(data);
-    const validationErrors = validateRecord(normalizedRecord);
-    if (hasRecordValidationErrors(validationErrors)) {
-      const message = getRecordValidationMessage(validationErrors);
-      showSnackbar(message, 'error');
-      throw new Error(message);
-    }
-    try {
-      await createRecord.mutateAsync({ record: normalizedRecord });
-      setCreateDialogOpen(false);
-    } catch (error) {
-      const message = getApiErrorMessage(error, 'Failed to create record');
-      showSnackbar(message, 'error');
-      throw error;
-    }
+    await create(data);
+    setCreateDialogOpen(false);
   };
 
   return (

@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
-import { GridPaginationModel } from '@mui/x-data-grid';
 import {
   Receipt,
   SwapHoriz,
   TrendingDown,
   TrendingUp,
 } from '@mui/icons-material';
-import {
-  useCreateRecordAPI,
-} from '@/api/records/createRecord';
+import { GridPaginationModel } from '@mui/x-data-grid';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { useCreateRecordAPI } from '@/api/records/createRecord';
 import { useDeleteRecordAPI } from '@/api/records/deleteRecord';
 import { useGetRecordsAPI } from '@/api/records/getRecords';
 import { useUpdateRecordAPI } from '@/api/records/updateRecord';
@@ -22,6 +21,42 @@ import {
   normalizeRecord,
   validateRecord,
 } from '@/validations/Record';
+
+async function createRecordWithValidation(
+  recordData: Omit<Record, 'ID'>,
+  createRecord: { mutateAsync: (args: { record: Omit<Record, 'ID'> }) => Promise<any> },
+  showSnackbar: (message: string, severity: 'error' | 'success') => void,
+): Promise<Record> {
+  const normalizedRecord = normalizeRecord(recordData);
+  const validationErrors = validateRecord(normalizedRecord);
+  if (hasRecordValidationErrors(validationErrors)) {
+    const message = getRecordValidationMessage(validationErrors);
+    showSnackbar(message, 'error');
+    throw new Error(message);
+  }
+  try {
+    const response = await createRecord.mutateAsync({ record: normalizedRecord });
+    const ID = response.data?.ID;
+    if (!ID) {
+      throw new Error('No ID returned from server');
+    }
+    return { ...normalizedRecord, ID };
+  } catch (error) {
+    const message = getApiErrorMessage(error, 'Failed to create record');
+    showSnackbar(message, 'error');
+    throw error;
+  }
+}
+
+export function useCreateRecord() {
+  const { showSnackbar } = useAppSnackbar();
+  const createRecord = useCreateRecordAPI();
+
+  return {
+    create: (recordData: Omit<Record, 'ID'>) =>
+      createRecordWithValidation(recordData, createRecord, showSnackbar),
+  };
+}
 
 export type RecordsFilter = {
   search: string;
@@ -37,7 +72,7 @@ export type UseRecordsConfig = {
   usePeriodContext?: boolean;
 };
 
-const defaultFilters: RecordsFilter = {
+export const defaultFilters: RecordsFilter = {
   search: '',
   type: '',
   category: '',
@@ -50,7 +85,8 @@ export function useRecords({
   initialFilters = {},
   usePeriodContext: enablePeriodCtx = false,
 }: UseRecordsConfig = {}) {
-  const period = enablePeriodCtx ? usePeriodContext() : undefined;
+  const periodContext = usePeriodContext();
+  const period = enablePeriodCtx ? periodContext : undefined;
   const { showSnackbar } = useAppSnackbar();
   const updateRecord = useUpdateRecordAPI();
   const deleteRecord = useDeleteRecordAPI();
@@ -158,29 +194,9 @@ export function useRecords({
   const handleCreateRecord = async (
     recordData: Omit<Record, 'ID'>
   ): Promise<Record> => {
-    const normalizedRecord = normalizeRecord(recordData);
-    const validationErrors = validateRecord(normalizedRecord);
-    if (hasRecordValidationErrors(validationErrors)) {
-      const message = getRecordValidationMessage(validationErrors);
-      showSnackbar(message, 'error');
-      throw new Error(message);
-    }
-    try {
-      const response = await createRecord.mutateAsync({
-        record: normalizedRecord,
-      });
-      const ID = response.data?.ID;
-      if (!ID) {
-        throw new Error('No ID returned from server');
-      }
-      const created: Record = { ...normalizedRecord, ID };
-      setLocalRows((prev) => [created, ...prev]);
-      return created;
-    } catch (error) {
-      const message = getApiErrorMessage(error, 'Failed to add record');
-      showSnackbar(message, 'error');
-      throw error;
-    }
+    const created = await createRecordWithValidation(recordData, createRecord, showSnackbar);
+    setLocalRows((prev) => [created, ...prev]);
+    return created;
   };
 
   const processRowUpdate = async (
@@ -196,7 +212,9 @@ export function useRecords({
         throw new Error(message);
       }
       const changes: Partial<Omit<Record, 'ID'>> = {};
-      for (const key of Object.keys(normalizedRecord) as (keyof typeof normalizedRecord)[]) {
+      for (const key of Object.keys(
+        normalizedRecord
+      ) as (keyof typeof normalizedRecord)[]) {
         if (normalizedRecord[key] !== oldRow[key]) {
           changes[key] = normalizedRecord[key] as never;
         }
@@ -233,7 +251,5 @@ export function useRecords({
     error: error ?? undefined,
     filters,
     setFilters,
-    queryParams,
-    setQueryParams,
   };
 }

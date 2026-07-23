@@ -17,7 +17,6 @@ const Transactions = () => {
     getTypeDetails,
     processRowUpdate,
     handleDeleteRecord,
-    handleCreateRecord,
     isGetRecordsError,
     error,
     filters,
@@ -53,7 +52,6 @@ const Transactions = () => {
             getTypeDetails={getTypeDetails}
             processRowUpdate={processRowUpdate}
             handleDeleteRecord={handleDeleteRecord}
-            handleCreateRecord={handleCreateRecord}
             isGetRecordsError={isGetRecordsError}
             error={error}
             isCheckBoxSelectionAllowed={false}

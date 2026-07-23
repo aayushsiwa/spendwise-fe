@@ -31,7 +31,6 @@ export type RecordProps = {
   };
   processRowUpdate: (newRow: Record, oldRow: Record) => Promise<Record>;
   handleDeleteRecord: (ID: string) => Promise<void>;
-  handleCreateRecord: (record: Omit<Record, 'ID'>) => Promise<Record>;
   isGetRecordsError?: boolean;
   error?: Error;
   isCheckBoxSelectionAllowed?: boolean;
@@ -46,7 +45,6 @@ const Records: FC<RecordProps> = ({
   getTypeDetails,
   processRowUpdate,
   handleDeleteRecord,
-  handleCreateRecord,
   isGetRecordsError,
   error,
   isCheckBoxSelectionAllowed = true,

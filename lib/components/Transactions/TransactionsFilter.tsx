@@ -11,26 +11,11 @@ import {
 import { useMemo } from 'react';
 
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
-
-export type FiltersState = {
-  search: string;
-  type: string;
-  category: string;
-  from: string;
-  to: string;
-};
+import { RecordsFilter, defaultFilters } from '@/lib/hooks/useRecords';
 
 type TransactionsFilterProps = {
-  filters: FiltersState;
-  onChange: (filters: FiltersState) => void;
-};
-
-const defaultFilters: FiltersState = {
-  search: '',
-  type: '',
-  category: '',
-  from: '',
-  to: '',
+  filters: RecordsFilter;
+  onChange: (filters: RecordsFilter) => void;
 };
 
 const TransactionsFilter = ({ filters, onChange }: TransactionsFilterProps) => {
