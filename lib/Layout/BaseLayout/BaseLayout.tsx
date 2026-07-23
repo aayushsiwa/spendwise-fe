@@ -1,4 +1,8 @@
-import { CloudUpload, Dashboard as DashboardIcon } from '@mui/icons-material';
+import {
+  Category as CategoryIcon,
+  CloudUpload,
+  Dashboard as DashboardIcon,
+} from '@mui/icons-material';
 import { FC, PropsWithChildren } from 'react';
 
 import Sidebar, { SidebarMenuItem } from '@/lib/components/Sidebar/Sidebar';
@@ -15,6 +19,11 @@ const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
       text: 'Upload',
       icon: <CloudUpload />,
       href: '/upload/csv',
+    },
+    {
+      text: 'Categories',
+      icon: <CategoryIcon />,
+      href: '/categories',
     },
   ];
 
