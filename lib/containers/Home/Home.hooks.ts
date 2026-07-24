@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+
+import { useGetBudgetProgressAPI } from '@/api/budgets/getBudgetProgress';
 import { useGetSummaryAPI } from '@/api/summary/getSummary';
 import { usePeriodContext } from '@/lib/context/Period/Period';
 import { useRecords } from '@/lib/hooks/useRecords';
@@ -25,6 +28,12 @@ const useHome = () => {
     to: DateUtil.formattedDate(range.to),
   };
 
+  const from = dayjs(range.from);
+  const { data: budgetProgress } = useGetBudgetProgressAPI({
+    month: from.month() + 1,
+    year: from.year(),
+  });
+
   const { data: summary, isLoading, isError } = useGetSummaryAPI(queryParams);
 
   return {
@@ -45,6 +54,7 @@ const useHome = () => {
       isGetRecordsError,
       error,
     },
+    budgetProgress,
   };
 };
 export default useHome;
