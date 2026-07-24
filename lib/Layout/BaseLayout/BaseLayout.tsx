@@ -1,5 +1,6 @@
 import {
   AccountBalanceWallet,
+  Analytics as AnalyticsIcon,
   Category as CategoryIcon,
   CloudUpload,
   Dashboard as DashboardIcon,
@@ -29,6 +30,11 @@ const BaseLayout: FC<PropsWithChildren<BaseLayoutProps>> = ({
       text: 'Dashboard',
       icon: <DashboardIcon />,
       href: '/',
+    },
+    {
+      text: 'Analytics',
+      icon: <AnalyticsIcon />,
+      href: '/analytics',
     },
     {
       text: 'Transactions',
