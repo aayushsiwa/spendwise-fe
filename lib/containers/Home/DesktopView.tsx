@@ -8,7 +8,12 @@ import Summary from '@/lib/components/Summary/Summary';
 
 import type { HomeViewProps } from './types';
 
-const DesktopView: FC<HomeViewProps> = ({ summary, records, recordProps }) => {
+const DesktopView: FC<HomeViewProps> = ({
+  summary,
+  records,
+  recordProps,
+  budgetProgress,
+}) => {
   return (
     <Grid container spacing={2}>
       <Grid size={{ xs: 12 }}>
@@ -20,7 +25,7 @@ const DesktopView: FC<HomeViewProps> = ({ summary, records, recordProps }) => {
         </Stack>
       </Grid>
       <Grid size={{ xs: 12, lg: 4 }}>
-        <BudgetRadarChart />
+        <BudgetRadarChart data={budgetProgress} />
       </Grid>
       <Grid size={{ xs: 12 }}>
         <Box

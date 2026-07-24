@@ -26,8 +26,9 @@ export const useUpdateBudgetAPI = () => {
   return useMutation({
     mutationFn: updateBudgetAPI,
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BUDGETS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BUDGET_PROGRESS] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.BUDGETS, QueryKeys.BUDGET_PROGRESS],
+      });
     },
   });
 };

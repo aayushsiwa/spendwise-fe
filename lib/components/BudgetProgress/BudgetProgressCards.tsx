@@ -1,17 +1,9 @@
 import { Box, LinearProgress, Paper, Typography, alpha } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import dayjs from 'dayjs';
 
-import { useGetBudgetProgressAPI } from '@/api/budgets/getBudgetProgress';
-import { usePeriodContext } from '@/lib/context/Period/Period';
+import { GetBudgetProgressResponse } from '@/api/budgets/getBudgetProgress';
 
-const BudgetProgressCards = () => {
-  const { range } = usePeriodContext();
-  const from = dayjs(range.from);
-  const { data } = useGetBudgetProgressAPI({
-    month: from.month() + 1,
-    year: from.year(),
-  });
+const BudgetProgressCards = ({ data }: { data: GetBudgetProgressResponse }) => {
   const theme = useTheme();
 
   const progress = data?.data.progress ?? [];

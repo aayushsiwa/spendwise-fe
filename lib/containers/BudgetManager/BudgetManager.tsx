@@ -45,15 +45,6 @@ const MONTHS = [
 
 const BudgetManager = () => {
   const { categories } = useCategoriesContext();
-  const { data: progressData, isLoading } = useGetBudgetProgressAPI({
-    month: currentMonth,
-    year: currentYear,
-  });
-  const createBudget = useCreateBudgetAPI();
-  const updateBudget = useUpdateBudgetAPI();
-  const deleteBudget = useDeleteBudgetAPI();
-
-  const progress = progressData?.data.progress ?? [];
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<BudgetProgress | null>(null);
@@ -61,6 +52,18 @@ const BudgetManager = () => {
   const [month, setMonth] = useState(currentMonth);
   const [year, setYear] = useState(currentYear);
   const [deleteTarget, setDeleteTarget] = useState<BudgetProgress | null>(null);
+
+  const { data: progressData, isLoading } = useGetBudgetProgressAPI({
+    month,
+    year,
+  });
+
+  const createBudget = useCreateBudgetAPI();
+  const updateBudget = useUpdateBudgetAPI();
+  const deleteBudget = useDeleteBudgetAPI();
+
+  const progress = progressData?.data.progress ?? [];
+
   const [snackbar, setSnackbar] = useState<{
     message: string;
     severity: 'success' | 'error';
@@ -138,6 +141,7 @@ const BudgetManager = () => {
           <TextField
             select
             size="small"
+            label="Month"
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
             sx={{ minWidth: 120 }}
@@ -151,6 +155,7 @@ const BudgetManager = () => {
           <TextField
             type="number"
             size="small"
+            label="Year"
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
             sx={{ minWidth: 90 }}
@@ -310,7 +315,12 @@ const BudgetManager = () => {
           <Button
             variant="contained"
             onClick={handleSave}
-            disabled={!formData.amount || !formData.categoryID}
+            disabled={
+              !formData.amount ||
+              !formData.categoryID ||
+              createBudget.isPending ||
+              updateBudget.isPending
+            }
           >
             {editing ? 'Update' : 'Create'}
           </Button>
@@ -332,7 +342,12 @@ const BudgetManager = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
-          <Button variant="contained" color="error" onClick={handleDelete}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleDelete}
+            disabled={deleteBudget.isPending}
+          >
             Delete
           </Button>
         </DialogActions>

@@ -11,8 +11,9 @@ export const useDeleteBudgetAPI = () => {
   return useMutation({
     mutationFn: deleteBudgetAPI,
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BUDGETS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BUDGET_PROGRESS] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.BUDGETS, QueryKeys.BUDGET_PROGRESS],
+      });
     },
   });
 };

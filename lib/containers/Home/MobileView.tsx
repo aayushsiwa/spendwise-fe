@@ -8,11 +8,16 @@ import Summary from '@/lib/components/Summary/Summary';
 
 import type { HomeViewProps } from './types';
 
-const MobileView: FC<HomeViewProps> = ({ summary, records, recordProps }) => {
+const MobileView: FC<HomeViewProps> = ({
+  summary,
+  records,
+  recordProps,
+  budgetProgress,
+}) => {
   return (
     <Stack spacing={2}>
       <Summary summary={summary} />
-      <BudgetRadarChart />
+      <BudgetRadarChart data={budgetProgress} />
       <Statistics summary={summary} records={records ?? []} />
       <Box
         sx={{

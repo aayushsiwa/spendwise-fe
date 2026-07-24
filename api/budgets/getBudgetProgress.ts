@@ -6,7 +6,9 @@ import { QueryKeys } from '@/constants/QueryKeys';
 import { BudgetProgress } from '@/types/Budget';
 import { QueryHookOptions } from '@/types/api';
 
-type GetBudgetProgressResponse = AxiosResponse<{ progress: BudgetProgress[] }>;
+export type GetBudgetProgressResponse = AxiosResponse<{
+  progress: BudgetProgress[];
+}>;
 
 type GetBudgetProgressRequest = {
   month?: number;

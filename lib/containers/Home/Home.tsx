@@ -16,7 +16,8 @@ import MobileView from './MobileView';
 const Home: FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { summary, isLoading, isError, recordProps, records } = useHome();
+  const { summary, isLoading, isError, recordProps, records, budgetProgress } =
+    useHome();
 
   if (isLoading) {
     return (
@@ -33,7 +34,7 @@ const Home: FC = () => {
     );
   }
 
-  if (isError || !summary) {
+  if (isError || !summary || !budgetProgress) {
     return (
       <Box
         sx={{
@@ -86,6 +87,7 @@ const Home: FC = () => {
         summary={summary}
         records={records}
         recordProps={recordProps}
+        budgetProgress={budgetProgress}
       />
     );
   }
@@ -95,6 +97,7 @@ const Home: FC = () => {
       summary={summary}
       records={records}
       recordProps={recordProps}
+      budgetProgress={budgetProgress}
     />
   );
 };
