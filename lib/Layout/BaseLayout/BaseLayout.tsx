@@ -1,4 +1,5 @@
 import {
+  AccountBalanceWallet,
   Category as CategoryIcon,
   CloudUpload,
   Dashboard as DashboardIcon,
@@ -43,6 +44,11 @@ const BaseLayout: FC<PropsWithChildren<BaseLayoutProps>> = ({
       text: 'Categories',
       icon: <CategoryIcon />,
       href: '/categories',
+    },
+    {
+      text: 'Budgets',
+      icon: <AccountBalanceWallet />,
+      href: '/budgets',
     },
   ];
 
