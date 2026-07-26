@@ -3,7 +3,7 @@ import Home from '@/lib/containers/Home/Home';
 
 const HomePage = () => {
   return (
-    <BaseLayout>
+    <BaseLayout showPeriodSelector>
       <Home />
     </BaseLayout>
   );

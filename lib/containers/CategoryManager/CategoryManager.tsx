@@ -101,7 +101,7 @@ const CategoryManager = () => {
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: 'top',
           mb: 3,
         }}
       >

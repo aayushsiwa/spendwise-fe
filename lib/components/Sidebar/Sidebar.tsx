@@ -116,7 +116,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
 }>(({ theme }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
+  padding: theme.spacing(0, 3),
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -164,7 +164,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   menuItems = [],
   defaultOpen = false,
   showAppBar = true,
-  showPeriodSelector = true,
+  showPeriodSelector = false,
   globalFab,
 }) => {
   const theme = useTheme();

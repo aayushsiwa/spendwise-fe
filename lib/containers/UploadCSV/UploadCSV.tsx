@@ -36,7 +36,7 @@ const UploadCSV = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
         Upload CSV
       </Typography>

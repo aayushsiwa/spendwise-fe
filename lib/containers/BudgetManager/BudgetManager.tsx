@@ -123,12 +123,12 @@ const BudgetManager = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box>
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: 'top',
           mb: 3,
           flexWrap: 'wrap',
           gap: 2,
