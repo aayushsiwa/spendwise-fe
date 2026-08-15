@@ -17,7 +17,9 @@ const MobileView: FC<HomeViewProps> = ({
   return (
     <Stack spacing={2}>
       <Summary summary={summary} />
-      <BudgetRadarChart data={budgetProgress} />
+      {budgetProgress.data.progress.length > 2 && (
+        <BudgetRadarChart data={budgetProgress} />
+      )}
       <Statistics summary={summary} records={records ?? []} />
       <Box
         sx={{
