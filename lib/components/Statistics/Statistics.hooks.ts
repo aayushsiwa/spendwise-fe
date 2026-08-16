@@ -7,7 +7,15 @@ import { SummaryMonth } from '@/types/Summary';
 const useStatistics = (summary: SummaryMonth, records: TRecord[]) => {
   const { range } = usePeriodContext();
 
-  const [data, setData] = useState<{ date: string; balance: number }[]>([]);
+  const [data, setData] = useState<
+    {
+      date: string;
+      balance: number | null;
+      income: number;
+      expense: number;
+      transfer: number;
+    }[]
+  >([]);
 
   useEffect(() => {
     if (!range?.from || !range?.to || !summary) {
@@ -15,27 +23,46 @@ const useStatistics = (summary: SummaryMonth, records: TRecord[]) => {
       return;
     }
 
-    // Step 1: Map latest record per date
     const latestPerDateMap = new Map<string, TRecord>();
+    const dailyTotals = new Map<
+      string,
+      { income: number; expense: number; transfer: number }
+    >();
+
     for (const r of records || []) {
       const dateKey = r.date.split('T')[0];
+
       const existing = latestPerDateMap.get(dateKey);
-      if (
-        !existing ||
-        new Date(r.date).getTime() > new Date(existing.date).getTime()
-      ) {
+      if (!existing || r.createdAt > existing.createdAt) {
         latestPerDateMap.set(dateKey, r);
       }
+
+      const totals = dailyTotals.get(dateKey) ?? {
+        income: 0,
+        expense: 0,
+        transfer: 0,
+      };
+      if (r.type === 'income') totals.income += r.amount;
+      else if (r.type === 'expense') totals.expense += r.amount;
+      else if (r.type === 'transfer') totals.transfer += r.amount;
+      dailyTotals.set(dateKey, totals);
     }
 
-    // Step 2: Build full date range (cap at today)
     const startDate = new Date(range.from);
     const endDate = new Date(
       Math.min(new Date(range.to).getTime(), new Date().getTime())
     );
-    const filled: { date: string; balance: number }[] = [];
 
-    let prevBalance: number | null = summary.opening ?? null; // 👈 start from opening
+    const startStr = startDate.toISOString().split('T')[0];
+    const endStr = endDate.toISOString().split('T')[0];
+
+    const filled: {
+      date: string;
+      balance: number | null;
+      income: number;
+      expense: number;
+      transfer: number;
+    }[] = [];
 
     for (
       let d = new Date(startDate);
@@ -43,15 +70,23 @@ const useStatistics = (summary: SummaryMonth, records: TRecord[]) => {
       d.setDate(d.getDate() + 1)
     ) {
       const dateStr = d.toISOString().split('T')[0];
-      const record = latestPerDateMap.get(dateStr);
+      let balance: number | null = null;
 
-      if (record) {
-        filled.push({ date: dateStr, balance: record.balance });
-        prevBalance = record.balance;
+      if (dateStr === startStr) {
+        balance = summary.opening;
+      } else if (dateStr === endStr) {
+        balance = summary.closing;
       } else {
-        // carry forward last known balance
-        filled.push({ date: dateStr, balance: prevBalance ?? 0 });
+        balance = latestPerDateMap.get(dateStr)?.balance ?? null;
       }
+
+      const totals = dailyTotals.get(dateStr) ?? {
+        income: 0,
+        expense: 0,
+        transfer: 0,
+      };
+
+      filled.push({ date: dateStr, balance, ...totals });
     }
 
     setData(filled);

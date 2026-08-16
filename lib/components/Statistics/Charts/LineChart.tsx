@@ -1,6 +1,5 @@
 import {
-  Card,
-  CardContent,
+  Paper,
   Typography,
   alpha,
   useMediaQuery,
@@ -10,91 +9,120 @@ import { LineChart } from '@mui/x-charts/LineChart';
 
 type BalanceData = {
   date: string;
-  balance: number;
+  balance: number | null;
+  income: number;
+  expense: number;
+  transfer: number;
 };
 
 const BalanceChart = ({ data }: { data: BalanceData[] }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
   return (
-    <Card>
-      <CardContent
+    <Paper sx={{ p: 2, height: '100%', width: '100%' }}>
+      <Typography
+        variant="h6"
         sx={{
-          p: isMobile ? 1.5 : 2.5,
-          '&:last-child': { pb: isMobile ? 1.5 : 2.5 },
+          fontWeight: 700,
+          mb: 1,
+          fontSize: isMobile ? '1rem' : undefined,
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: 700,
-            mb: 1,
-            fontSize: isMobile ? '1rem' : undefined,
-          }}
-        >
-          Balance Over Time
-        </Typography>
-        <LineChart
-          height={isMobile ? 200 : 350}
-          dataset={data}
-          series={[
-            {
-              dataKey: 'balance',
-              label: 'Balance',
-              color: theme.palette.primary.main,
-              area: true,
-              showMark: data.length <= 1,
-              curve: 'monotoneX',
+        Balance Over Time
+      </Typography>
+      <LineChart
+        height={isMobile ? 300 : 400}
+        dataset={data}
+        series={[
+          {
+            dataKey: 'balance',
+            label: 'Balance',
+            color: alpha(theme.palette.primary.main, 0.5),
+            area: true,
+            showMark: data.length <= 1,
+            curve: 'monotoneX',
+            connectNulls: true,
+          },
+          {
+            dataKey: 'income',
+            label: 'Income',
+            color: alpha(theme.palette.success.main, 0.5),
+            area: true,
+            showMark: false,
+            curve: 'monotoneX',
+            connectNulls: true,
+          },
+          {
+            dataKey: 'expense',
+            label: 'Expense',
+            color: alpha(theme.palette.error.main, 0.5),
+            area: true,
+            showMark: false,
+            curve: 'monotoneX',
+            connectNulls: true,
+          },
+          {
+            dataKey: 'transfer',
+            label: 'Transfer',
+            color: alpha(theme.palette.warning.main, 0.5),
+            area: true,
+            showMark: false,
+            curve: 'monotoneX',
+            connectNulls: true,
+          },
+        ]}
+        margin={{ bottom: isMobile ? 40 : 60 }}
+        xAxis={[
+          {
+            dataKey: 'date',
+            scaleType: 'point',
+            tickLabelStyle: {
+              angle: isMobile ? 0 : -40,
+              textAnchor: isMobile ? 'middle' : 'end',
+              fontSize: isMobile ? 10 : 11,
             },
-          ]}
-          xAxis={[
-            {
-              dataKey: 'date',
-              scaleType: 'point',
-              tickLabelStyle: {
-                angle: isMobile ? 0 : -40,
-                textAnchor: isMobile ? 'middle' : 'end',
-                fontSize: isMobile ? 10 : 11,
-              },
-              valueFormatter: (value: string) =>
-                new Date(value).toLocaleDateString('en-IN', {
-                  day: 'numeric',
-                  month: isMobile ? 'numeric' : 'short',
-                }),
+            valueFormatter: (value: string) =>
+              new Date(value).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: isMobile ? 'numeric' : 'short',
+              }),
+            tickLabelInterval: (_, index) => {
+              const maxLabels = isMobile ? 6 : 10;
+              const step = Math.ceil(data.length / maxLabels);
+              return index % step === 0 || index === data.length - 1;
             },
-          ]}
-          yAxis={[
-            {
-              tickLabelStyle: { fontSize: isMobile ? 10 : 12 },
-              valueFormatter: (value: number) =>
-                new Intl.NumberFormat('en-IN', {
-                  style: 'currency',
-                  currency: 'INR',
-                  maximumFractionDigits: 0,
-                }).format(value as number),
-            },
-          ]}
-          sx={{
-            '.MuiChartsGrid-line': {
-              stroke: theme.palette.divider,
-              strokeDasharray: '4 4',
-            },
-            '.MuiAreaElement-root': {
-              fill: alpha(theme.palette.primary.main, 0.15),
-            },
-            '.MuiLineElement-root': {
-              strokeWidth: isMobile ? 2 : 2.5,
-            },
-            '.MuiMarkElement-root': {
-              stroke: theme.palette.primary.main,
-              fill: theme.palette.background.paper,
-              strokeWidth: 2,
-            },
-          }}
-        />
-      </CardContent>
-    </Card>
+          },
+        ]}
+        yAxis={[
+          {
+            tickLabelStyle: { fontSize: isMobile ? 10 : 12 },
+            valueFormatter: (value: number) =>
+              new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 0,
+              }).format(value as number),
+          },
+        ]}
+        sx={{
+          '.MuiChartsGrid-line': {
+            stroke: theme.palette.divider,
+            strokeDasharray: '4 4',
+          },
+          '.MuiAreaElement-root': {
+            fill: alpha(theme.palette.primary.main, 0.15),
+          },
+          '.MuiLineElement-root': {
+            strokeWidth: { sm: 2, md: 2.5 },
+          },
+          '.MuiMarkElement-root': {
+            stroke: theme.palette.primary.main,
+            fill: theme.palette.background.paper,
+            strokeWidth: 2,
+          },
+        }}
+      />
+    </Paper>
   );
 };
 
