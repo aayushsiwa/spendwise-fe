@@ -6,6 +6,8 @@ import { QueryKeys } from '@/constants/QueryKeys';
 
 type UploadCSVAPIResponse = {
   message: string;
+  recordsImported: number;
+  skippedCount: number;
 };
 
 type UploadCSVResponse = AxiosResponse<UploadCSVAPIResponse>;
