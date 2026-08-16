@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   Button,
   Dialog,
@@ -18,9 +19,15 @@ import {
 import type { SelectChangeEvent } from '@mui/material/Select';
 import { useEffect, useState } from 'react';
 
+import { useCreateCategoryAPI } from '@/api/categories/createCategory';
+import {
+  CATEGORY_ICONS,
+  CategoryIcon,
+} from '@/lib/components/Category/CategoryIcon';
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
 import { Record, RecordTypes } from '@/types/Records';
 import { DateUtil } from '@/utils/DateUtils';
+import { snake_CaseToNormalTitle } from '@/utils/CategoryUtils';
 import {
   RecordValidationErrors,
   hasRecordValidationErrors,
@@ -44,11 +51,18 @@ const RecordDetailDialog = ({
   onDelete,
 }: RecordDetailDialogProps) => {
   const { categories } = useCategoriesContext();
+  const createCategory = useCreateCategoryAPI();
   const isCreate = !record;
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [validationErrors, setValidationErrors] =
     useState<RecordValidationErrors>({});
+  const [createCatDialogOpen, setCreateCatDialogOpen] = useState(false);
+  const [createCatForm, setCreateCatForm] = useState({
+    name: '',
+    icon: 'restaurant',
+    color: '#1976d2',
+  });
   const [edit, setEdit] = useState({
     date: '',
     description: '',
@@ -165,7 +179,8 @@ const RecordDetailDialog = ({
   const isBusy = saving || deleting;
 
   return (
-    <Dialog
+    <>
+      <Dialog
       open={open}
       onClose={() => {
         if (!isBusy) onClose();
@@ -238,32 +253,75 @@ const RecordDetailDialog = ({
             error={!!validationErrors.date}
             helperText={validationErrors.date}
           />
-          {categories && categories.length > 0 ? (
-            <TextField
-              select
-              label="Category"
-              value={edit.category}
-              onChange={(e) => handleChange('category', e.target.value)}
-              fullWidth
-              error={!!validationErrors.category}
-              helperText={validationErrors.category}
-            >
-              {categories.map((cat) => (
-                <MenuItem key={cat.ID} value={cat.name}>
-                  {cat.name}
-                </MenuItem>
-              ))}
-            </TextField>
-          ) : (
-            <TextField
-              label="Category"
-              value={edit.category}
-              onChange={(e) => handleChange('category', e.target.value)}
-              fullWidth
-              error={!!validationErrors.category}
-              helperText={validationErrors.category}
-            />
-          )}
+          <Autocomplete
+            freeSolo
+            options={categories?.map((cat) => cat.name) ?? []}
+            inputValue={edit.category}
+            onInputChange={(_, value, reason) => {
+              if (reason === 'input') {
+                handleChange('category', value);
+              }
+            }}
+            onChange={(_, value) => {
+              if (typeof value === 'string') {
+                const match = value.match(/^\+ Create "(.+)"$/);
+                if (match) {
+                  setCreateCatForm({
+                    name: match[1],
+                    icon: 'restaurant',
+                    color: '#1976d2',
+                  });
+                  setCreateCatDialogOpen(true);
+                } else if (value) {
+                  handleChange('category', value);
+                }
+              }
+            }}
+            filterOptions={(options, { inputValue }) => {
+              const filtered = options.filter((opt) =>
+                opt.toLowerCase().includes(inputValue.toLowerCase())
+              );
+              if (
+                inputValue.trim() &&
+                !options.some(
+                  (opt) => opt.toLowerCase() === inputValue.toLowerCase()
+                )
+              ) {
+                filtered.push(`+ Create "${inputValue}"`);
+              }
+              return filtered;
+            }}
+            renderOption={(props, option) => {
+              if (option.startsWith('+ Create "')) {
+                return (
+                  <li {...props}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        color: 'primary.main',
+                      }}
+                    >
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {option}
+                      </Typography>
+                    </Box>
+                  </li>
+                );
+              }
+              return <li {...props}>{option}</li>;
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Category"
+                fullWidth
+                error={!!validationErrors.category}
+                helperText={validationErrors.category}
+              />
+            )}
+          />
           <TextField
             label="Note"
             value={edit.note}
@@ -294,6 +352,85 @@ const RecordDetailDialog = ({
         </Box>
       </DialogActions>
     </Dialog>
+
+      <Dialog
+        open={createCatDialogOpen}
+        onClose={() => setCreateCatDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Typography sx={{ fontWeight: 700 }}>Add Category</Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Box
+            sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}
+          >
+            <TextField
+              label="Name"
+              value={createCatForm.name}
+              onChange={(e) =>
+                setCreateCatForm({ ...createCatForm, name: e.target.value })
+              }
+              fullWidth
+              autoFocus
+            />
+            <TextField
+              select
+              label="Icon"
+              value={createCatForm.icon}
+              onChange={(e) =>
+                setCreateCatForm({ ...createCatForm, icon: e.target.value })
+              }
+              fullWidth
+            >
+              {Object.keys(CATEGORY_ICONS).map((name) => (
+                <MenuItem key={name} value={name}>
+                  <Box
+                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                  >
+                    <CategoryIcon name={name} />
+                    {snake_CaseToNormalTitle(name)}
+                  </Box>
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label="Color"
+              value={createCatForm.color}
+              onChange={(e) =>
+                setCreateCatForm({ ...createCatForm, color: e.target.value })
+              }
+              fullWidth
+              placeholder="#1976d2"
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCreateCatDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={async () => {
+              if (!createCatForm.name.trim()) return;
+              try {
+                await createCategory.mutateAsync(createCatForm);
+                handleChange('category', createCatForm.name);
+                setCreateCatDialogOpen(false);
+              } catch {
+                /* error handled by mutation */
+              }
+            }}
+            disabled={
+              !createCatForm.name.trim() || createCategory.isPending
+            }
+          >
+            {createCategory.isPending ? 'Creating...' : 'Create'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
