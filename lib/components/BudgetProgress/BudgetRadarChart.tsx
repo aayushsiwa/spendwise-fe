@@ -39,7 +39,7 @@ const BudgetRadarChart = ({ data }: { data: GetBudgetProgressResponse }) => {
     );
   });
 
-  if (validProgress.length < 2) {
+  if (validProgress.length < 3) {
     return (
       <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: '100%' }}>
         <Typography
@@ -51,7 +51,7 @@ const BudgetRadarChart = ({ data }: { data: GetBudgetProgressResponse }) => {
         </Typography>
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <Typography variant="body2" color="text.secondary">
-            Need at least two valid budget categories
+            Need at least three valid budget categories
           </Typography>
         </Box>
       </Paper>
@@ -71,9 +71,17 @@ const BudgetRadarChart = ({ data }: { data: GetBudgetProgressResponse }) => {
       >
         Budget Overview
       </Typography>
-      <Box sx={{ width: '100%', height: 280 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          width: '100%',
+        }}
+      >
         <RadarChart
-          height={280}
+          height={300}
           highlight="axis"
           series={[
             {
