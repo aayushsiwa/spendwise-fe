@@ -109,9 +109,6 @@ const BalanceChart = ({ data }: { data: BalanceData[] }) => {
             stroke: theme.palette.divider,
             strokeDasharray: '4 4',
           },
-          '.MuiAreaElement-root': {
-            fill: alpha(theme.palette.primary.main, 0.15),
-          },
           '.MuiLineElement-root': {
             strokeWidth: { sm: 2, md: 2.5 },
           },

@@ -1,4 +1,5 @@
 import {
+  Alert,
   Autocomplete,
   Box,
   Button,
@@ -13,6 +14,7 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
@@ -71,6 +73,10 @@ const RecordDetailDialog = ({
     type: 'expense' as RecordTypes,
     note: '',
   });
+  const [snackbar, setSnackbar] = useState<{
+    message: string;
+    severity: 'success' | 'error';
+  } | null>(null);
 
   useEffect(() => {
     if (record) {
@@ -258,7 +264,7 @@ const RecordDetailDialog = ({
               options={categories?.map((cat) => cat.name) ?? []}
               inputValue={edit.category}
               onInputChange={(_, value, reason) => {
-                if (reason === 'input') {
+                if (reason === 'input' || reason === 'clear') {
                   handleChange('category', value);
                 }
               }}
@@ -416,8 +422,15 @@ const RecordDetailDialog = ({
                 await createCategory.mutateAsync(createCatForm);
                 handleChange('category', createCatForm.name);
                 setCreateCatDialogOpen(false);
-              } catch {
-                /* error handled by mutation */
+                setSnackbar({
+                  message: 'Category created successfully',
+                  severity: 'success',
+                });
+              } catch (error) {
+                setSnackbar({
+                  message: 'Failed to create category',
+                  severity: 'error',
+                });
               }
             }}
             disabled={!createCatForm.name.trim() || createCategory.isPending}
@@ -426,6 +439,23 @@ const RecordDetailDialog = ({
           </Button>
         </DialogActions>
       </Dialog>
+
+      {snackbar && (
+        <Snackbar
+          open
+          autoHideDuration={3000}
+          onClose={() => setSnackbar(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert
+            severity={snackbar.severity}
+            onClose={() => setSnackbar(null)}
+            variant="filled"
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      )}
     </>
   );
 };

@@ -14,12 +14,25 @@ const MobileView: FC<HomeViewProps> = ({
   recordProps,
   budgetProgress,
 }) => {
+  // Compute valid unique categories the same way BudgetRadarChart does
+  const progress = budgetProgress.data.progress ?? [];
+  const validCategories = new Set<string>();
+  const validProgress = progress.filter((bp) => {
+    return (
+      typeof bp.category === 'string' &&
+      bp.category.trim() !== '' &&
+      Number.isFinite(bp.amount) &&
+      Number.isFinite(bp.spent) &&
+      !validCategories.has(bp.category) &&
+      validCategories.add(bp.category)
+    );
+  });
+  const hasEnoughCategories = validProgress.length >= 3;
+
   return (
     <Stack spacing={2}>
       <Summary summary={summary} />
-      {budgetProgress.data.progress.length > 2 && (
-        <BudgetRadarChart data={budgetProgress} />
-      )}
+      {hasEnoughCategories && <BudgetRadarChart data={budgetProgress} />}
       <Statistics summary={summary} records={records ?? []} />
       <Box
         sx={{

@@ -19,6 +19,7 @@ import { QueryKeys } from './QueryKeys';
  * this graph to resolve those keys automatically.
  */
 export const queryDependencies: Partial<Record<QueryKeys, QueryKeys[]>> = {
+  [QueryKeys.SUMMARIES]: [QueryKeys.RECORDS],
   [QueryKeys.SUMMARY]: [QueryKeys.RECORDS],
   [QueryKeys.SUMMARY_FILTER]: [QueryKeys.RECORDS],
   [QueryKeys.BUDGET_PROGRESS]: [QueryKeys.RECORDS, QueryKeys.BUDGETS],

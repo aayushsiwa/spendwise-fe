@@ -31,7 +31,7 @@ Track every financial movement as a record of type `income`, `expense`, or `tran
 Organize records with categories that carry a custom name, icon, and color. Categories power filtering, charts, and budget assignment, and keep analytics meaningful.
 
 **Budgets**
-Set a spend limit per category for a given month and year. The dashboard shows budget progress as cards and a radar chart, surfacing how much is spent versus budgeted and warning as limits are approached.
+Set a spend limit per category for a given month and year. The dashboard shows budget progress as cards and a radar chart (displayed when at least three categories are available), surfacing how much is spent versus budgeted and warning as limits are approached.
 
 **Savings goals**
 Define savings targets with a goal amount, optional current amount, target date, and status (active / achieved / abandoned). Contribute toward goals over time and watch progress update.
@@ -49,27 +49,27 @@ Bring existing data in via CSV or JSON import (CSV import tolerates varied colum
 Switch between light, dark, and system modes; the entire UI adapts through the shared MUI theme tokens.
 
 **AI integration**
-Pairs with the [`spendwise-mcp`](https://github.com/aayushsiwa/spendwise-mcp) server so AI assistants can query records, manage categories/budgets/goals, and read summaries through your own backend — no third-party data sharing.
+Pairs with the [`spendwise-mcp`](https://github.com/aayushsiwa/spendwise-mcp) server so AI assistants can query records, manage categories/budgets/goals, and read summaries through your own backend. When using AI assistants through MCP, financial records are sent to the AI model provider (e.g., Anthropic, OpenAI) for processing. Data sharing and retention are governed by the AI provider's terms; self-hosted or otherwise isolated deployments of SpendWise itself do not share data with third parties.
 
 ## Tech stack
 
 - **Framework:** Next.js (Pages Router) 16, React 19, TypeScript.
 - **UI:** Material UI v9, MUI X Data Grid, MUI X Charts, Emotion.
 - **Data:** TanStack Query (React Query) for server-state, Axios for HTTP.
-- **Tooling:** ESLint, Prettier (with import sorting), Husky + commitlint, Vitest.
+- **Tooling:** ESLint, Prettier (with import sorting), Husky + commitlint.
 
 ## Getting started
 
 ### Prerequisites
 
-- A running [`spendwise-be`](https://github.com/aayushsiwa/spendwise-be) instance (default `http://localhost:8090/api/v1`).
+- A running [`spendwise-be`](https://github.com/aayushsiwa/spendwise-be) instance.
 - Node.js + pnpm.
 
 ### Install and run
 
 ```sh
 cp .env.example .env
-# Set API_URL and NEXT_PUBLIC_API_URL to your backend /api/v1 base URL
+# Set API_URL and NEXT_PUBLIC_API_URL to your backend URL (defaults to http://localhost:3001)
 pnpm install
 pnpm dev
 ```
@@ -78,13 +78,11 @@ The dev server runs on **port 5173** with Turbopack.
 
 ### Environment variables
 
-| Variable | Example | Purpose |
-|---|---|---|
-| `API_URL` | `http://localhost:8090/api/v1` | Backend base for Next.js rewrites and browser-opened `/api/*` links (e.g. CSV export). |
-| `NEXT_PUBLIC_API_URL` | `http://localhost:8090/api/v1` | Axios base URL used by the data hooks. |
-| `ENVIRONMENT` | `local` \| `production` | Controls runtime behavior/feature flags. |
-
-Both API URLs must target the backend's `/api/v1` base path.
+| Variable | Example | Purpose | Default |
+|---|---|---|---|
+| `API_URL` | `http://localhost:8090/api/v1` | Backend base for Next.js rewrites and browser-opened `/api/*` links (e.g. CSV export). | `http://localhost:3001` |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:8090/api/v1` | Axios base URL used by the data hooks. | None (required) |
+| `NODE_ENV` | `development` \| `production` | Standard Next.js environment variable controlling build mode. | Set by Next.js |
 
 ### Useful scripts
 
@@ -119,4 +117,4 @@ Both API URLs must target the backend's `/api/v1` base path.
 - Backend API & database: <https://github.com/aayushsiwa/spendwise-be>
 - MCP server for AI assistants: <https://github.com/aayushsiwa/spendwise-mcp>
 
-> **Privacy note:** SpendWise is intended to be deployed by you. This frontend only talks to the backend URL you configure; the backend reads and writes solely to the database you configure. If you expose any component publicly, you are responsible for authentication, network access, TLS, backups, and hardening.
+> **Privacy note:** SpendWise is intended to be deployed by you. This frontend only talks to the backend URL you configure; the backend reads and writes solely to the database you configure. No third-party data sharing applies to self-hosted or otherwise isolated deployments. If using AI integration through MCP, financial records are sent to the AI model provider for processing, subject to that provider's data retention and telemetry practices. If you expose any component publicly, you are responsible for authentication, network access, TLS, backups, and hardening.

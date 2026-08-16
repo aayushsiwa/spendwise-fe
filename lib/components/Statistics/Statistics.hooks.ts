@@ -29,6 +29,14 @@ const useStatistics = (summary: SummaryMonth, records: TRecord[]) => {
       { income: number; expense: number; transfer: number }
     >();
 
+    // Helper to format dates consistently using local date parts
+    const formatLocalDate = (date: Date): string => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
     for (const r of records || []) {
       const dateKey = r.date.split('T')[0];
 
@@ -48,13 +56,19 @@ const useStatistics = (summary: SummaryMonth, records: TRecord[]) => {
       dailyTotals.set(dateKey, totals);
     }
 
+    // Normalize dates to local midnight
     const startDate = new Date(range.from);
-    const endDate = new Date(
-      Math.min(new Date(range.to).getTime(), new Date().getTime())
-    );
+    startDate.setHours(0, 0, 0, 0);
 
-    const startStr = startDate.toISOString().split('T')[0];
-    const endStr = endDate.toISOString().split('T')[0];
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const endDate = new Date(
+      Math.min(new Date(range.to).getTime(), now.getTime())
+    );
+    endDate.setHours(0, 0, 0, 0);
+
+    const startStr = formatLocalDate(startDate);
+    const endStr = formatLocalDate(endDate);
 
     const filled: {
       date: string;
@@ -69,7 +83,7 @@ const useStatistics = (summary: SummaryMonth, records: TRecord[]) => {
       d <= endDate;
       d.setDate(d.getDate() + 1)
     ) {
-      const dateStr = d.toISOString().split('T')[0];
+      const dateStr = formatLocalDate(d);
       let balance: number | null = null;
 
       if (dateStr === startStr) {

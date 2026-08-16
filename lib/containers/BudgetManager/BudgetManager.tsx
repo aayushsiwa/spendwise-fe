@@ -128,7 +128,7 @@ const BudgetManager = () => {
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'top',
+          alignItems: 'flex-start',
           mb: 3,
           flexWrap: 'wrap',
           gap: 2,
