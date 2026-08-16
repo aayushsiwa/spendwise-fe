@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 
 import { PrivateAxios, queryClient } from '@/api/index';
+import { invalidateOnChange } from '@/constants/QueryInvalidation';
 import { QueryKeys } from '@/constants/QueryKeys';
 
 type DeleteCategoryResponse = AxiosResponse<void>;
@@ -17,7 +18,7 @@ export const useDeleteCategoryAPI = () => {
   return useMutation({
     mutationFn: deleteCategoryAPI,
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.CATEGORIES] });
+      invalidateOnChange(queryClient, QueryKeys.CATEGORIES);
     },
   });
 };

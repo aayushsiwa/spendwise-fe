@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 
 import { PrivateAxios, queryClient } from '@/api/index';
+import { invalidateOnChange } from '@/constants/QueryInvalidation';
 import { QueryKeys } from '@/constants/QueryKeys';
 
 type RefreshBalancesResponse = AxiosResponse<{ status: string }>;
@@ -16,11 +17,7 @@ export const useRefreshBalancesAPI = () => {
   return useMutation({
     mutationFn: refreshBalancesAPI,
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.RECORDS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.SUMMARY] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.SUMMARY_FILTER] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BUDGETS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BUDGET_PROGRESS] });
+      invalidateOnChange(queryClient, QueryKeys.RECORDS);
     },
   });
 };

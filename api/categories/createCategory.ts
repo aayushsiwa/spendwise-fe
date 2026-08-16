@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 
 import { PrivateAxios, queryClient } from '@/api/index';
+import { invalidateOnChange } from '@/constants/QueryInvalidation';
 import { QueryKeys } from '@/constants/QueryKeys';
 import { Category } from '@/types/Categories';
 
@@ -22,7 +23,7 @@ export const useCreateCategoryAPI = () => {
   return useMutation({
     mutationFn: createCategoryAPI,
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.CATEGORIES] });
+      invalidateOnChange(queryClient, QueryKeys.CATEGORIES);
     },
   });
 };
