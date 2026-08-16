@@ -26,8 +26,8 @@ import {
 } from '@/lib/components/Category/CategoryIcon';
 import { useCategoriesContext } from '@/lib/context/Categories/Categories';
 import { Record, RecordTypes } from '@/types/Records';
-import { DateUtil } from '@/utils/DateUtils';
 import { snake_CaseToNormalTitle } from '@/utils/CategoryUtils';
+import { DateUtil } from '@/utils/DateUtils';
 import {
   RecordValidationErrors,
   hasRecordValidationErrors,
@@ -181,177 +181,181 @@ const RecordDetailDialog = ({
   return (
     <>
       <Dialog
-      open={open}
-      onClose={() => {
-        if (!isBusy) onClose();
-      }}
-      maxWidth="sm"
-      fullWidth
-    >
-      <DialogTitle>
-        <Typography sx={{ fontWeight: 700 }}>
-          {isCreate ? 'Add Record' : 'Edit Record'}
-        </Typography>
-      </DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
-          <TextField
-            label="Description"
-            value={edit.description}
-            onChange={(e) => handleChange('description', e.target.value)}
-            fullWidth
-            autoFocus
-            error={!!validationErrors.description}
-            helperText={validationErrors.description}
-          />
-          <FormControl
-            fullWidth
-            error={!!validationErrors.amount}
-            variant="outlined"
-          >
-            <InputLabel htmlFor="amount-field">Amount</InputLabel>
-            <OutlinedInput
-              id="amount-field"
-              type="number"
-              label="Amount"
-              value={edit.amount}
-              onChange={(e) => handleChange('amount', e.target.value)}
-              endAdornment={
-                <InputAdornment position="end">
-                  <Select
-                    value={edit.type}
-                    onChange={(e: SelectChangeEvent) =>
-                      handleChange('type', e.target.value)
-                    }
-                    size="small"
-                    variant="standard"
-                    disableUnderline
-                    sx={{
-                      minWidth: 90,
-                      fontSize: '0.95rem',
-                      '.MuiSelect-select': { p: '3px 12px 3px 8px' },
-                    }}
-                  >
-                    <MenuItem value="expense">Expense</MenuItem>
-                    <MenuItem value="income">Income</MenuItem>
-                    <MenuItem value="transfer">Transfer</MenuItem>
-                  </Select>
-                </InputAdornment>
-              }
+        open={open}
+        onClose={() => {
+          if (!isBusy) onClose();
+        }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Typography sx={{ fontWeight: 700 }}>
+            {isCreate ? 'Add Record' : 'Edit Record'}
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+            <TextField
+              label="Description"
+              value={edit.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              fullWidth
+              autoFocus
+              error={!!validationErrors.description}
+              helperText={validationErrors.description}
             />
-            {validationErrors.amount && (
-              <FormHelperText>{validationErrors.amount}</FormHelperText>
-            )}
-          </FormControl>
-          <TextField
-            label="Date"
-            type="date"
-            value={edit.date}
-            onChange={(e) => handleChange('date', e.target.value)}
-            fullWidth
-            slotProps={{ inputLabel: { shrink: true } }}
-            error={!!validationErrors.date}
-            helperText={validationErrors.date}
-          />
-          <Autocomplete
-            freeSolo
-            options={categories?.map((cat) => cat.name) ?? []}
-            inputValue={edit.category}
-            onInputChange={(_, value, reason) => {
-              if (reason === 'input') {
-                handleChange('category', value);
-              }
-            }}
-            onChange={(_, value) => {
-              if (typeof value === 'string') {
-                const match = value.match(/^\+ Create "(.+)"$/);
-                if (match) {
-                  setCreateCatForm({
-                    name: match[1],
-                    icon: 'restaurant',
-                    color: '#1976d2',
-                  });
-                  setCreateCatDialogOpen(true);
-                } else if (value) {
-                  handleChange('category', value);
-                }
-              }
-            }}
-            filterOptions={(options, { inputValue }) => {
-              const filtered = options.filter((opt) =>
-                opt.toLowerCase().includes(inputValue.toLowerCase())
-              );
-              if (
-                inputValue.trim() &&
-                !options.some(
-                  (opt) => opt.toLowerCase() === inputValue.toLowerCase()
-                )
-              ) {
-                filtered.push(`+ Create "${inputValue}"`);
-              }
-              return filtered;
-            }}
-            renderOption={(props, option) => {
-              if (option.startsWith('+ Create "')) {
-                return (
-                  <li {...props}>
-                    <Box
+            <FormControl
+              fullWidth
+              error={!!validationErrors.amount}
+              variant="outlined"
+            >
+              <InputLabel htmlFor="amount-field">Amount</InputLabel>
+              <OutlinedInput
+                id="amount-field"
+                type="number"
+                label="Amount"
+                value={edit.amount}
+                onChange={(e) => handleChange('amount', e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <Select
+                      value={edit.type}
+                      onChange={(e: SelectChangeEvent) =>
+                        handleChange('type', e.target.value)
+                      }
+                      size="small"
+                      variant="standard"
+                      disableUnderline
                       sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        color: 'primary.main',
+                        minWidth: 90,
+                        fontSize: '0.95rem',
+                        '.MuiSelect-select': { p: '3px 12px 3px 8px' },
                       }}
                     >
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {option}
-                      </Typography>
-                    </Box>
-                  </li>
-                );
-              }
-              return <li {...props}>{option}</li>;
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Category"
-                fullWidth
-                error={!!validationErrors.category}
-                helperText={validationErrors.category}
+                      <MenuItem value="expense">Expense</MenuItem>
+                      <MenuItem value="income">Income</MenuItem>
+                      <MenuItem value="transfer">Transfer</MenuItem>
+                    </Select>
+                  </InputAdornment>
+                }
               />
-            )}
-          />
-          <TextField
-            label="Note"
-            value={edit.note}
-            onChange={(e) => handleChange('note', e.target.value)}
-            fullWidth
-            multiline
-            rows={2}
-            error={!!validationErrors.note}
-            helperText={validationErrors.note}
-          />
-        </Box>
-      </DialogContent>
-      <DialogActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
-        {!isCreate && onDelete && (
-          <Button color="error" onClick={handleDelete} disabled={isBusy}>
-            Delete
-          </Button>
-        )}
-        <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
-          <Button onClick={onClose} disabled={isBusy}>
-            Cancel
-          </Button>
-          {onSave && (
-            <Button variant="contained" onClick={handleSave} disabled={isBusy}>
-              {isCreate ? 'Create' : 'Save'}
+              {validationErrors.amount && (
+                <FormHelperText>{validationErrors.amount}</FormHelperText>
+              )}
+            </FormControl>
+            <TextField
+              label="Date"
+              type="date"
+              value={edit.date}
+              onChange={(e) => handleChange('date', e.target.value)}
+              fullWidth
+              slotProps={{ inputLabel: { shrink: true } }}
+              error={!!validationErrors.date}
+              helperText={validationErrors.date}
+            />
+            <Autocomplete
+              freeSolo
+              options={categories?.map((cat) => cat.name) ?? []}
+              inputValue={edit.category}
+              onInputChange={(_, value, reason) => {
+                if (reason === 'input') {
+                  handleChange('category', value);
+                }
+              }}
+              onChange={(_, value) => {
+                if (typeof value === 'string') {
+                  const match = value.match(/^\+ Create "(.+)"$/);
+                  if (match) {
+                    setCreateCatForm({
+                      name: match[1],
+                      icon: 'restaurant',
+                      color: '#1976d2',
+                    });
+                    setCreateCatDialogOpen(true);
+                  } else if (value) {
+                    handleChange('category', value);
+                  }
+                }
+              }}
+              filterOptions={(options, { inputValue }) => {
+                const filtered = options.filter((opt) =>
+                  opt.toLowerCase().includes(inputValue.toLowerCase())
+                );
+                if (
+                  inputValue.trim() &&
+                  !options.some(
+                    (opt) => opt.toLowerCase() === inputValue.toLowerCase()
+                  )
+                ) {
+                  filtered.push(`+ Create "${inputValue}"`);
+                }
+                return filtered;
+              }}
+              renderOption={(props, option) => {
+                if (option.startsWith('+ Create "')) {
+                  return (
+                    <li {...props}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          color: 'primary.main',
+                        }}
+                      >
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {option}
+                        </Typography>
+                      </Box>
+                    </li>
+                  );
+                }
+                return <li {...props}>{option}</li>;
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Category"
+                  fullWidth
+                  error={!!validationErrors.category}
+                  helperText={validationErrors.category}
+                />
+              )}
+            />
+            <TextField
+              label="Note"
+              value={edit.note}
+              onChange={(e) => handleChange('note', e.target.value)}
+              fullWidth
+              multiline
+              rows={2}
+              error={!!validationErrors.note}
+              helperText={validationErrors.note}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
+          {!isCreate && onDelete && (
+            <Button color="error" onClick={handleDelete} disabled={isBusy}>
+              Delete
             </Button>
           )}
-        </Box>
-      </DialogActions>
-    </Dialog>
+          <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
+            <Button onClick={onClose} disabled={isBusy}>
+              Cancel
+            </Button>
+            {onSave && (
+              <Button
+                variant="contained"
+                onClick={handleSave}
+                disabled={isBusy}
+              >
+                {isCreate ? 'Create' : 'Save'}
+              </Button>
+            )}
+          </Box>
+        </DialogActions>
+      </Dialog>
 
       <Dialog
         open={createCatDialogOpen}
@@ -363,9 +367,7 @@ const RecordDetailDialog = ({
           <Typography sx={{ fontWeight: 700 }}>Add Category</Typography>
         </DialogTitle>
         <DialogContent>
-          <Box
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}
-          >
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
             <TextField
               label="Name"
               value={createCatForm.name}
@@ -386,9 +388,7 @@ const RecordDetailDialog = ({
             >
               {Object.keys(CATEGORY_ICONS).map((name) => (
                 <MenuItem key={name} value={name}>
-                  <Box
-                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                  >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <CategoryIcon name={name} />
                     {snake_CaseToNormalTitle(name)}
                   </Box>
@@ -407,9 +407,7 @@ const RecordDetailDialog = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateCatDialogOpen(false)}>
-            Cancel
-          </Button>
+          <Button onClick={() => setCreateCatDialogOpen(false)}>Cancel</Button>
           <Button
             variant="contained"
             onClick={async () => {
@@ -422,9 +420,7 @@ const RecordDetailDialog = ({
                 /* error handled by mutation */
               }
             }}
-            disabled={
-              !createCatForm.name.trim() || createCategory.isPending
-            }
+            disabled={!createCatForm.name.trim() || createCategory.isPending}
           >
             {createCategory.isPending ? 'Creating...' : 'Create'}
           </Button>
