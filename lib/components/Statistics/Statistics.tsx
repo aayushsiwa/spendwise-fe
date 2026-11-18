@@ -15,13 +15,7 @@ const Statistics = ({
 }) => {
   const { data } = useStatistics(summary, records);
 
-  return (
-    <Grid container spacing={2}>
-      <Grid size={{ xs: 12 }}>
-        <BalanceChart data={data} />
-      </Grid>
-    </Grid>
-  );
+  return <BalanceChart data={data} />;
 };
 
 export default Statistics;

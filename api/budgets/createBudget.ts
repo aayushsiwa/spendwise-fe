@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 
 import { PrivateAxios, queryClient } from '@/api/index';
+import { invalidateOnChange } from '@/constants/QueryInvalidation';
 import { QueryKeys } from '@/constants/QueryKeys';
 
 type CreateBudgetRequest = {
@@ -27,9 +28,7 @@ export const useCreateBudgetAPI = () => {
   return useMutation({
     mutationFn: createBudgetAPI,
     onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.BUDGETS, QueryKeys.BUDGET_PROGRESS],
-      });
+      invalidateOnChange(queryClient, QueryKeys.BUDGETS);
     },
   });
 };

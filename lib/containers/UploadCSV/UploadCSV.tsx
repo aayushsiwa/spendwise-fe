@@ -10,12 +10,14 @@ import {
 import { useState } from 'react';
 
 import { useUploadCSVAPI } from '@/api/upload/csv';
+import { useAppSnackbar } from '@/lib/context/Snackbar/Snackbar';
 
 const UploadCSV = () => {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const { mutate: uploadCSV, isPending } = useUploadCSVAPI();
+  const { showSnackbar } = useAppSnackbar();
 
   const handleUpload = () => {
     if (!file) return;
@@ -25,8 +27,13 @@ const UploadCSV = () => {
     uploadCSV(
       { file },
       {
-        onSuccess: () => {
+        onSuccess: (res) => {
           setFile(null);
+          const { recordsImported, skippedCount } = res.data;
+          showSnackbar(
+            `${recordsImported} records imported, ${skippedCount} skipped`,
+            'success'
+          );
         },
         onError: () => {
           setError('Upload failed');
@@ -36,7 +43,7 @@ const UploadCSV = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
         Upload CSV
       </Typography>

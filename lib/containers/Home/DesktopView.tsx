@@ -1,8 +1,10 @@
-import { Box, Grid, Stack } from '@mui/material';
+import { Box, Grid, Paper, Stack, Typography } from '@mui/material';
 import { FC } from 'react';
 
+import SpendingHeatmap from '@/lib/components/Analytics/SpendingHeatmap';
 import BudgetRadarChart from '@/lib/components/BudgetProgress/BudgetRadarChart';
 import Records from '@/lib/components/Records/Records';
+import SimpleRadarChart from '@/lib/components/Statistics/Charts/RadarChart';
 import Statistics from '@/lib/components/Statistics/Statistics';
 import Summary from '@/lib/components/Summary/Summary';
 
@@ -14,20 +16,35 @@ const DesktopView: FC<HomeViewProps> = ({
   recordProps,
   budgetProgress,
 }) => {
+  // Compute valid unique categories the same way BudgetRadarChart does
+  const progress = budgetProgress.data.progress ?? [];
+  const validCategories = new Set<string>();
+  const validProgress = progress.filter((bp) => {
+    return (
+      typeof bp.category === 'string' &&
+      bp.category.trim() !== '' &&
+      Number.isFinite(bp.amount) &&
+      Number.isFinite(bp.spent) &&
+      !validCategories.has(bp.category) &&
+      validCategories.add(bp.category)
+    );
+  });
+  const hasEnoughCategories = validProgress.length >= 3;
+
   return (
     <Grid container spacing={2}>
       <Grid size={{ xs: 12 }}>
         <Summary summary={summary} />
       </Grid>
-      <Grid size={{ xs: 12, md: 8 }}>
-        <Stack spacing={2}>
-          <Statistics summary={summary} records={records ?? []} />
-        </Stack>
+      <Grid size={{ xs: 12, lg: hasEnoughCategories ? 8 : 12 }}>
+        <Statistics summary={summary} records={records ?? []} />
       </Grid>
-      <Grid size={{ xs: 12, lg: 4 }}>
-        <BudgetRadarChart data={budgetProgress} />
-      </Grid>
-      <Grid size={{ xs: 12 }}>
+      {hasEnoughCategories && (
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <BudgetRadarChart data={budgetProgress} />
+        </Grid>
+      )}
+      <Grid size={{ xs: 12, lg: 12 }}>
         <Box
           sx={{
             borderRadius: 1,

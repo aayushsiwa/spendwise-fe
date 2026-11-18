@@ -92,7 +92,6 @@ const RecordsTable = ({
             '& .MuiDataGrid-row': {
               backgroundColor: alpha(theme.palette.background.paper, 0.6),
               backdropFilter: 'blur(12px)',
-              borderRadius: '8px',
               boxShadow: `0 2px 10px ${alpha(theme.palette.common.black, 0.04)}`,
               transition: 'all 0.2s ease',
               '&:hover': {

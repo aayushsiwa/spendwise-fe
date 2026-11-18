@@ -2,10 +2,13 @@ import { useMutation } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 
 import { PrivateAxios, queryClient } from '@/api/index';
+import { invalidateOnChange } from '@/constants/QueryInvalidation';
 import { QueryKeys } from '@/constants/QueryKeys';
 
 type UploadCSVAPIResponse = {
   message: string;
+  recordsImported: number;
+  skippedCount: number;
 };
 
 type UploadCSVResponse = AxiosResponse<UploadCSVAPIResponse>;
@@ -49,12 +52,8 @@ export const useUploadCSVAPI = () => {
     },
 
     onSuccess: () => {
-      // CSV upload changes records → refresh everything
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.RECORDS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.SUMMARY] });
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.SUMMARY_FILTER],
-      });
+      // CSV upload changes records → refresh everything derived from records
+      invalidateOnChange(queryClient, QueryKeys.RECORDS);
     },
   });
 };

@@ -7,6 +7,7 @@ export interface TRecord {
   type: RecordTypes;
   note: string;
   balance: number;
+  createdAt: number;
 }
 
 export interface Record {

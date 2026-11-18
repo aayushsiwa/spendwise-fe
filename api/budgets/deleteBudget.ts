@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 
 import { PrivateAxios, queryClient } from '@/api/index';
+import { invalidateOnChange } from '@/constants/QueryInvalidation';
 import { QueryKeys } from '@/constants/QueryKeys';
 
 export const deleteBudgetAPI = async (ID: string): Promise<void> => {
@@ -11,9 +12,7 @@ export const useDeleteBudgetAPI = () => {
   return useMutation({
     mutationFn: deleteBudgetAPI,
     onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.BUDGETS, QueryKeys.BUDGET_PROGRESS],
-      });
+      invalidateOnChange(queryClient, QueryKeys.BUDGETS);
     },
   });
 };
